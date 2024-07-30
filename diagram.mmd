@@ -1,0 +1,190 @@
+
+---
+title: Testing generation of schemes
+---
+classDiagram
+
+	class MaatAddressProvider {
+		-bytes4 AddressProviderInterfaceId
+		-bytes4 TokenVaultInterfaceId
+		-bytes4 StrategyInterfaceId
+		-bytes4 MaatOracleGlobalPPSInterfaceId
+		-address[] _vaults
+		-address[] _strategies
+		+address oracle
+		+address stargateAdapter
+		+address incentiveController
+		+address admin
+		+mapping(address => bool) isVault
+		+mapping(address => bool) isStrategy
+		+initialize(address _admin) 
+		+addStrategy(address strategy) 
+		+removeStrategy(address strategy) 
+		+addVault(address vault) 
+		+removeVault(address vault) 
+		+changeOracle(address newOracle) 
+		+changeIncentiveController(address newIncentiveController) 
+		+changeStargateAdapter(address newStargateAdapter) 
+		+changeAdmin(address newAdmin) 
+		+getVaults() vaults 
+		+getStrategies() strategies 
+		-_removeAddress(address[] array, address addressToRemove) 
+		-_validateVaultInterface(address _vault) 
+		-_validateStrategyInterface(address strategy) 
+		-_validateOracleInterface(address _oracle) 
+	}
+
+	class TokenVaultLogic {
+		+IMaatAddressProvider addressProvider
+		+uint32 chainEid
+		+ERC20 underlyingToken
+		+address feeTo
+		+uint112 feeIn
+		+uint112 feeOut
+		+uint32 feePrecision
+		+uint idle
+		-mapping(bytes32 => Strategy) _supportedStrategies
+		-mapping(address => bytes32) _strategyAddressToId
+		-mapping(bytes32 => WithdrawRequestInfo) _withdrawRequests
+		-mapping(uint32 => bool) _supportedDstEidToWithdraw
+		-_deposit(uint assets, uint shares, address _owner, address receiver) adjustedAssets adjustedShares 
+		-_redeem(uint _shares, address _receiver, address _owner) assets 
+		-_withdraw(uint _assets, address _receiver, address _owner) adjustedShares 
+		-_sendFunds(address _receiver, uint _assets, uint _shares, uint fee) 
+		-_depositInStrategy(bytes32 _strategyId, uint amount, bytes32 intentionId) shares 
+		-_withdrawFromStrategy(bytes32 _strategyId, uint amount, bytes32 intentionId) shares 
+		-_fulfillWithdrawRequest(bytes32 intentionId) 
+		-_bridge(uint256 _amount, uint256 dstEid, bytes32 intentionId) 
+		-_toggleStrategy(bytes32 _strategyId, bool _isActive) 
+		-_bridgeToUser(uint amount, address _receiver, uint32 dstEid) 
+		-_finishBridge(uint amountBridged, address sender) 
+		-_deleteStrategy(bytes32 _strategyId, IERC4626 strategy) 
+		-_cleanRequestInfo(address owner, bytes32 intentionId) 
+		-_increaseIdle(uint value) 
+		-_decreaseIdle(uint value) 
+		-_sendFee(uint fee) 
+		-_getVaultName(address _asset) string 
+		-_getVaultSymbol(address _asset) string 
+		-_calculateFee(uint amount, uint112 fee) uint 
+		+oracle() IMaatOracleGlobalPPS 
+		+stargateAdapter() IStargateAdapter 
+		+asset() address 
+		+totalAssets() uint 
+		+convertToShares(uint assets) uint 
+		-_convertToSharesByPrevPPS(uint assets) uint 
+		+convertToAssets(uint shares) uint 
+		-_convertToAssetsByPrevPPS(uint shares) uint 
+		+maxDeposit(address receiver) uint256 
+		+maxMint(address receiver) uint256 
+		+maxRedeem(address receiver) uint 
+		+maxWithdraw(address receiver) uint 
+		+previewDeposit(uint assets) uint 
+		+previewMint(uint shares) uint 
+		+previewWithdraw(uint assets) uint 
+		+previewRedeem(uint shares) uint 
+		+getStrategyByAddress(address _strategy) bytes32 bool 
+		+getStrategyById(bytes32 _strategyId) address bool 
+		+setFees(uint112 _feeIn, uint112 _feeOut) 
+		+setFeeTo(address _feeTo) 
+		+decimals() uint8 
+	}
+
+	class TokenVault {
+		-bytes4 StrategyInterfaceId
+		-bytes4 TokenVaultInterfaceId
+		-bytes4 AddressProviderInterfaceId
+		+address commander
+		+address watcher
+		+uint minAmount
+		+uint cancelWithdrawTimer
+		+deposit(uint _assets, address _receiver) shares 
+		+mint(uint shares, address receiver) assets 
+		+withdraw(uint _assets, address _receiver, address _owner) shares 
+		+redeem(uint256 _shares, address _receiver, address _owner) assets 
+		+finishBridge(uint256 amountBridged, bytes32 intentionId) 
+		+execute(ActionType[] actionType, ActionInput[] inputs) bool 
+		+requestWithdraw(uint shares, uint32 dstEid, address owner, address receiver) intentionId 
+		+requestRebalance() intentionId 
+		+cancelWithdrawal(bytes32 intentionId) 
+		-_execute(ActionType _type, ActionInput input) 
+		+getIntentionId(address sender, RequestType _type) bytes32 
+		+getSupportedDstEidToWithdraw(uint32 _dstEid) bool 
+		+getWithdrawRequest(bytes32 intentionId) WithdrawRequestInfo 
+		+setAddressProvider(address _addressProvider) 
+		+setCommander(address _commander) 
+		+setWatcher(address _watcher) 
+		+setMinAmount(uint amount) 
+		+setWithdrawCancelTimer(uint timer) 
+		+addStrategy(address _strategy) 
+		+removeStrategy(bytes32 _strategyId) 
+		+enableStrategy(bytes32 _strategyId) 
+		+disableStrategy(bytes32 _strategyId) 
+		+addChainToWithdraw(uint32 _dstEid) 
+		+removeChainToWithdraw(uint32 _dstEid) 
+		-_validateUser(address owner, address sender) 
+		-_validateMinAmount(uint amount) 
+		-_validateStrategyInterface(address strategy) 
+		-_validateAddressProviderInterface(address _addressProvider) 
+	}
+
+	class StargateAdapter {
+		-bytes4 StargateAdapterInterfaceId
+		-bytes4 TokenVaultInterfaceId
+		+uint32 srcEid
+		-bytes lzExtraOptions
+		+address lzEndpoint
+		+address commander
+		-mapping(uint32 => address) _dstAdapters
+		-mapping(uint32 => address) _stargateByPoolId
+		-mapping(address => address) _stargateByToken
+		-mapping(address => address) _srcVaults
+		-mapping(uint32 => address) _srcTokens
+		-mapping(address => uint32) _poolIds
+		+sendTokens(uint32 _dstEid, address _token, uint _amountLD, bytes32 _intentionId) 
+		+sendTokensToReceiver(uint32 _dstEid, address _token, uint _amountLD, address _receiver) 
+		+lzCompose(address _from, bytes32 _guid, bytes _message, address _executor, bytes _extraData) 
+		+depositOnDstChain(address _token, uint _amount, bytes32 _intentionId) success 
+		+withdraw(address to, uint amount) 
+		+sweep(address to, address token, uint amount) 
+		+setDstAdapter(uint32 _dstEid, address _dstAdapterAddress) 
+		+setStargate(address _stargate) 
+		+setVault(address _token, address _vault) 
+		+setPoolId(uint32 _poolId, address _token) 
+		+setLzExtraOptions(uint16 _index, uint128 _gas, uint128 _value) 
+		+setCommander(address _commander) 
+		+isDstEidSupported(uint32 dstEid) bool 
+		+getDstAdapter(uint32 dstEid) address 
+		+getStargateByPoolId(uint32 poolId) address 
+		+getStargateByToken(address token) address 
+		+getVault(address token) address 
+		+getTokenByPoolId(uint32 poolId) address 
+		+getPoolIdByToken(address token) uint32 
+		-_sendTokens(uint32 _dstEid, address _token, uint _amountLD, bytes composeMsg, address _receiver) msgReceipt oftReceipt 
+		-_prepareSendParams(address _stargate, uint32 _dstEid, uint _amountLD, address _receiver, bytes _composeMsg) valueToSend sendParam messagingFee 
+		-_addressToBytes32(address _addr) bytes32 
+		-_depositOnDstChain(address _token, uint _amount, bytes32 _intentionId) success 
+		-_setStargate(uint32 _poolId, address _token, address _stargate) 
+		-_getPoolIdFromStargate(address _stargate) poolId 
+		-_getTokenFromStargate(address _stargate) token 
+		-_getLzEndpointFromStargate(address _stargate) endpoint 
+		-_validateTokenVaultInterface(address vault) 
+		-_validateStargatePool(address stargate) 
+	}
+
+	class MaatOracleGlobalPPS {
+		-bytes4 MaatOracleGlobalPPSInterfaceId
+		+uint DELTA_PPS_PER_SECOND
+		#uint _decimals
+		+mapping(address => bool) isInitialized
+		+mapping(address => PricePerShare) globalPricePerShare
+		+initPPS(address token) 
+		+updateGlobalPPS(address token, uint112 newPricePerShare) 
+		+getPrevGlobalPPS(address token) uint 
+		+getGlobalPPS(address token) uint 
+		+decimals() uint 
+		+synchronize() 
+		-_checkDeltaPPS(uint112 newPPS, uint112 prevPPS, uint32 _lastUpdateTime) bool 
+		-_updatePPS(uint112 newPricePerShare, address token) 
+		#_subAbs(uint x, uint y) uint 
+	}
+
