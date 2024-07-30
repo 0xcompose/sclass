@@ -26,6 +26,12 @@ You can add your own validations to this functions to warn or throw errors about
 -   Finding unused variables, imports, functions
 -   Finding deprecated code blocks
 
+## Error handling
+
+If interpreter stumbles across unhandled code variation it will put "empty" to type/name or throw Error with data about unhandled invariant.
+
+Doesn't support nested mappings.
+
 ## Possible features
 
 -   Enforcing code style and best practices
