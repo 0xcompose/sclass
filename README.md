@@ -1,5 +1,7 @@
 # Solidity to Class Diagram Interpreter
 
+Parses Solidity files using [@solidity-parser/parser](https://www.npmjs.com/package/@solidity-parser/parser) and creates .mmd (Mermaid) Class Diagrams.
+
 ## Getting Started
 
 Load your **flattened** and **compilable** smart contracts into `/contracts` folder
