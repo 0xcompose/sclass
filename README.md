@@ -4,7 +4,7 @@
 
 Load your **flattened** and **compilable** smart contracts into `/contracts` folder
 
-Then run following commands
+Then run following commands:
 
 ```bash
 npm install
@@ -12,6 +12,26 @@ npm run start
 ```
 
 You can open resulting diagram.svg in browser or [preview extension](https://marketplace.visualstudio.com/items?itemName=vitaliymaz.vscode-svg-previewer)
+
+## Configuration
+
+Basically interpreter parses only contracts, excluding Interfaces and Libraries.
+
+Also filters out OpenZeppelin, LayerZero and Stargate contracts.
+
+New contracts to filter out can be added in `main.ts` array `excludeContracts: string[] = []`. Or by adding contract collection in `src/collections` and adding new filter in `filterNodes(nodes)` in `main.ts`
+
+You can change basic behavior by changing boolean values of variables at the top of `main.ts` file:
+
+```typescript
+const filterInterfaces = true
+const filterLibraries = true
+const filterOz = true
+const filterStargate = true
+const filterLayerZero = true
+
+export const disableFunctionParamType = false
+```
 
 ## Making custom validation
 
