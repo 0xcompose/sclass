@@ -29,8 +29,6 @@ export function convertContractDefinitionToContract(
 
     for (const variable of variables) {
         // Special process for mapping
-        if (variable.variables[0].name === "_vaults")
-            console.log(variable.variables[0])
 
         if (variable.variables[0].typeName?.type === "Mapping") {
             const mapping = parseMapping(variable)

@@ -51,8 +51,6 @@ function main() {
     let parsedContracts: Contract[] = []
 
     for (const contract of filteredContracts) {
-        // console.log(contract)
-
         parsedContracts.push(convertContractDefinitionToContract(contract))
     }
 
