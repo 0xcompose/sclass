@@ -16,7 +16,11 @@ interface IERC20Errors {
      * @param balance Current balance for the interacting account.
      * @param needed Minimum amount required to perform a transfer.
      */
-    error ERC20InsufficientBalance(address sender, uint256 balance, uint256 needed);
+    error ERC20InsufficientBalance(
+        address sender,
+        uint256 balance,
+        uint256 needed
+    );
 
     /**
      * @dev Indicates a failure with the token `sender`. Used in transfers.
@@ -36,7 +40,11 @@ interface IERC20Errors {
      * @param allowance Amount of tokens a `spender` is allowed to operate with.
      * @param needed Minimum amount required to perform a transfer.
      */
-    error ERC20InsufficientAllowance(address spender, uint256 allowance, uint256 needed);
+    error ERC20InsufficientAllowance(
+        address spender,
+        uint256 allowance,
+        uint256 needed
+    );
 
     /**
      * @dev Indicates a failure with the `approver` of a token to be approved. Used in approvals.
@@ -121,7 +129,12 @@ interface IERC1155Errors {
      * @param needed Minimum amount required to perform a transfer.
      * @param tokenId Identifier number of a token.
      */
-    error ERC1155InsufficientBalance(address sender, uint256 balance, uint256 needed, uint256 tokenId);
+    error ERC1155InsufficientBalance(
+        address sender,
+        uint256 balance,
+        uint256 needed,
+        uint256 tokenId
+    );
 
     /**
      * @dev Indicates a failure with the token `sender`. Used in transfers.
@@ -183,7 +196,11 @@ interface IERC20 {
      * @dev Emitted when the allowance of a `spender` for an `owner` is set by
      * a call to {approve}. `value` is the new allowance.
      */
-    event Approval(address indexed owner, address indexed spender, uint256 value);
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 value
+    );
 
     /**
      * @dev Returns the value of tokens in existence.
@@ -211,7 +228,10 @@ interface IERC20 {
      *
      * This value changes when {approve} or {transferFrom} are called.
      */
-    function allowance(address owner, address spender) external view returns (uint256);
+    function allowance(
+        address owner,
+        address spender
+    ) external view returns (uint256);
 
     /**
      * @dev Sets a `value` amount of tokens as the allowance of `spender` over the
@@ -239,7 +259,11 @@ interface IERC20 {
      *
      * Emits a {Transfer} event.
      */
-    function transferFrom(address from, address to, uint256 value) external returns (bool);
+    function transferFrom(
+        address from,
+        address to,
+        uint256 value
+    ) external returns (bool);
 }
 
 // node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol
@@ -400,7 +424,10 @@ library Address {
      * - `target` must be a contract.
      * - calling `target` with `data` must not revert.
      */
-    function functionCall(address target, bytes memory data) internal returns (bytes memory) {
+    function functionCall(
+        address target,
+        bytes memory data
+    ) internal returns (bytes memory) {
         return functionCallWithValue(target, data, 0);
     }
 
@@ -413,11 +440,17 @@ library Address {
      * - the calling contract must have an ETH balance of at least `value`.
      * - the called Solidity function must be `payable`.
      */
-    function functionCallWithValue(address target, bytes memory data, uint256 value) internal returns (bytes memory) {
+    function functionCallWithValue(
+        address target,
+        bytes memory data,
+        uint256 value
+    ) internal returns (bytes memory) {
         if (address(this).balance < value) {
             revert AddressInsufficientBalance(address(this));
         }
-        (bool success, bytes memory returndata) = target.call{value: value}(data);
+        (bool success, bytes memory returndata) = target.call{value: value}(
+            data
+        );
         return verifyCallResultFromTarget(target, success, returndata);
     }
 
@@ -425,7 +458,10 @@ library Address {
      * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
      * but performing a static call.
      */
-    function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {
+    function functionStaticCall(
+        address target,
+        bytes memory data
+    ) internal view returns (bytes memory) {
         (bool success, bytes memory returndata) = target.staticcall(data);
         return verifyCallResultFromTarget(target, success, returndata);
     }
@@ -434,7 +470,10 @@ library Address {
      * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
      * but performing a delegate call.
      */
-    function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {
+    function functionDelegateCall(
+        address target,
+        bytes memory data
+    ) internal returns (bytes memory) {
         (bool success, bytes memory returndata) = target.delegatecall(data);
         return verifyCallResultFromTarget(target, success, returndata);
     }
@@ -465,7 +504,10 @@ library Address {
      * @dev Tool to verify that a low level call was successful, and reverts if it wasn't, either by bubbling the
      * revert reason or with a default {FailedInnerCall} error.
      */
-    function verifyCallResult(bool success, bytes memory returndata) internal pure returns (bytes memory) {
+    function verifyCallResult(
+        bool success,
+        bytes memory returndata
+    ) internal pure returns (bytes memory) {
         if (!success) {
             _revert(returndata);
         } else {
@@ -651,7 +693,10 @@ library Math {
     /**
      * @dev Returns the addition of two unsigned integers, with an overflow flag.
      */
-    function tryAdd(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+    function tryAdd(
+        uint256 a,
+        uint256 b
+    ) internal pure returns (bool, uint256) {
         unchecked {
             uint256 c = a + b;
             if (c < a) return (false, 0);
@@ -662,7 +707,10 @@ library Math {
     /**
      * @dev Returns the subtraction of two unsigned integers, with an overflow flag.
      */
-    function trySub(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+    function trySub(
+        uint256 a,
+        uint256 b
+    ) internal pure returns (bool, uint256) {
         unchecked {
             if (b > a) return (false, 0);
             return (true, a - b);
@@ -672,7 +720,10 @@ library Math {
     /**
      * @dev Returns the multiplication of two unsigned integers, with an overflow flag.
      */
-    function tryMul(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+    function tryMul(
+        uint256 a,
+        uint256 b
+    ) internal pure returns (bool, uint256) {
         unchecked {
             // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
             // benefit is lost if 'b' is also tested.
@@ -687,7 +738,10 @@ library Math {
     /**
      * @dev Returns the division of two unsigned integers, with a division by zero flag.
      */
-    function tryDiv(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+    function tryDiv(
+        uint256 a,
+        uint256 b
+    ) internal pure returns (bool, uint256) {
         unchecked {
             if (b == 0) return (false, 0);
             return (true, a / b);
@@ -697,7 +751,10 @@ library Math {
     /**
      * @dev Returns the remainder of dividing two unsigned integers, with a division by zero flag.
      */
-    function tryMod(uint256 a, uint256 b) internal pure returns (bool, uint256) {
+    function tryMod(
+        uint256 a,
+        uint256 b
+    ) internal pure returns (bool, uint256) {
         unchecked {
             if (b == 0) return (false, 0);
             return (true, a % b);
@@ -749,7 +806,11 @@ library Math {
      * @dev Original credit to Remco Bloemen under MIT license (https://xn--2-umb.com/21/muldiv) with further edits by
      * Uniswap Labs also under MIT license.
      */
-    function mulDiv(uint256 x, uint256 y, uint256 denominator) internal pure returns (uint256 result) {
+    function mulDiv(
+        uint256 x,
+        uint256 y,
+        uint256 denominator
+    ) internal pure returns (uint256 result) {
         unchecked {
             // 512-bit multiply [prod1 prod0] = x * y. Compute the product mod 2^256 and mod 2^256 - 1, then use
             // use the Chinese Remainder Theorem to reconstruct the 512 bit result. The result is stored in two 256
@@ -833,7 +894,12 @@ library Math {
     /**
      * @notice Calculates x * y / denominator with full precision, following the selected rounding direction.
      */
-    function mulDiv(uint256 x, uint256 y, uint256 denominator, Rounding rounding) internal pure returns (uint256) {
+    function mulDiv(
+        uint256 x,
+        uint256 y,
+        uint256 denominator,
+        Rounding rounding
+    ) internal pure returns (uint256) {
         uint256 result = mulDiv(x, y, denominator);
         if (unsignedRoundsUp(rounding) && mulmod(x, y, denominator) > 0) {
             result += 1;
@@ -883,10 +949,15 @@ library Math {
     /**
      * @notice Calculates sqrt(a), following the selected rounding direction.
      */
-    function sqrt(uint256 a, Rounding rounding) internal pure returns (uint256) {
+    function sqrt(
+        uint256 a,
+        Rounding rounding
+    ) internal pure returns (uint256) {
         unchecked {
             uint256 result = sqrt(a);
-            return result + (unsignedRoundsUp(rounding) && result * result < a ? 1 : 0);
+            return
+                result +
+                (unsignedRoundsUp(rounding) && result * result < a ? 1 : 0);
         }
     }
 
@@ -936,10 +1007,15 @@ library Math {
      * @dev Return the log in base 2, following the selected rounding direction, of a positive value.
      * Returns 0 if given 0.
      */
-    function log2(uint256 value, Rounding rounding) internal pure returns (uint256) {
+    function log2(
+        uint256 value,
+        Rounding rounding
+    ) internal pure returns (uint256) {
         unchecked {
             uint256 result = log2(value);
-            return result + (unsignedRoundsUp(rounding) && 1 << result < value ? 1 : 0);
+            return
+                result +
+                (unsignedRoundsUp(rounding) && 1 << result < value ? 1 : 0);
         }
     }
 
@@ -985,10 +1061,15 @@ library Math {
      * @dev Return the log in base 10, following the selected rounding direction, of a positive value.
      * Returns 0 if given 0.
      */
-    function log10(uint256 value, Rounding rounding) internal pure returns (uint256) {
+    function log10(
+        uint256 value,
+        Rounding rounding
+    ) internal pure returns (uint256) {
         unchecked {
             uint256 result = log10(value);
-            return result + (unsignedRoundsUp(rounding) && 10 ** result < value ? 1 : 0);
+            return
+                result +
+                (unsignedRoundsUp(rounding) && 10 ** result < value ? 1 : 0);
         }
     }
 
@@ -1028,10 +1109,19 @@ library Math {
      * @dev Return the log in base 256, following the selected rounding direction, of a positive value.
      * Returns 0 if given 0.
      */
-    function log256(uint256 value, Rounding rounding) internal pure returns (uint256) {
+    function log256(
+        uint256 value,
+        Rounding rounding
+    ) internal pure returns (uint256) {
         unchecked {
             uint256 result = log256(value);
-            return result + (unsignedRoundsUp(rounding) && 1 << (result << 3) < value ? 1 : 0);
+            return
+                result +
+                (
+                    unsignedRoundsUp(rounding) && 1 << (result << 3) < value
+                        ? 1
+                        : 0
+                );
         }
     }
 
@@ -1041,169 +1131,6 @@ library Math {
     function unsignedRoundsUp(Rounding rounding) internal pure returns (bool) {
         return uint8(rounding) % 2 == 1;
     }
-}
-
-// src/interfaces/IExecutor.sol
-
-interface IWithdrawRequestLogic {
-    /* ====== STRUCT ====== */
-
-    struct WithdrawRequestInfo {
-        address owner;
-        address receiver;
-        address token;
-        uint32 dstEid;
-        uint32 creationTime;
-        uint256 shares;
-    }
-
-    /* ====== EVENTS ====== */
-
-    event WithdrawRequestCancelled(bytes32 indexed intentionId);
-
-    event WithdrawalRequested(
-        address token,
-        uint256 shares,
-        address owner,
-        bytes32 indexed intentionId,
-        uint32 dstEid
-    );
-
-    event WithdrawRequestFulfilled(
-        address token,
-        uint256 assets,
-        address owner,
-        address receiver,
-        bytes32 indexed intentionId
-    );
-
-    /* ====== FUNCTIONS ====== */
-
-    function getWithdrawRequest(
-        bytes32 intentionId
-    ) external view returns (WithdrawRequestInfo memory);
-
-    function getSupportedDstEidToWithdraw(
-        uint32 _dstEid
-    ) external view returns (bool);
-}
-
-interface IBridgeLogic {
-    /* ====== EVENTS ====== */
-
-    event Bridged(
-        uint32 dstEid,
-        address asset,
-        uint256 amount,
-        bytes32 indexed intentionId
-    );
-
-    event BridgeFinished(uint amount, bytes32 intentionId);
-
-    /* ====== FUNCTIONS ====== */
-
-    function finishBridge(uint256 amountBridged, bytes32 intentionId) external;
-}
-
-interface IStrategyManager {
-    /* ====== STRUCT ====== */
-
-    struct Strategy {
-        address strategyAddress;
-        bool isActive;
-    }
-
-    /* ====== EVENTS ====== */
-
-    event StrategyAdded(bytes32 strategyId);
-    event StrategyRemoved(bytes32 strategyId);
-    event StrategyToggled(bytes32 strategyId, bool isActive);
-
-    /* ====== FUNCTIONS ====== */
-
-    function getStrategyById(
-        bytes32 _strategyId
-    ) external view returns (address, bool);
-
-    function getStrategyByAddress(
-        address _strategy
-    ) external view returns (bytes32, bool);
-
-    /// @notice Adds a new strategy to the list of valid strategies in the contract.
-    /// @dev This function requires that the caller is an administrator or has appropriate access rights.
-    function addStrategy(address strategy) external;
-
-    /// @notice Delete a strategy from the list of valid strategies in the contract.
-    /// @dev Requires that the caller is an administrator or has appropriate access rights.
-    function removeStrategy(bytes32 _strategyId) external;
-
-    ///@notice Deactivate a strategy in the contract. Deactivated strategies will not be able to perform any actions.
-    function disableStrategy(bytes32 _strategyId) external;
-
-    ///@notice Turn on a strategy
-    function enableStrategy(bytes32 _strategyId) external;
-}
-
-interface IRoles {
-    function setCommander(address _commander) external;
-}
-
-interface IExecutor is IWithdrawRequestLogic, IBridgeLogic, IStrategyManager {
-    ///@dev Used to Deposit/Withdraw from strategy, Bridge assets between Vault, Fulfill Requests
-    enum ActionType {
-        DEPOSIT,
-        WITHDRAW,
-        BRIDGE,
-        FULFILL_WITHDRAW_REQUEST
-    }
-
-    ///@notice Not all fields are required for all actions
-    struct ActionInput {
-        uint32 dstEid;
-        bytes32 strategyId;
-        uint256 amount;
-        bytes32 intentionId;
-    }
-
-    function execute(
-        ActionType[] calldata actionType,
-        ActionInput[] calldata inputs
-    ) external returns (bool);
-
-    event DepositedInStrategy(
-        bytes32 strategyId,
-        address asset,
-        uint256 amount,
-        bytes32 indexed intentionId
-    );
-
-    event WithdrewFromStrategy(
-        bytes32 strategyId,
-        address asset,
-        uint256 amount,
-        bytes32 indexed intentionId
-    );
-
-    event RebalanceRequested(bytes32 intentionId);
-
-    enum RequestType {
-        WITHDRAW,
-        REBALANCE
-    }
-
-    struct RebalanceRequestInfo {
-        uint32 lastRebalanceTime;
-        bytes32 intentionId;
-    }
-
-    function requestRebalance() external returns (bytes32 intentionId);
-
-    function requestWithdraw(
-        uint shares,
-        uint32 dstEid,
-        address receiver,
-        address owner
-    ) external returns (bytes32);
 }
 
 // src/interfaces/IMaatAddressProvider.sol
@@ -1386,7 +1313,10 @@ abstract contract Ownable is Context {
      */
     error OwnableInvalidOwner(address owner);
 
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event OwnershipTransferred(
+        address indexed previousOwner,
+        address indexed newOwner
+    );
 
     /**
      * @dev Initializes the contract setting the address provided by the deployer as the initial owner.
@@ -1501,7 +1431,10 @@ library ERC165Checker {
         // Any contract that implements ERC165 must explicitly indicate support of
         // InterfaceId_ERC165 and explicitly indicate non-support of InterfaceId_Invalid
         return
-            supportsERC165InterfaceUnchecked(account, type(IERC165).interfaceId) &&
+            supportsERC165InterfaceUnchecked(
+                account,
+                type(IERC165).interfaceId
+            ) &&
             !supportsERC165InterfaceUnchecked(account, INTERFACE_ID_INVALID);
     }
 
@@ -1511,9 +1444,14 @@ library ERC165Checker {
      *
      * See {IERC165-supportsInterface}.
      */
-    function supportsInterface(address account, bytes4 interfaceId) internal view returns (bool) {
+    function supportsInterface(
+        address account,
+        bytes4 interfaceId
+    ) internal view returns (bool) {
         // query support of both ERC165 as per the spec and support of _interfaceId
-        return supportsERC165(account) && supportsERC165InterfaceUnchecked(account, interfaceId);
+        return
+            supportsERC165(account) &&
+            supportsERC165InterfaceUnchecked(account, interfaceId);
     }
 
     /**
@@ -1535,7 +1473,10 @@ library ERC165Checker {
         if (supportsERC165(account)) {
             // query support of each interface in interfaceIds
             for (uint256 i = 0; i < interfaceIds.length; i++) {
-                interfaceIdsSupported[i] = supportsERC165InterfaceUnchecked(account, interfaceIds[i]);
+                interfaceIdsSupported[i] = supportsERC165InterfaceUnchecked(
+                    account,
+                    interfaceIds[i]
+                );
             }
         }
 
@@ -1551,7 +1492,10 @@ library ERC165Checker {
      *
      * See {IERC165-supportsInterface}.
      */
-    function supportsAllInterfaces(address account, bytes4[] memory interfaceIds) internal view returns (bool) {
+    function supportsAllInterfaces(
+        address account,
+        bytes4[] memory interfaceIds
+    ) internal view returns (bool) {
         // query support of ERC165 itself
         if (!supportsERC165(account)) {
             return false;
@@ -1583,16 +1527,29 @@ library ERC165Checker {
      *
      * Interface identification is specified in ERC-165.
      */
-    function supportsERC165InterfaceUnchecked(address account, bytes4 interfaceId) internal view returns (bool) {
+    function supportsERC165InterfaceUnchecked(
+        address account,
+        bytes4 interfaceId
+    ) internal view returns (bool) {
         // prepare call
-        bytes memory encodedParams = abi.encodeCall(IERC165.supportsInterface, (interfaceId));
+        bytes memory encodedParams = abi.encodeCall(
+            IERC165.supportsInterface,
+            (interfaceId)
+        );
 
         // perform static call
         bool success;
         uint256 returnSize;
         uint256 returnValue;
         assembly {
-            success := staticcall(30000, account, add(encodedParams, 0x20), mload(encodedParams), 0x00, 0x20)
+            success := staticcall(
+                30000,
+                account,
+                add(encodedParams, 0x20),
+                mload(encodedParams),
+                0x00,
+                0x20
+            )
             returnSize := returndatasize()
             returnValue := mload(0x00)
         }
@@ -1624,7 +1581,7 @@ contract ERC165Registry is IERC165 {
      */
     mapping(bytes4 => bool) private _supportedInterfaces;
 
-    constructor () {
+    constructor() {
         // Derived contracts need only register support for their own interfaces,
         // we register support for ERC165 itself here
         _registerInterface(_INTERFACE_ID_ERC165);
@@ -1635,7 +1592,9 @@ contract ERC165Registry is IERC165 {
      *
      * Time complexity O(1), guaranteed to always use less than 30 000 gas.
      */
-    function supportsInterface(bytes4 interfaceId) external view returns (bool) {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) external view returns (bool) {
         return _supportedInterfaces[interfaceId];
     }
 
@@ -1665,7 +1624,12 @@ contract ERC165Registry is IERC165 {
  * https://eips.ethereum.org/EIPS/eip-4626[ERC-4626].
  */
 interface IERC4626 is IERC20, IERC20Metadata {
-    event Deposit(address indexed sender, address indexed owner, uint256 assets, uint256 shares);
+    event Deposit(
+        address indexed sender,
+        address indexed owner,
+        uint256 assets,
+        uint256 shares
+    );
 
     event Withdraw(
         address indexed sender,
@@ -1705,7 +1669,9 @@ interface IERC4626 is IERC20, IERC20Metadata {
      * “average-user’s” price-per-share, meaning what the average user should expect to see when exchanging to and
      * from.
      */
-    function convertToShares(uint256 assets) external view returns (uint256 shares);
+    function convertToShares(
+        uint256 assets
+    ) external view returns (uint256 shares);
 
     /**
      * @dev Returns the amount of assets that the Vault would exchange for the amount of shares provided, in an ideal
@@ -1720,7 +1686,9 @@ interface IERC4626 is IERC20, IERC20Metadata {
      * “average-user’s” price-per-share, meaning what the average user should expect to see when exchanging to and
      * from.
      */
-    function convertToAssets(uint256 shares) external view returns (uint256 assets);
+    function convertToAssets(
+        uint256 shares
+    ) external view returns (uint256 assets);
 
     /**
      * @dev Returns the maximum amount of the underlying asset that can be deposited into the Vault for the receiver,
@@ -1730,7 +1698,9 @@ interface IERC4626 is IERC20, IERC20Metadata {
      * - MUST return 2 ** 256 - 1 if there is no limit on the maximum amount of assets that may be deposited.
      * - MUST NOT revert.
      */
-    function maxDeposit(address receiver) external view returns (uint256 maxAssets);
+    function maxDeposit(
+        address receiver
+    ) external view returns (uint256 maxAssets);
 
     /**
      * @dev Allows an on-chain or off-chain user to simulate the effects of their deposit at the current block, given
@@ -1747,7 +1717,9 @@ interface IERC4626 is IERC20, IERC20Metadata {
      * NOTE: any unfavorable discrepancy between convertToShares and previewDeposit SHOULD be considered slippage in
      * share price or some other type of condition, meaning the depositor will lose assets by depositing.
      */
-    function previewDeposit(uint256 assets) external view returns (uint256 shares);
+    function previewDeposit(
+        uint256 assets
+    ) external view returns (uint256 shares);
 
     /**
      * @dev Mints shares Vault shares to receiver by depositing exactly amount of underlying tokens.
@@ -1760,7 +1732,10 @@ interface IERC4626 is IERC20, IERC20Metadata {
      *
      * NOTE: most implementations will require pre-approval of the Vault with the Vault’s underlying asset token.
      */
-    function deposit(uint256 assets, address receiver) external returns (uint256 shares);
+    function deposit(
+        uint256 assets,
+        address receiver
+    ) external returns (uint256 shares);
 
     /**
      * @dev Returns the maximum amount of the Vault shares that can be minted for the receiver, through a mint call.
@@ -1768,7 +1743,9 @@ interface IERC4626 is IERC20, IERC20Metadata {
      * - MUST return 2 ** 256 - 1 if there is no limit on the maximum amount of shares that may be minted.
      * - MUST NOT revert.
      */
-    function maxMint(address receiver) external view returns (uint256 maxShares);
+    function maxMint(
+        address receiver
+    ) external view returns (uint256 maxShares);
 
     /**
      * @dev Allows an on-chain or off-chain user to simulate the effects of their mint at the current block, given
@@ -1798,7 +1775,10 @@ interface IERC4626 is IERC20, IERC20Metadata {
      *
      * NOTE: most implementations will require pre-approval of the Vault with the Vault’s underlying asset token.
      */
-    function mint(uint256 shares, address receiver) external returns (uint256 assets);
+    function mint(
+        uint256 shares,
+        address receiver
+    ) external returns (uint256 assets);
 
     /**
      * @dev Returns the maximum amount of the underlying asset that can be withdrawn from the owner balance in the
@@ -1807,7 +1787,9 @@ interface IERC4626 is IERC20, IERC20Metadata {
      * - MUST return a limited value if owner is subject to some withdrawal limit or timelock.
      * - MUST NOT revert.
      */
-    function maxWithdraw(address owner) external view returns (uint256 maxAssets);
+    function maxWithdraw(
+        address owner
+    ) external view returns (uint256 maxAssets);
 
     /**
      * @dev Allows an on-chain or off-chain user to simulate the effects of their withdrawal at the current block,
@@ -1825,7 +1807,9 @@ interface IERC4626 is IERC20, IERC20Metadata {
      * NOTE: any unfavorable discrepancy between convertToShares and previewWithdraw SHOULD be considered slippage in
      * share price or some other type of condition, meaning the depositor will lose assets by depositing.
      */
-    function previewWithdraw(uint256 assets) external view returns (uint256 shares);
+    function previewWithdraw(
+        uint256 assets
+    ) external view returns (uint256 shares);
 
     /**
      * @dev Burns shares from owner and sends exactly assets of underlying tokens to receiver.
@@ -1839,7 +1823,11 @@ interface IERC4626 is IERC20, IERC20Metadata {
      * Note that some implementations will require pre-requesting to the Vault before a withdrawal may be performed.
      * Those methods should be performed separately.
      */
-    function withdraw(uint256 assets, address receiver, address owner) external returns (uint256 shares);
+    function withdraw(
+        uint256 assets,
+        address receiver,
+        address owner
+    ) external returns (uint256 shares);
 
     /**
      * @dev Returns the maximum amount of Vault shares that can be redeemed from the owner balance in the Vault,
@@ -1866,7 +1854,9 @@ interface IERC4626 is IERC20, IERC20Metadata {
      * NOTE: any unfavorable discrepancy between convertToAssets and previewRedeem SHOULD be considered slippage in
      * share price or some other type of condition, meaning the depositor will lose assets by redeeming.
      */
-    function previewRedeem(uint256 shares) external view returns (uint256 assets);
+    function previewRedeem(
+        uint256 shares
+    ) external view returns (uint256 assets);
 
     /**
      * @dev Burns exactly shares from owner and sends assets of underlying tokens to receiver.
@@ -1880,42 +1870,11 @@ interface IERC4626 is IERC20, IERC20Metadata {
      * NOTE: some implementations will require pre-requesting to the Vault before a withdrawal may be performed.
      * Those methods should be performed separately.
      */
-    function redeem(uint256 shares, address receiver, address owner) external returns (uint256 assets);
-}
-
-// src/core/vault/FeeManager.sol
-
-abstract contract FeeManager is Ownable {
-    uint112 public feeIn = 5 * 10 ** 5;
-    uint112 public feeOut = 5 * 10 ** 5;
-    uint32 public feePrecision = 10 ** 8;
-
-    address public feeTo;
-
-    constructor(address _feeTo) {
-        feeTo = _feeTo;
-    }
-
-    function _calculateFee(
-        uint amount,
-        uint112 fee
-    ) internal view returns (uint) {
-        return (amount * fee) / feePrecision;
-    }
-
-    function setFees(uint112 _feeIn, uint112 _feeOut) external onlyOwner {
-        require(
-            feeIn < 10 ** 8 && feeOut < 10 ** 8,
-            "TokenVault: Fee is more than one"
-        );
-
-        feeIn = _feeIn;
-        feeOut = _feeOut;
-    }
-
-    function setFeeTo(address _feeTo) external onlyOwner {
-        feeTo = _feeTo;
-    }
+    function redeem(
+        uint256 shares,
+        address receiver,
+        address owner
+    ) external returns (uint256 assets);
 }
 
 // node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
@@ -1942,7 +1901,11 @@ library SafeERC20 {
     /**
      * @dev Indicates a failed `decreaseAllowance` request.
      */
-    error SafeERC20FailedDecreaseAllowance(address spender, uint256 currentAllowance, uint256 requestedDecrease);
+    error SafeERC20FailedDecreaseAllowance(
+        address spender,
+        uint256 currentAllowance,
+        uint256 requestedDecrease
+    );
 
     /**
      * @dev Transfer `value` amount of `token` from the calling contract to `to`. If `token` returns no value,
@@ -1956,15 +1919,27 @@ library SafeERC20 {
      * @dev Transfer `value` amount of `token` from `from` to `to`, spending the approval given by `from` to the
      * calling contract. If `token` returns no value, non-reverting calls are assumed to be successful.
      */
-    function safeTransferFrom(IERC20 token, address from, address to, uint256 value) internal {
-        _callOptionalReturn(token, abi.encodeCall(token.transferFrom, (from, to, value)));
+    function safeTransferFrom(
+        IERC20 token,
+        address from,
+        address to,
+        uint256 value
+    ) internal {
+        _callOptionalReturn(
+            token,
+            abi.encodeCall(token.transferFrom, (from, to, value))
+        );
     }
 
     /**
      * @dev Increase the calling contract's allowance toward `spender` by `value`. If `token` returns no value,
      * non-reverting calls are assumed to be successful.
      */
-    function safeIncreaseAllowance(IERC20 token, address spender, uint256 value) internal {
+    function safeIncreaseAllowance(
+        IERC20 token,
+        address spender,
+        uint256 value
+    ) internal {
         uint256 oldAllowance = token.allowance(address(this), spender);
         forceApprove(token, spender, oldAllowance + value);
     }
@@ -1973,11 +1948,19 @@ library SafeERC20 {
      * @dev Decrease the calling contract's allowance toward `spender` by `requestedDecrease`. If `token` returns no
      * value, non-reverting calls are assumed to be successful.
      */
-    function safeDecreaseAllowance(IERC20 token, address spender, uint256 requestedDecrease) internal {
+    function safeDecreaseAllowance(
+        IERC20 token,
+        address spender,
+        uint256 requestedDecrease
+    ) internal {
         unchecked {
             uint256 currentAllowance = token.allowance(address(this), spender);
             if (currentAllowance < requestedDecrease) {
-                revert SafeERC20FailedDecreaseAllowance(spender, currentAllowance, requestedDecrease);
+                revert SafeERC20FailedDecreaseAllowance(
+                    spender,
+                    currentAllowance,
+                    requestedDecrease
+                );
             }
             forceApprove(token, spender, currentAllowance - requestedDecrease);
         }
@@ -1988,11 +1971,21 @@ library SafeERC20 {
      * non-reverting calls are assumed to be successful. Meant to be used with tokens that require the approval
      * to be set to zero before setting it to a non-zero value, such as USDT.
      */
-    function forceApprove(IERC20 token, address spender, uint256 value) internal {
-        bytes memory approvalCall = abi.encodeCall(token.approve, (spender, value));
+    function forceApprove(
+        IERC20 token,
+        address spender,
+        uint256 value
+    ) internal {
+        bytes memory approvalCall = abi.encodeCall(
+            token.approve,
+            (spender, value)
+        );
 
         if (!_callOptionalReturnBool(token, approvalCall)) {
-            _callOptionalReturn(token, abi.encodeCall(token.approve, (spender, 0)));
+            _callOptionalReturn(
+                token,
+                abi.encodeCall(token.approve, (spender, 0))
+            );
             _callOptionalReturn(token, approvalCall);
         }
     }
@@ -2022,192 +2015,19 @@ library SafeERC20 {
      *
      * This is a variant of {_callOptionalReturn} that silents catches all reverts and returns a bool instead.
      */
-    function _callOptionalReturnBool(IERC20 token, bytes memory data) private returns (bool) {
+    function _callOptionalReturnBool(
+        IERC20 token,
+        bytes memory data
+    ) private returns (bool) {
         // We need to perform a low level call here, to bypass Solidity's return data size checking mechanism, since
         // we're implementing it ourselves. We cannot use {Address-functionCall} here since this should return false
         // and not revert is the subcall reverts.
 
         (bool success, bytes memory returndata) = address(token).call(data);
-        return success && (returndata.length == 0 || abi.decode(returndata, (bool))) && address(token).code.length > 0;
-    }
-}
-
-// src/core/base/AddressProviderKeeper.sol
-
-contract AddressProviderKeeper {
-    using ERC165Checker for address;
-
-    IMaatAddressProvider private _addressProvider;
-
-    bytes4 public constant AddressProviderInterfaceId =
-        bytes4(keccak256("MAAT.V1.AddressProvider"));
-
-    error AddressIsNotAddressProvider(address addr);
-
-    constructor(address addressProvider_) {
-        _validateAddressProviderInterface(addressProvider_);
-
-        _addressProvider = IMaatAddressProvider(addressProvider_);
-    }
-
-    function _validateAddressProviderInterface(
-        address addressProvider_
-    ) private view {
-        if (addressProvider_.supportsInterface(AddressProviderInterfaceId))
-            return;
-
-        revert AddressIsNotAddressProvider(addressProvider_);
-    }
-
-    function addressProvider() public view returns (IMaatAddressProvider) {
-        return _addressProvider;
-    }
-}
-
-// src/core/execute/Roles.sol
-
-abstract contract Roles is Ownable, IRoles {
-    address public commander;
-    address public watcher;
-
-    constructor(address commander_, address watcher_) {
-        commander = commander_;
-        watcher = watcher_;
-    }
-
-    function setCommander(address _commander) external onlyOwner {
-        commander = _commander;
-    }
-
-    function setWatcher(address _watcher) external onlyOwner {
-        watcher = _watcher;
-    }
-
-    /* ======== MODIFIERS ======== */
-
-    modifier onlyCommanderOrAdmin() {
-        require(
-            msg.sender == commander || msg.sender == owner(),
-            "TokenVault: Caller is not commander or admin"
-        );
-        _;
-    }
-
-    modifier onlyWatcherOrAdmin() {
-        require(
-            msg.sender == watcher || msg.sender == owner(),
-            "TokenVault: Caller is not watcher or admin"
-        );
-        _;
-    }
-}
-
-// src/core/execute/WithdrawRequestLogic.sol
-
-abstract contract WithdrawRequestLogic is Ownable, IWithdrawRequestLogic {
-    /* ======== STATE ======== */
-
-    uint public cancelWithdrawTimer = 1 hours;
-
-    ///@dev Endpoint Id of current chain in stargate terminology
-    uint32 public chainEid;
-
-    mapping(uint32 dstEid => bool) internal _supportedDstEidToWithdraw;
-
-    mapping(bytes32 intentionId => WithdrawRequestInfo)
-        internal _withdrawRequests;
-
-    constructor(uint32 _chainEid) {
-        chainEid = _chainEid;
-        _supportedDstEidToWithdraw[chainEid] = true;
-    }
-
-    /* ======== EXTERNAL ======== */
-
-    function setWithdrawCancelTimer(uint timer) external onlyOwner {
-        cancelWithdrawTimer = timer;
-    }
-
-    /* ======== INTERNAL ======== */
-
-    function _createWithdrawRequest(
-        bytes32 intentionId,
-        address _owner,
-        address receiver,
-        address asset,
-        uint32 dstEid,
-        uint shares
-    ) internal {
-        // TODO: add validations for all params possible
-        require(
-            receiver != address(0),
-            "WithdrawRequestLogic: Receiver is zero address"
-        );
-
-        _withdrawRequests[intentionId] = WithdrawRequestInfo({
-            owner: _owner,
-            receiver: receiver,
-            token: asset,
-            dstEid: dstEid,
-            creationTime: uint32(block.timestamp),
-            shares: shares
-        });
-
-        emit WithdrawalRequested(asset, shares, _owner, intentionId, dstEid);
-    }
-
-    function _cancelWithdrawRequest(
-        bytes32 intentionId
-    ) internal returns (address owner, uint shares) {
-        WithdrawRequestInfo memory request = _withdrawRequests[intentionId];
-
-        require(
-            request.creationTime != 0,
-            "WithdrawRequestLogic: Request does not exist"
-        );
-
-        require(
-            request.creationTime + cancelWithdrawTimer <= block.timestamp,
-            "WithdrawRequestLogic: Not enough time has passed yet to withdraw"
-        );
-        address _owner = request.owner;
-
-        require(
-            msg.sender == _owner,
-            "WithdrawRequestLogic: Unauthorized caller"
-        );
-
-        _cleanRequestInfo(_owner, intentionId);
-
-        emit WithdrawRequestCancelled(intentionId);
-
-        return (_owner, request.shares);
-    }
-
-    function _cleanRequestInfo(address owner, bytes32 intentionId) internal {
-        delete _withdrawRequests[intentionId];
-    }
-
-    function addChainToWithdraw(uint32 _dstEid) external onlyOwner {
-        _supportedDstEidToWithdraw[_dstEid] = true;
-    }
-
-    function removeChainToWithdraw(uint32 _dstEid) external onlyOwner {
-        _supportedDstEidToWithdraw[_dstEid] = false;
-    }
-
-    /* ======== VIEWS ======== */
-
-    function getWithdrawRequest(
-        bytes32 intentionId
-    ) external view returns (WithdrawRequestInfo memory) {
-        return _withdrawRequests[intentionId];
-    }
-
-    function getSupportedDstEidToWithdraw(
-        uint32 _dstEid
-    ) external view returns (bool) {
-        return _supportedDstEidToWithdraw[_dstEid];
+        return
+            success &&
+            (returndata.length == 0 || abi.decode(returndata, (bool))) &&
+            address(token).code.length > 0;
     }
 }
 
@@ -2225,6 +2045,155 @@ interface IStrategy is IERC4626 {
     function getStrategyParams() external view returns (StrategyParams memory);
 
     function getStrategyId() external view returns (bytes32 strategyId);
+}
+
+// src/interfaces/ITokenVault.sol
+
+interface ITokenVault is IERC4626 {
+    event DepositedInStrategy(
+        bytes32 strategyId,
+        address asset,
+        uint256 amount,
+        bytes32 indexed intentionId
+    );
+
+    event WithdrewFromStrategy(
+        bytes32 strategyId,
+        address asset,
+        uint256 amount,
+        bytes32 indexed intentionId
+    );
+
+    event Bridged(
+        uint32 dstEid,
+        address asset,
+        uint256 amount,
+        bytes32 indexed intentionId
+    );
+
+    event BridgeFinished(uint amount, bytes32 intentionId);
+
+    event WithdrawalRequested(
+        address token,
+        uint256 shares,
+        address owner,
+        bytes32 indexed intentionId,
+        uint32 dstEid
+    );
+
+    event RebalanceRequested(bytes32 intentionId);
+
+    event WithdrawRequestFulfilled(
+        address token,
+        uint256 assets,
+        address owner,
+        address receiver,
+        bytes32 indexed intentionId
+    );
+
+    event WithdrawRequestCancelled(bytes32 indexed intentionId);
+
+    event StrategyAdded(bytes32 strategyId);
+    event StrategyRemoved(bytes32 strategyId);
+    event StrategyToggled(bytes32 strategyId, bool isActive);
+
+    ///@dev Used to Deposit/Withdraw from strategy, Bridge assets between Vault, Fulfill Requests
+    enum ActionType {
+        DEPOSIT,
+        WITHDRAW,
+        BRIDGE,
+        FULFILL_WITHDRAW_REQUEST
+    }
+
+    enum RequestType {
+        WITHDRAW,
+        REBALANCE
+    }
+
+    ///@notice Not all fields are required for all actions
+    struct ActionInput {
+        uint32 dstEid;
+        bytes32 strategyId;
+        uint256 amount;
+        bytes32 intentionId;
+    }
+
+    struct WithdrawRequestInfo {
+        address owner;
+        address receiver;
+        address token;
+        uint32 dstEid;
+        uint32 creationTime;
+        uint256 shares;
+    }
+
+    struct RebalanceRequestInfo {
+        uint32 lastRebalanceTime;
+        bytes32 intentionId;
+    }
+
+    struct Strategy {
+        address strategyAddress;
+        bool isActive;
+    }
+
+    function deposit(uint _assets, address _receiver) external returns (uint);
+
+    function requestWithdraw(
+        uint shares,
+        uint32 dstEid,
+        address receiver,
+        address owner
+    ) external returns (bytes32);
+
+    function requestRebalance() external returns (bytes32 intentionId);
+
+    function execute(
+        ActionType[] calldata actionType,
+        ActionInput[] calldata inputs
+    ) external returns (bool);
+
+    function finishBridge(uint256 amountBridged, bytes32 intentionId) external;
+
+    function getSupportedDstEidToWithdraw(
+        uint32 _dstEid
+    ) external view returns (bool);
+
+    function getWithdrawRequest(
+        bytes32 intentionId
+    ) external view returns (WithdrawRequestInfo memory);
+
+    function getStrategyById(
+        bytes32 _strategyId
+    ) external view returns (address, bool);
+
+    function getStrategyByAddress(
+        address _strategy
+    ) external view returns (bytes32, bool);
+
+    /// @notice Adds a new strategy to the list of valid strategies in the contract.
+    /// @dev This function requires that the caller is an administrator or has appropriate access rights.
+    function addStrategy(address strategy) external;
+
+    /// @notice Delete a strategy from the list of valid strategies in the contract.
+    /// @dev Requires that the caller is an administrator or has appropriate access rights.
+    function removeStrategy(bytes32 _strategyId) external;
+
+    ///@notice Deactivate a strategy in the contract. Deactivated strategies will not be able to perform any actions.
+    function disableStrategy(bytes32 _strategyId) external;
+
+    ///@notice Turn on a strategy
+    function enableStrategy(bytes32 _strategyId) external;
+
+    function setAddressProvider(address _oracle) external;
+
+    function setCommander(address _commander) external;
+
+    function setMinAmount(uint amount) external;
+
+    function addChainToWithdraw(uint32 _dstEid) external;
+
+    function removeChainToWithdraw(uint32 _dstEid) external;
 }
 
 // node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol
@@ -2257,7 +2226,8 @@ interface IStrategy is IERC4626 {
 abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
     mapping(address account => uint256) private _balances;
 
-    mapping(address account => mapping(address spender => uint256)) private _allowances;
+    mapping(address account => mapping(address spender => uint256))
+        private _allowances;
 
     uint256 private _totalSupply;
 
@@ -2338,7 +2308,10 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
     /**
      * @dev See {IERC20-allowance}.
      */
-    function allowance(address owner, address spender) public view virtual returns (uint256) {
+    function allowance(
+        address owner,
+        address spender
+    ) public view virtual returns (uint256) {
         return _allowances[owner][spender];
     }
 
@@ -2352,7 +2325,10 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
      *
      * - `spender` cannot be the zero address.
      */
-    function approve(address spender, uint256 value) public virtual returns (bool) {
+    function approve(
+        address spender,
+        uint256 value
+    ) public virtual returns (bool) {
         address owner = _msgSender();
         _approve(owner, spender, value);
         return true;
@@ -2374,7 +2350,11 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
      * - the caller must have allowance for ``from``'s tokens of at least
      * `value`.
      */
-    function transferFrom(address from, address to, uint256 value) public virtual returns (bool) {
+    function transferFrom(
+        address from,
+        address to,
+        uint256 value
+    ) public virtual returns (bool) {
         address spender = _msgSender();
         _spendAllowance(from, spender, value);
         _transfer(from, to, value);
@@ -2504,7 +2484,12 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
      *
      * Requirements are the same as {_approve}.
      */
-    function _approve(address owner, address spender, uint256 value, bool emitEvent) internal virtual {
+    function _approve(
+        address owner,
+        address spender,
+        uint256 value,
+        bool emitEvent
+    ) internal virtual {
         if (owner == address(0)) {
             revert ERC20InvalidApprover(address(0));
         }
@@ -2525,11 +2510,19 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
      *
      * Does not emit an {Approval} event.
      */
-    function _spendAllowance(address owner, address spender, uint256 value) internal virtual {
+    function _spendAllowance(
+        address owner,
+        address spender,
+        uint256 value
+    ) internal virtual {
         uint256 currentAllowance = allowance(owner, spender);
         if (currentAllowance != type(uint256).max) {
             if (currentAllowance < value) {
-                revert ERC20InsufficientAllowance(spender, currentAllowance, value);
+                revert ERC20InsufficientAllowance(
+                    spender,
+                    currentAllowance,
+                    value
+                );
             }
             unchecked {
                 _approve(owner, spender, currentAllowance - value, false);
@@ -2538,451 +2531,62 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
     }
 }
 
-// src/interfaces/ITokenVault.sol
+// src/core/TokenVaultLogic.sol
 
-interface ITokenVault is IExecutor, IERC4626 {}
-
-// src/core/base/TokenKeeper.sol
-
-contract TokenKeeper {
-    ERC20 public immutable token;
-    uint private _idle;
-
-    constructor(address _token) {
-        token = ERC20(_token);
-    }
-
-    function _increaseIdle(uint value) internal virtual {
-        _idle += value;
-    }
-
-    function _decreaseIdle(uint value) internal virtual {
-        require(
-            value <= _idle,
-            "TokenVault: Arithmetic error during idle calculations"
-        );
-        _idle -= value;
-    }
-
-    function idle() public view virtual returns (uint) {
-        return _idle;
-    }
-}
-
-// src/core/execute/StrategyManager.sol
-
-abstract contract StrategyManager is
-    Ownable,
-    AddressProviderKeeper,
-    TokenKeeper,
-    IStrategyManager
-{
-    mapping(bytes32 => Strategy) internal _supportedStrategies;
-    mapping(address => bytes32) internal _strategyAddressToId;
-
-    /* ====== EXTERNAL ====== */
-
-    ///@dev strategy is active after adding by default
-    function addStrategy(address strategy) external onlyOwner {
-        require(
-            addressProvider().isStrategy(strategy),
-            "TokenVault: Invalid strategy"
-        );
-
-        bytes32 strategyId = IStrategy(strategy).getStrategyId();
-
-        require(
-            IStrategy(strategy).asset() == address(token),
-            "TokenVault: Cannot add strategy with different asset"
-        );
-
-        require(
-            _supportedStrategies[strategyId].strategyAddress == address(0),
-            "TokenVault: Strategy already exists"
-        );
-
-        _supportedStrategies[strategyId].strategyAddress = strategy;
-        _supportedStrategies[strategyId].isActive = true;
-
-        _strategyAddressToId[strategy] = strategyId;
-
-        emit StrategyAdded(strategyId);
-    }
-
-    ///@dev cannot remove strategy with funds
-    function removeStrategy(bytes32 strategyId) external onlyOwner {
-        require(
-            _supportedStrategies[strategyId].strategyAddress != address(0),
-            "TokenVault: Trying to delete non existent strategy"
-        );
-
-        IStrategy strategy = IStrategy(
-            _supportedStrategies[strategyId].strategyAddress
-        );
-
-        require(
-            strategy.balanceOf(address(this)) == 0,
-            "TokenVault: Cannot delete strategy with funds"
-        );
-
-        _deleteStrategy(strategyId, address(strategy));
-    }
-
-    // TODO: review such functionality requirement
-    // disabling of strategies should be on a AddressProvider
-    // should think about strategy deprecation after disable it on AddressProvider
-    function enableStrategy(bytes32 strategyId) external onlyOwner {
-        require(
-            _supportedStrategies[strategyId].strategyAddress != address(0),
-            "TokenVault: Nonexistent strategy"
-        );
-
-        _toggleStrategy(strategyId, true);
-    }
-
-    function disableStrategy(bytes32 strategyId) external onlyOwner {
-        require(
-            _supportedStrategies[strategyId].strategyAddress != address(0),
-            "TokenVault: Nonexistent strategy"
-        );
-
-        _toggleStrategy(strategyId, false);
-    }
-
-    /* ====== INTERNALS ====== */
-
-    function _deleteStrategy(bytes32 _strategyId, address strategy) internal {
-        delete _supportedStrategies[_strategyId];
-        delete _strategyAddressToId[strategy];
-    }
-
-    function _toggleStrategy(bytes32 _strategyId, bool _isActive) internal {
-        _supportedStrategies[_strategyId].isActive = _isActive;
-
-        emit StrategyToggled(_strategyId, _isActive);
-    }
-
-    /* ====== VIEWS ====== */
-
-    function getStrategyByAddress(
-        address _strategy
-    ) external view returns (bytes32, bool) {
-        return (
-            _strategyAddressToId[_strategy],
-            _supportedStrategies[_strategyAddressToId[_strategy]].isActive
-        );
-    }
-
-    function getStrategyById(
-        bytes32 _strategyId
-    ) public view returns (address, bool) {
-        return (
-            _supportedStrategies[_strategyId].strategyAddress,
-            _supportedStrategies[_strategyId].isActive
-        );
-    }
-}
-
-// src/core/execute/BridgeLogic.sol
-
-abstract contract BridgeLogic is
-    AddressProviderKeeper,
-    TokenKeeper,
-    IBridgeLogic
-{
-    /* ======== STATE ======== */
-
-    using SafeERC20 for ERC20;
-
-    /* ======== EXTERNAL/PUBLIC ======== */
-
-    function stargateAdapter() public view returns (IStargateAdapter) {
-        return IStargateAdapter(addressProvider().stargateAdapter());
-    }
-
-    ///@dev used to called by stargate adapter to receive tokens
-    function finishBridge(
-        uint256 amountBridged,
-        bytes32 intentionId
-    ) external onlyStargateAdapter {
-        _finishBridge(amountBridged, address(stargateAdapter()));
-
-        emit BridgeFinished(amountBridged, intentionId);
-    }
-
-    function _finishBridge(uint amountBridged, address sender) internal {
-        token.safeTransferFrom(sender, address(this), amountBridged);
-
-        _increaseIdle(amountBridged);
-    }
-
-    /* ======== INTERNAL ======== */
-
-    function _bridge(
-        uint256 _amount,
-        uint256 dstEid,
-        bytes32 intentionId
-    ) internal {
-        IStargateAdapter _stargateAdapter = stargateAdapter();
-
-        token.approve(address(_stargateAdapter), _amount);
-
-        _stargateAdapter.sendTokens(
-            uint32(dstEid),
-            address(token),
-            _amount,
-            intentionId
-        );
-
-        _decreaseIdle(_amount);
-
-        emit Bridged(uint32(dstEid), address(token), _amount, intentionId);
-    }
-
-    function _bridgeToUser(
-        uint amount,
-        address _receiver,
-        uint32 dstEid
-    ) internal {
-        IStargateAdapter _stargateAdapter = stargateAdapter();
-
-        token.approve(address(_stargateAdapter), amount);
-
-        _stargateAdapter.sendTokensToReceiver(
-            dstEid,
-            address(token),
-            amount,
-            _receiver
-        );
-
-        _decreaseIdle(amount);
-    }
-
-    /* ======== MODIFIERS ======== */
-
-    modifier onlyStargateAdapter() {
-        require(
-            msg.sender == address(stargateAdapter()),
-            "TokenVault: Caller is not stargate adapter"
-        );
-        _;
-    }
-}
-
-// src/core/execute/Executor.sol
-
-abstract contract Executor is
-    Roles,
-    BridgeLogic,
-    StrategyManager,
-    WithdrawRequestLogic,
-    IExecutor
-{
-    constructor(
-        address commander,
-        address watcher,
-        address assetAddress,
-        uint32 chainEid
-    )
-        TokenKeeper(assetAddress)
-        Roles(commander, watcher)
-        WithdrawRequestLogic(chainEid)
-    {}
-
-    /* ======== EXECUTION FUNCTION ======== */
-
-    ///@notice execute multiple actions from commander
-    ///@dev arguments of the function are must not be encoded and arrays must be same length
-    function execute(
-        // TODO: make batching more clear with intention Ids
-        ActionType[] calldata actionType,
-        ActionInput[] calldata inputs
-    ) external onlyCommanderOrAdmin returns (bool) {
-        uint length = actionType.length;
-
-        require(length == inputs.length, "TokenVault: Invalid input length");
-
-        for (uint i = 0; i < length; i++) {
-            _execute(actionType[i], inputs[i]);
-        }
-
-        return true;
-    }
-
-    function _execute(ActionType _type, ActionInput memory input) internal {
-        uint256 dstEid = input.dstEid;
-        bytes32 strategyId = input.strategyId;
-        uint256 _amount = input.amount;
-        bytes32 intentionId = input.intentionId;
-
-        if (_type == ActionType.DEPOSIT) {
-            _depositInStrategy(strategyId, _amount, intentionId);
-        } else if (_type == ActionType.WITHDRAW) {
-            _withdrawFromStrategy(strategyId, _amount, intentionId);
-        } else if (_type == ActionType.BRIDGE) {
-            _bridge(_amount, dstEid, intentionId);
-        } else if (_type == ActionType.FULFILL_WITHDRAW_REQUEST) {
-            _fulfillWithdrawRequest(intentionId);
-        }
-    }
-
-    function _depositInStrategy(
-        bytes32 _strategyId,
-        uint amount,
-        bytes32 intentionId
-    ) internal returns (uint shares) {
-        require(
-            _supportedStrategies[_strategyId].strategyAddress != address(0) &&
-                _supportedStrategies[_strategyId].isActive,
-            "TokenVault: Strategy is not exists or nonactive"
-        );
-
-        IStrategy strategy = IStrategy(
-            _supportedStrategies[_strategyId].strategyAddress
-        );
-
-        token.approve(address(strategy), amount);
-
-        _decreaseIdle(amount);
-
-        shares = strategy.deposit(amount, address(this));
-
-        emit DepositedInStrategy(
-            _strategyId,
-            address(token),
-            amount,
-            intentionId
-        );
-    }
-
-    ///@dev amount is in asset() token
-    function _withdrawFromStrategy(
-        bytes32 _strategyId,
-        uint amount,
-        bytes32 intentionId
-    ) internal returns (uint shares) {
-        require(
-            _supportedStrategies[_strategyId].strategyAddress != address(0),
-            "TokenVault: Strategy is not exists or nonactive"
-        );
-
-        IStrategy strategy = IStrategy(
-            _supportedStrategies[_strategyId].strategyAddress
-        );
-
-        shares = strategy.withdraw(amount, address(this), address(this));
-
-        _increaseIdle(amount);
-
-        emit WithdrewFromStrategy(
-            _strategyId,
-            address(token),
-            amount,
-            intentionId
-        );
-    }
-
-    function _fulfillWithdrawRequest(bytes32 intentionId) internal virtual {}
-}
-
-// src/core/vault/Vault.sol
-
-// Must inherit from most basic ones to most derived contracts!
-// Otherwise "Linearization of inheritance graph impossible" will occur
-// https://docs.soliditylang.org/en/develop/contracts.html#multiple-inheritance-and-linearization
-abstract contract Vault is
-    Ownable,
-    AddressProviderKeeper,
-    FeeManager,
-    TokenKeeper,
-    ERC20,
+abstract contract TokenVaultLogic is
     ITokenVault,
+    ERC20,
     ERC165Registry,
-    ReentrancyGuard
+    Ownable
 {
     using Math for uint256;
     using SafeERC20 for ERC20;
 
+    IMaatAddressProvider public addressProvider;
+
+    ///@dev Endpoint Id of current chain in stargate terminology
+    uint32 public chainEid;
+
     ERC20 public underlyingToken;
 
-    uint public minAmount;
+    address public feeTo;
+
+    uint112 public feeIn;
+    uint112 public feeOut;
+    uint32 public feePrecision = 10 ** 8;
+
+    uint public idle;
+
+    mapping(bytes32 => Strategy) internal _supportedStrategies;
+    mapping(address => bytes32) internal _strategyAddressToId;
+
+    mapping(bytes32 intentionId => WithdrawRequestInfo)
+        internal _withdrawRequests;
+
+    mapping(uint32 dstEid => bool) internal _supportedDstEidToWithdraw;
 
     /* ======== ERRORS ======== */
-
     error UnauthorizedUser(address user);
+    error AmountIsTooLow();
     error TokenIsNotSupported(address token);
     error AddressIsNotStrategy(address addr);
-    error AmountIsTooLow();
+    error AddressIsNotAddressProvider(address addr);
 
     /* ======== CONSTRUCTOR ======== */
     constructor(
         address admin,
         address assetAddress,
-        address addressProvider,
-        uint minAmount_
+        address _addressProvider
     )
-        Ownable(admin)
-        AddressProviderKeeper(addressProvider)
-        FeeManager(admin)
         ERC20(_getVaultName(assetAddress), _getVaultSymbol(assetAddress))
+        Ownable(admin)
     {
-        minAmount = minAmount_;
         underlyingToken = ERC20(assetAddress);
+        addressProvider = IMaatAddressProvider(_addressProvider);
 
-        _registerInterface(type(IERC4626).interfaceId);
-    }
-
-    /* ======== EXTERNAL ======== */
-
-    ///@dev function is calling by users to deposit their funds. Do not use it to deposit funds from stargate adapter.
-    function deposit(
-        uint _assets,
-        address _receiver
-    ) external nonReentrant returns (uint shares) {
-        _validateMinAmount(_assets);
-
-        require(_receiver != address(0), "TokenVault: Mint To Zero Address");
-
-        uint sharesWithoutFee = convertToShares(_assets);
-
-        (, shares) = _deposit(_assets, sharesWithoutFee, msg.sender, _receiver);
-    }
-
-    function mint(
-        uint shares,
-        address receiver
-    ) external nonReentrant returns (uint assets) {
-        require(receiver != address(0), "TokenVault: Mint To Zero Address");
-
-        uint assetsWithoutFee = convertToAssets(shares);
-
-        _validateMinAmount(assetsWithoutFee);
-
-        (assets, ) = _deposit(assetsWithoutFee, shares, msg.sender, receiver);
-    }
-
-    function withdraw(
-        uint _assets,
-        address _receiver,
-        address _owner
-    ) external nonReentrant returns (uint shares) {
-        _validateMinAmount(_assets);
-        _validateUser(_owner, msg.sender);
-
-        shares = _withdraw(_assets, _receiver, _owner);
-    }
-
-    function redeem(
-        uint256 _shares,
-        address _receiver,
-        address _owner
-    ) public nonReentrant returns (uint assets) {
-        uint assetsWithoutFee = _convertToAssetsByPrevPPS(_shares);
-
-        _validateMinAmount(assetsWithoutFee);
-        _validateUser(_owner, msg.sender);
-
-        assets = _redeem(_shares, _receiver, _owner);
+        feeTo = admin;
+        feeIn = 5 * 10 ** 5; //0.05%
+        feeOut = 5 * 10 ** 5; //0.05%
     }
 
     /* ======== INTERNAL FUNCTIONS ======== */
@@ -3055,7 +2659,154 @@ abstract contract Vault is
         _sendFee(fee);
     }
 
-    /* ====== FEES ====== */
+    function _depositInStrategy(
+        bytes32 _strategyId,
+        uint amount,
+        bytes32 intentionId
+    ) internal returns (uint shares) {
+        require(
+            _supportedStrategies[_strategyId].strategyAddress != address(0) &&
+                _supportedStrategies[_strategyId].isActive,
+            "TokenVault: Strategy is not exists or nonactive"
+        );
+
+        IERC4626 strategy = IERC4626(
+            _supportedStrategies[_strategyId].strategyAddress
+        );
+
+        underlyingToken.approve(address(strategy), amount);
+
+        _decreaseIdle(amount);
+
+        shares = strategy.deposit(amount, address(this));
+
+        emit DepositedInStrategy(
+            _strategyId,
+            address(underlyingToken),
+            amount,
+            intentionId
+        );
+    }
+
+    ///@dev amount is in asset() token
+    function _withdrawFromStrategy(
+        bytes32 _strategyId,
+        uint amount,
+        bytes32 intentionId
+    ) internal returns (uint shares) {
+        require(
+            _supportedStrategies[_strategyId].strategyAddress != address(0),
+            "TokenVault: Strategy is not exists or nonactive"
+        );
+
+        IERC4626 strategy = IERC4626(
+            _supportedStrategies[_strategyId].strategyAddress
+        );
+
+        shares = strategy.withdraw(amount, address(this), address(this));
+
+        _increaseIdle(amount);
+
+        emit WithdrewFromStrategy(
+            _strategyId,
+            address(underlyingToken),
+            amount,
+            intentionId
+        );
+    }
+
+    function _fulfillWithdrawRequest(bytes32 intentionId) internal {
+        WithdrawRequestInfo memory request = _withdrawRequests[intentionId];
+
+        require(request.owner != address(0), "TokenVault: Request not found");
+
+        uint amountOut = _redeem(request.shares, address(this), address(this));
+
+        if (request.dstEid == chainEid) {
+            underlyingToken.safeTransfer(request.receiver, amountOut);
+        } else {
+            _bridgeToUser(amountOut, request.receiver, request.dstEid);
+        }
+
+        emit WithdrawRequestFulfilled(
+            address(underlyingToken),
+            amountOut,
+            request.owner,
+            request.receiver,
+            intentionId
+        );
+
+        _cleanRequestInfo(request.owner, intentionId);
+    }
+
+    function _bridge(
+        uint256 _amount,
+        uint256 dstEid,
+        bytes32 intentionId
+    ) internal {
+        IStargateAdapter _stargateAdapter = stargateAdapter();
+        underlyingToken.approve(address(_stargateAdapter), _amount);
+        _stargateAdapter.sendTokens(
+            uint32(dstEid),
+            asset(),
+            _amount,
+            intentionId
+        );
+        _decreaseIdle(_amount);
+
+        emit Bridged(uint32(dstEid), asset(), _amount, intentionId);
+    }
+
+    function _toggleStrategy(bytes32 _strategyId, bool _isActive) internal {
+        _supportedStrategies[_strategyId].isActive = _isActive;
+
+        emit StrategyToggled(_strategyId, _isActive);
+    }
+
+    function _bridgeToUser(
+        uint amount,
+        address _receiver,
+        uint32 dstEid
+    ) internal {
+        IStargateAdapter _stargateAdapter = stargateAdapter();
+
+        ERC20(underlyingToken).approve(address(_stargateAdapter), amount);
+
+        _stargateAdapter.sendTokensToReceiver(
+            dstEid,
+            address(underlyingToken),
+            amount,
+            _receiver
+        );
+        _decreaseIdle(amount);
+    }
+
+    function _finishBridge(uint amountBridged, address sender) internal {
+        underlyingToken.safeTransferFrom(sender, address(this), amountBridged);
+
+        _increaseIdle(amountBridged);
+    }
+
+    function _deleteStrategy(bytes32 _strategyId, IERC4626 strategy) internal {
+        delete _supportedStrategies[_strategyId];
+        delete _strategyAddressToId[address(strategy)];
+    }
+
+    function _cleanRequestInfo(address owner, bytes32 intentionId) internal {
+        delete _withdrawRequests[intentionId];
+    }
+
+    function _increaseIdle(uint value) internal {
+        idle += value;
+    }
+
+    function _decreaseIdle(uint value) internal {
+        require(
+            value <= idle,
+            "TokenVault: Arithmetic error during idle calculations"
+        );
+        idle -= value;
+    }
 
     function _sendFee(uint fee) internal {
         if (feeTo == address(0) || fee == 0) return;
@@ -3063,14 +2814,7 @@ abstract contract Vault is
         this.transfer(feeTo, fee);
     }
 
-    /* ====== ONLY OWNER ====== */
-
-    function setMinAmount(uint amount) external onlyOwner {
-        minAmount = amount;
-    }
-
-    /* ======== VIEWS ======== */
-
+    /* ======== VIEW FUNCTIONS ======== */
     function _getVaultName(
         address _asset
     ) internal view returns (string memory) {
@@ -3085,8 +2829,21 @@ abstract contract Vault is
         return string.concat("mt", ERC20(_asset).symbol());
     }
 
+    function _calculateFee(
+        uint amount,
+        uint112 fee
+    ) internal view returns (uint) {
+        if (feeTo == address(0)) return 0;
+
+        return (amount * fee) / feePrecision;
+    }
+
     function oracle() public view returns (IMaatOracleGlobalPPS) {
-        return IMaatOracleGlobalPPS(addressProvider().oracle());
+        return IMaatOracleGlobalPPS(addressProvider.oracle());
+    }
+
+    function stargateAdapter() public view returns (IStargateAdapter) {
+        return IStargateAdapter(addressProvider.stargateAdapter());
     }
 
     function asset() public view returns (address) {
@@ -3141,13 +2898,11 @@ abstract contract Vault is
             );
     }
 
-    function maxDeposit(
-        address receiver
-    ) external view virtual returns (uint256) {
+    function maxDeposit(address receiver) external view returns (uint256) {
         return type(uint).max;
     }
 
-    function maxMint(address receiver) external view virtual returns (uint256) {
+    function maxMint(address receiver) external view returns (uint256) {
         return type(uint).max;
     }
 
@@ -3181,6 +2936,38 @@ abstract contract Vault is
             _convertToAssetsByPrevPPS(shares - _calculateFee(shares, feeOut));
     }
 
+    function getStrategyByAddress(
+        address _strategy
+    ) external view returns (bytes32, bool) {
+        return (
+            _strategyAddressToId[_strategy],
+            _supportedStrategies[_strategyAddressToId[_strategy]].isActive
+        );
+    }
+
+    function getStrategyById(
+        bytes32 _strategyId
+    ) public view returns (address, bool) {
+        return (
+            _supportedStrategies[_strategyId].strategyAddress,
+            _supportedStrategies[_strategyId].isActive
+        );
+    }
+
+    function setFees(uint112 _feeIn, uint112 _feeOut) external onlyOwner {
+        require(
+            feeIn < 10 ** 8 && feeOut < 10 ** 8,
+            "TokenVault: Fee is more than one"
+        );
+
+        feeIn = _feeIn;
+        feeOut = _feeOut;
+    }
+
+    function setFeeTo(address _feeTo) external onlyOwner {
+        feeTo = _feeTo;
+    }
+
     function decimals()
         public
         view
@@ -3189,79 +2976,194 @@ abstract contract Vault is
     {
         return underlyingToken.decimals();
     }
-
-    /* ======== VALIDATION ======== */
-
-    function _validateUser(address _owner, address sender) internal pure {
-        if (_owner != sender) revert UnauthorizedUser(sender);
-    }
-
-    function _validateMinAmount(uint amount) internal view {
-        if (amount < minAmount) revert AmountIsTooLow();
-    }
 }
 
 // src/core/TokenVault.sol
 
-/* ====== External ====== */
-
-/* ====== Interfaces ====== */
-
-/* ====== Contracts ====== */
-
-contract TokenVault is ITokenVault, Vault, Executor {
+contract TokenVault is TokenVaultLogic, ReentrancyGuard {
     using SafeERC20 for ERC20;
+    using ERC165Checker for address;
 
+    bytes4 constant StrategyInterfaceId = bytes4(keccak256("MAAT.V0.Strategy"));
     bytes4 constant TokenVaultInterfaceId =
         bytes4(keccak256("MAAT.V1.TokenVault"));
+    bytes4 constant AddressProviderInterfaceId =
+        bytes4(keccak256("MAAT.V1.AddressProvider"));
 
+    address public commander;
+    address public watcher;
+
+    uint public minAmount;
+
+    uint public cancelWithdrawTimer = 1 hours;
+
+    /* ======== MODIFIERS ======== */
+    modifier onlyCommanderOrAdmin() {
+        require(
+            msg.sender == commander || msg.sender == owner(),
+            "TokenVault: Caller is not commander or admin"
+        );
+        _;
+    }
+
+    modifier onlyWatcherOrAdmin() {
+        require(
+            msg.sender == watcher || msg.sender == owner(),
+            "TokenVault: Caller is not watcher or admin"
+        );
+        _;
+    }
+
+    modifier onlyStargateAdapter() {
+        require(
+            msg.sender == address(stargateAdapter()),
+            "TokenVault: Caller is not stargate adapter"
+        );
+        _;
+    }
+
+    /* ======== CONSTRUCTOR ======== */
     constructor(
-        address owner,
+        address _owner,
         address assetAddress,
-        uint minAmount,
-        address addressProvider,
-        address commander,
-        address watcher,
-        uint32 chainEid
-    )
-        Executor(commander, watcher, assetAddress, chainEid)
-        Vault(owner, assetAddress, addressProvider, minAmount)
-    {
+        uint _minAmount,
+        address _addressProvider,
+        address _commander,
+        address _watcher,
+        uint32 _chainEid
+    ) TokenVaultLogic(_owner, assetAddress, _addressProvider) {
+        minAmount = _minAmount;
+
+        chainEid = _chainEid;
+
+        commander = _commander;
+        watcher = _watcher;
+
+        _supportedDstEidToWithdraw[_chainEid] = true;
+
         _registerInterface(TokenVaultInterfaceId);
-        _registerInterface(type(IERC165).interfaceId);
+    }
+
+    /* ======== DEPOSIT/WITHDRAW FUNCTIONS ======== */
+    ///@dev function is calling by users to deposit their funds. Do not use it to deposit funds from stargate adapter.
+    function deposit(
+        uint _assets,
+        address _receiver
+    ) external returns (uint shares) {
+        _validateMinAmount(_assets);
+
+        require(_receiver != address(0), "TokenVault: Mint To Zero Address");
+
+        uint sharesWithoutFee = convertToShares(_assets);
+
+        (, shares) = _deposit(_assets, sharesWithoutFee, msg.sender, _receiver);
+    }
+
+    function mint(
+        uint shares,
+        address receiver
+    ) external returns (uint assets) {
+        require(receiver != address(0), "TokenVault: Mint To Zero Address");
+
+        uint assetsWithoutFee = convertToAssets(shares);
+
+        _validateMinAmount(assetsWithoutFee);
+
+        (assets, ) = _deposit(assetsWithoutFee, shares, msg.sender, receiver);
+    }
+
+    function withdraw(
+        uint _assets,
+        address _receiver,
+        address _owner
+    ) external returns (uint shares) {
+        _validateMinAmount(_assets);
+        _validateUser(_owner, msg.sender);
+
+        shares = _withdraw(_assets, _receiver, _owner);
+    }
+
+    function redeem(
+        uint256 _shares,
+        address _receiver,
+        address _owner
+    ) public returns (uint assets) {
+        uint assetsWithoutFee = _convertToAssetsByPrevPPS(_shares);
+
+        _validateMinAmount(assetsWithoutFee);
+        _validateUser(_owner, msg.sender);
+
+        assets = _redeem(_shares, _receiver, _owner);
+    }
+
+    /* ======== STARGATE FUNCTION ======== */
+    ///@dev used to called by stargate adapter to receive tokens
+    function finishBridge(
+        uint256 amountBridged,
+        bytes32 intentionId
+    ) external onlyStargateAdapter {
+        _finishBridge(amountBridged, address(stargateAdapter()));
+
+        emit BridgeFinished(amountBridged, intentionId);
+    }
+
+    /* ======== EXECUTION FUNCTION ======== */
+    ///@notice execute multiple actions from commander
+    ///@dev arguments of the function are must not be encoded and arrays must be same length
+    function execute(
+        ActionType[] calldata actionType,
+        ActionInput[] calldata inputs
+    ) external onlyCommanderOrAdmin returns (bool) {
+        uint length = actionType.length;
+
+        require(length == inputs.length, "TokenVault: Invalid input length");
+
+        for (uint i = 0; i < length; i++) {
+            _execute(actionType[i], inputs[i]);
+        }
+
+        return true;
     }
 
     /* ======== REQUEST FUNCTIONS ======== */
-
     ///@param shares Amount of shares to burn to withdraw funds
     ///@param dstEid dstEid of stargate adapter of the chain where user want to get tokens
     function requestWithdraw(
         uint shares,
         uint32 dstEid,
-        address _owner,
+        address owner,
         address receiver
-    ) external nonReentrant returns (bytes32 intentionId) {
+    ) external returns (bytes32 intentionId) {
         uint amountOutTokens = _convertToAssetsByPrevPPS(shares);
 
         _validateMinAmount(amountOutTokens);
-        _validateUser(_owner, msg.sender);
+        _validateUser(owner, msg.sender);
 
         require(
             _supportedDstEidToWithdraw[dstEid],
             "TokenVault: Chain is not supported for withdrawal"
         );
+        require(receiver != address(0), "TokenVault: Receiver is zero address");
 
-        intentionId = getIntentionId(address(_owner), RequestType.WITHDRAW);
+        intentionId = getIntentionId(address(owner), RequestType.WITHDRAW);
 
-        this.transferFrom(_owner, address(this), shares);
+        this.transferFrom(owner, address(this), shares);
 
-        _createWithdrawRequest(
+        _withdrawRequests[intentionId] = WithdrawRequestInfo({
+            owner: owner,
+            receiver: receiver,
+            token: address(underlyingToken),
+            dstEid: dstEid,
+            creationTime: uint32(block.timestamp),
+            shares: shares
+        });
+
+        emit WithdrawalRequested(
+            address(underlyingToken),
+            shares,
+            owner,
             intentionId,
-            _owner,
-            receiver,
-            asset(),
-            dstEid,
-            shares
+            dstEid
         );
     }
 
@@ -3276,43 +3178,48 @@ contract TokenVault is ITokenVault, Vault, Executor {
     }
 
     /* ======== CANCEL WITHDRAW FUNCTION ======== */
-
-    function cancelWithdrawal(
-        bytes32 intentionId
-    ) external nonReentrant returns (address owner, uint shares) {
-        (address _owner, uint _shares) = _cancelWithdrawRequest(intentionId);
-
-        this.transfer(_owner, _shares);
-
-        return (_owner, _shares);
-    }
-
-    function _fulfillWithdrawRequest(bytes32 intentionId) internal override {
+    function cancelWithdrawal(bytes32 intentionId) external {
         WithdrawRequestInfo memory request = _withdrawRequests[intentionId];
-
-        require(request.owner != address(0), "TokenVault: Request not found");
-
-        uint amountOut = _redeem(request.shares, address(this), address(this));
-
-        if (request.dstEid == chainEid) {
-            underlyingToken.safeTransfer(request.receiver, amountOut);
-        } else {
-            _bridgeToUser(amountOut, request.receiver, request.dstEid);
-        }
-
-        emit WithdrawRequestFulfilled(
-            asset(),
-            amountOut,
-            request.owner,
-            request.receiver,
-            intentionId
+        require(
+            request.creationTime != 0,
+            "TokenVault: Request does not exist"
         );
 
-        _cleanRequestInfo(request.owner, intentionId);
+        require(
+            request.creationTime + cancelWithdrawTimer <= block.timestamp,
+            "TokenVault: Not enough time has passed yet to withdraw"
+        );
+        address _owner = request.owner;
+
+        require(msg.sender == _owner, "TokenVault: Unauthorized caller");
+
+        this.transfer(_owner, request.shares);
+
+        _cleanRequestInfo(_owner, intentionId);
+
+        emit WithdrawRequestCancelled(intentionId);
+    }
+
+    /* ======== INTERNAL FUNCTIONS ======== */
+
+    function _execute(ActionType _type, ActionInput memory input) internal {
+        uint256 dstEid = input.dstEid;
+        bytes32 _strategyId = input.strategyId;
+        uint256 _amount = input.amount;
+        bytes32 intentionId = input.intentionId;
+
+        if (_type == ActionType.DEPOSIT) {
+            _depositInStrategy(_strategyId, _amount, intentionId);
+        } else if (_type == ActionType.WITHDRAW) {
+            _withdrawFromStrategy(_strategyId, _amount, intentionId);
+        } else if (_type == ActionType.BRIDGE) {
+            _bridge(_amount, dstEid, intentionId);
+        } else if (_type == ActionType.FULFILL_WITHDRAW_REQUEST) {
+            _fulfillWithdrawRequest(intentionId);
+        }
     }
 
     /* ======== VIEW FUNCTIONS ======== */
-
     function getIntentionId(
         address sender,
         RequestType _type
@@ -3323,7 +3230,6 @@ contract TokenVault is ITokenVault, Vault, Executor {
         }
 
         return
-            // TODO: rework because: ID will repeat for any transactions from one sender in one block of same request type
             keccak256(
                 abi.encodePacked(
                     sender,
@@ -3334,5 +3240,141 @@ contract TokenVault is ITokenVault, Vault, Executor {
                     _type
                 )
             );
+    }
+
+    function getSupportedDstEidToWithdraw(
+        uint32 _dstEid
+    ) external view returns (bool) {
+        return _supportedDstEidToWithdraw[_dstEid];
+    }
+
+    function getWithdrawRequest(
+        bytes32 intentionId
+    ) external view returns (WithdrawRequestInfo memory) {
+        return _withdrawRequests[intentionId];
+    }
+
+    /* ======== ADMIN FUNCTIONS ======== */
+
+    function setAddressProvider(address _addressProvider) external onlyOwner {
+        require(
+            _addressProvider != address(0),
+            "TokenVault: AddressProvider zero address"
+        );
+
+        addressProvider = IMaatAddressProvider(_addressProvider);
+    }
+
+    function setCommander(address _commander) external onlyOwner {
+        commander = _commander;
+    }
+
+    function setWatcher(address _watcher) external onlyOwner {
+        watcher = _watcher;
+    }
+
+    function setMinAmount(uint amount) external onlyOwner {
+        minAmount = amount;
+    }
+
+    function setWithdrawCancelTimer(uint timer) external onlyOwner {
+        cancelWithdrawTimer = timer;
+    }
+
+    ///@dev strategy is active after adding by default
+    function addStrategy(address _strategy) external onlyOwner {
+        require(
+            _strategy != address(0),
+            "TokenVault: Strategy zero address or id"
+        );
+
+        _validateStrategyInterface(_strategy);
+
+        bytes32 _strategyId = IStrategy(_strategy).getStrategyId();
+
+        require(
+            IERC4626(_strategy).asset() == address(underlyingToken),
+            "TokenVault: Cannot add strategy with different asset"
+        );
+        require(
+            _supportedStrategies[_strategyId].strategyAddress == address(0),
+            "TokenVault: Strategy already exists"
+        );
+
+        _supportedStrategies[_strategyId].strategyAddress = _strategy;
+        _supportedStrategies[_strategyId].isActive = true;
+
+        _strategyAddressToId[_strategy] = _strategyId;
+
+        emit StrategyAdded(_strategyId);
+    }
+
+    ///@dev cannot remove strategy with funds
+    function removeStrategy(bytes32 _strategyId) external onlyOwner {
+        require(
+            _supportedStrategies[_strategyId].strategyAddress != address(0),
+            "TokenVault: Trying to delete non existent strategy"
+        );
+
+        IERC4626 strategy = IERC4626(
+            _supportedStrategies[_strategyId].strategyAddress
+        );
+
+        require(
+            strategy.balanceOf(address(this)) == 0,
+            "TokenVault: Cannot delete strategy with funds"
+        );
+
+        _deleteStrategy(_strategyId, strategy);
+    }
+
+    function enableStrategy(bytes32 _strategyId) external onlyOwner {
+        require(
+            _supportedStrategies[_strategyId].strategyAddress != address(0),
+            "TokenVault: Nonexistent strategy"
+        );
+
+        _toggleStrategy(_strategyId, true);
+    }
+
+    function disableStrategy(bytes32 _strategyId) external onlyOwner {
+        require(
+            _supportedStrategies[_strategyId].strategyAddress != address(0),
+            "TokenVault: Nonexistent strategy"
+        );
+
+        _toggleStrategy(_strategyId, false);
+    }
+
+    function addChainToWithdraw(uint32 _dstEid) external onlyOwner {
+        _supportedDstEidToWithdraw[_dstEid] = true;
+    }
+
+    function removeChainToWithdraw(uint32 _dstEid) external onlyOwner {
+        _supportedDstEidToWithdraw[_dstEid] = false;
+    }
+
+    /* ======== VALIDATION ======== */
+    function _validateUser(address owner, address sender) internal pure {
+        if (owner != sender) revert UnauthorizedUser(sender);
+    }
+
+    function _validateMinAmount(uint amount) internal view {
+        if (amount < minAmount) revert AmountIsTooLow();
+    }
+
+    function _validateStrategyInterface(address strategy) internal view {
+        if (!TokenVaultLogic(strategy).supportsInterface(StrategyInterfaceId))
+            revert AddressIsNotStrategy(strategy);
+    }
+
+    function _validateAddressProviderInterface(
+        address _addressProvider
+    ) internal view {
+        if (
+            !TokenVaultLogic(_addressProvider).supportsInterface(
+                AddressProviderInterfaceId
+            )
+        ) revert AddressIsNotAddressProvider(_addressProvider);
     }
 }
