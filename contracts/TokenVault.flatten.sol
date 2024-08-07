@@ -1149,7 +1149,7 @@ interface IRoles {
 }
 
 interface IExecutor is IWithdrawRequestLogic, IBridgeLogic, IStrategyManager {
-    ///@dev Used to Deposit/Withdraw from strategy, Bridge assets between Vault, Fulfill Requests
+    ///@dev Used to Deposit/Withdraw from strategy, Bridge assets between MaatVaultV1, Fulfill Requests
     enum ActionType {
         DEPOSIT,
         WITHDRAW,
@@ -1886,35 +1886,55 @@ interface IERC4626 is IERC20, IERC20Metadata {
 // src/core/vault/FeeManager.sol
 
 abstract contract FeeManager is Ownable {
-    uint112 public feeIn = 5 * 10 ** 5;
-    uint112 public feeOut = 5 * 10 ** 5;
-    uint32 public feePrecision = 10 ** 8;
+    uint112 private _feeIn = 5 * 10 ** 5;
+    uint112 private _feeOut = 5 * 10 ** 5;
+    uint32 public constant feePrecision = 10 ** 8;
 
-    address public feeTo;
+    address private _feeTo;
 
-    constructor(address _feeTo) {
-        feeTo = _feeTo;
+    constructor(address feeTo_) {
+        _feeTo = feeTo_;
     }
+
+    /* ====== SETTER ====== */
+
+    function setFees(uint112 feeIn_, uint112 feeOut_) external onlyOwner {
+        require(
+            feeIn_ < 10 ** 8 && feeOut_ < 10 ** 8,
+            "MaatVaultV1: Fee is more than one"
+        );
+
+        _feeIn = feeIn_;
+        _feeOut = feeOut_;
+    }
+
+    function setFeeTo(address feeTo_) external onlyOwner {
+        require(feeTo_ != address(0), "MaatVaultV1: FeeTo is zero address");
+
+        _feeTo = feeTo_;
+    }
+
+    /* ====== INTERNAL ====== */
 
     function _calculateFee(
         uint amount,
         uint112 fee
-    ) internal view returns (uint) {
+    ) internal pure returns (uint) {
         return (amount * fee) / feePrecision;
     }
 
-    function setFees(uint112 _feeIn, uint112 _feeOut) external onlyOwner {
-        require(
-            feeIn < 10 ** 8 && feeOut < 10 ** 8,
-            "TokenVault: Fee is more than one"
-        );
+    /* ====== VIEWS ====== */
 
-        feeIn = _feeIn;
-        feeOut = _feeOut;
+    function feeIn() public view returns (uint112) {
+        return _feeIn;
     }
 
-    function setFeeTo(address _feeTo) external onlyOwner {
-        feeTo = _feeTo;
+    function feeOut() public view returns (uint112) {
+        return _feeOut;
+    }
+
+    function feeTo() public view returns (address) {
+        return _feeTo;
     }
 }
 
@@ -2037,7 +2057,7 @@ library SafeERC20 {
 contract AddressProviderKeeper {
     using ERC165Checker for address;
 
-    IMaatAddressProvider private _addressProvider;
+    IMaatAddressProvider private immutable _addressProvider;
 
     bytes4 public constant AddressProviderInterfaceId =
         bytes4(keccak256("MAAT.V1.AddressProvider"));
@@ -2088,7 +2108,7 @@ abstract contract Roles is Ownable, IRoles {
     modifier onlyCommanderOrAdmin() {
         require(
             msg.sender == commander || msg.sender == owner(),
-            "TokenVault: Caller is not commander or admin"
+            "MaatVaultV1: Caller is not commander or admin"
         );
         _;
     }
@@ -2096,7 +2116,7 @@ abstract contract Roles is Ownable, IRoles {
     modifier onlyWatcherOrAdmin() {
         require(
             msg.sender == watcher || msg.sender == owner(),
-            "TokenVault: Caller is not watcher or admin"
+            "MaatVaultV1: Caller is not watcher or admin"
         );
         _;
     }
@@ -2110,12 +2130,12 @@ abstract contract WithdrawRequestLogic is Ownable, IWithdrawRequestLogic {
     uint public cancelWithdrawTimer = 1 hours;
 
     ///@dev Endpoint Id of current chain in stargate terminology
-    uint32 public chainEid;
+    uint32 public immutable chainEid;
 
     mapping(uint32 dstEid => bool) internal _supportedDstEidToWithdraw;
 
     mapping(bytes32 intentionId => WithdrawRequestInfo)
-        internal _withdrawRequests;
+        private _withdrawRequests;
 
     constructor(uint32 _chainEid) {
         chainEid = _chainEid;
@@ -2200,14 +2220,24 @@ abstract contract WithdrawRequestLogic is Ownable, IWithdrawRequestLogic {
 
     function getWithdrawRequest(
         bytes32 intentionId
-    ) external view returns (WithdrawRequestInfo memory) {
+    ) public view returns (WithdrawRequestInfo memory) {
+        _validateWithdrawRequestExistence(intentionId);
+
         return _withdrawRequests[intentionId];
     }
 
     function getSupportedDstEidToWithdraw(
         uint32 _dstEid
-    ) external view returns (bool) {
+    ) public view returns (bool) {
         return _supportedDstEidToWithdraw[_dstEid];
+    }
+
+    function _validateWithdrawRequestExistence(
+        bytes32 intentionId
+    ) internal view {
+        WithdrawRequestInfo memory request = _withdrawRequests[intentionId];
+
+        require(request.owner != address(0), "MaatVaultV1: Request not found");
     }
 }
 
@@ -2538,9 +2568,9 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
     }
 }
 
-// src/interfaces/ITokenVault.sol
+// src/interfaces/IMaatVaultV1.sol
 
-interface ITokenVault is IExecutor, IERC4626 {}
+interface IMaatVaultV1 is IExecutor, IERC4626 {}
 
 // src/core/base/TokenKeeper.sol
 
@@ -2559,7 +2589,7 @@ contract TokenKeeper {
     function _decreaseIdle(uint value) internal virtual {
         require(
             value <= _idle,
-            "TokenVault: Arithmetic error during idle calculations"
+            "MaatVaultV1: Arithmetic error during idle calculations"
         );
         _idle -= value;
     }
@@ -2577,8 +2607,8 @@ abstract contract StrategyManager is
     TokenKeeper,
     IStrategyManager
 {
-    mapping(bytes32 => Strategy) internal _supportedStrategies;
-    mapping(address => bytes32) internal _strategyAddressToId;
+    mapping(bytes32 => Strategy) private _supportedStrategies;
+    mapping(address => bytes32) private _strategyAddressToId;
 
     /* ====== EXTERNAL ====== */
 
@@ -2586,19 +2616,19 @@ abstract contract StrategyManager is
     function addStrategy(address strategy) external onlyOwner {
         require(
             addressProvider().isStrategy(strategy),
-            "TokenVault: Invalid strategy"
+            "MaatVaultV1: Invalid strategy"
         );
 
         bytes32 strategyId = IStrategy(strategy).getStrategyId();
 
         require(
             IStrategy(strategy).asset() == address(token),
-            "TokenVault: Cannot add strategy with different asset"
+            "MaatVaultV1: Cannot add strategy with different asset"
         );
 
         require(
             _supportedStrategies[strategyId].strategyAddress == address(0),
-            "TokenVault: Strategy already exists"
+            "MaatVaultV1: Strategy already exists"
         );
 
         _supportedStrategies[strategyId].strategyAddress = strategy;
@@ -2611,10 +2641,7 @@ abstract contract StrategyManager is
 
     ///@dev cannot remove strategy with funds
     function removeStrategy(bytes32 strategyId) external onlyOwner {
-        require(
-            _supportedStrategies[strategyId].strategyAddress != address(0),
-            "TokenVault: Trying to delete non existent strategy"
-        );
+        _validateStrategyExistence(strategyId);
 
         IStrategy strategy = IStrategy(
             _supportedStrategies[strategyId].strategyAddress
@@ -2622,7 +2649,7 @@ abstract contract StrategyManager is
 
         require(
             strategy.balanceOf(address(this)) == 0,
-            "TokenVault: Cannot delete strategy with funds"
+            "MaatVaultV1: Cannot delete strategy with funds"
         );
 
         _deleteStrategy(strategyId, address(strategy));
@@ -2632,54 +2659,64 @@ abstract contract StrategyManager is
     // disabling of strategies should be on a AddressProvider
     // should think about strategy deprecation after disable it on AddressProvider
     function enableStrategy(bytes32 strategyId) external onlyOwner {
-        require(
-            _supportedStrategies[strategyId].strategyAddress != address(0),
-            "TokenVault: Nonexistent strategy"
-        );
+        _validateStrategyExistence(strategyId);
 
         _toggleStrategy(strategyId, true);
     }
 
     function disableStrategy(bytes32 strategyId) external onlyOwner {
-        require(
-            _supportedStrategies[strategyId].strategyAddress != address(0),
-            "TokenVault: Nonexistent strategy"
-        );
+        _validateStrategyExistence(strategyId);
 
         _toggleStrategy(strategyId, false);
     }
 
     /* ====== INTERNALS ====== */
 
-    function _deleteStrategy(bytes32 _strategyId, address strategy) internal {
-        delete _supportedStrategies[_strategyId];
+    function _deleteStrategy(bytes32 strategyId, address strategy) internal {
+        delete _supportedStrategies[strategyId];
         delete _strategyAddressToId[strategy];
     }
 
-    function _toggleStrategy(bytes32 _strategyId, bool _isActive) internal {
-        _supportedStrategies[_strategyId].isActive = _isActive;
+    function _toggleStrategy(bytes32 strategyId, bool isActive) internal {
+        _supportedStrategies[strategyId].isActive = isActive;
 
-        emit StrategyToggled(_strategyId, _isActive);
+        emit StrategyToggled(strategyId, isActive);
     }
 
     /* ====== VIEWS ====== */
 
     function getStrategyByAddress(
-        address _strategy
+        address strategy
     ) external view returns (bytes32, bool) {
+        _validateStrategyExistence(strategy);
+
         return (
-            _strategyAddressToId[_strategy],
-            _supportedStrategies[_strategyAddressToId[_strategy]].isActive
+            _strategyAddressToId[strategy],
+            _supportedStrategies[_strategyAddressToId[strategy]].isActive
         );
     }
 
     function getStrategyById(
-        bytes32 _strategyId
+        bytes32 strategyId
     ) public view returns (address, bool) {
+        _validateStrategyExistence(strategyId);
+
         return (
-            _supportedStrategies[_strategyId].strategyAddress,
-            _supportedStrategies[_strategyId].isActive
+            _supportedStrategies[strategyId].strategyAddress,
+            _supportedStrategies[strategyId].isActive
         );
+    }
+
+    function _validateStrategyExistence(bytes32 strategyId) internal view {
+        address strategy = _supportedStrategies[strategyId].strategyAddress;
+
+        require(strategy != address(0), "MaatVaultV1: Nonexistent strategy");
+    }
+
+    function _validateStrategyExistence(address strategy) internal view {
+        bytes32 strategyId = _strategyAddressToId[strategy];
+
+        require(strategyId != bytes32(0), "MaatVaultV1: Nonexistent strategy");
     }
 }
 
@@ -2763,7 +2800,7 @@ abstract contract BridgeLogic is
     modifier onlyStargateAdapter() {
         require(
             msg.sender == address(stargateAdapter()),
-            "TokenVault: Caller is not stargate adapter"
+            "MaatVaultV1: Caller is not stargate adapter"
         );
         _;
     }
@@ -2781,13 +2818,8 @@ abstract contract Executor is
     constructor(
         address commander,
         address watcher,
-        address assetAddress,
         uint32 chainEid
-    )
-        TokenKeeper(assetAddress)
-        Roles(commander, watcher)
-        WithdrawRequestLogic(chainEid)
-    {}
+    ) Roles(commander, watcher) WithdrawRequestLogic(chainEid) {}
 
     /* ======== EXECUTION FUNCTION ======== */
 
@@ -2800,7 +2832,7 @@ abstract contract Executor is
     ) external onlyCommanderOrAdmin returns (bool) {
         uint length = actionType.length;
 
-        require(length == inputs.length, "TokenVault: Invalid input length");
+        require(length == inputs.length, "MaatVaultV1: Invalid input length");
 
         for (uint i = 0; i < length; i++) {
             _execute(actionType[i], inputs[i]);
@@ -2826,22 +2858,19 @@ abstract contract Executor is
         }
     }
 
+    // TODO: rename depositToStrategy
     function _depositInStrategy(
         bytes32 _strategyId,
         uint amount,
         bytes32 intentionId
     ) internal returns (uint shares) {
-        require(
-            _supportedStrategies[_strategyId].strategyAddress != address(0) &&
-                _supportedStrategies[_strategyId].isActive,
-            "TokenVault: Strategy is not exists or nonactive"
-        );
+        (address strategyAddress, bool isActive) = getStrategyById(_strategyId);
 
-        IStrategy strategy = IStrategy(
-            _supportedStrategies[_strategyId].strategyAddress
-        );
+        require(isActive, "MaatVaultV1: Strategy is not active");
 
-        token.approve(address(strategy), amount);
+        IStrategy strategy = IStrategy(strategyAddress);
+
+        token.approve(strategyAddress, amount);
 
         _decreaseIdle(amount);
 
@@ -2861,14 +2890,9 @@ abstract contract Executor is
         uint amount,
         bytes32 intentionId
     ) internal returns (uint shares) {
-        require(
-            _supportedStrategies[_strategyId].strategyAddress != address(0),
-            "TokenVault: Strategy is not exists or nonactive"
-        );
+        (address strategyAddress, ) = getStrategyById(_strategyId);
 
-        IStrategy strategy = IStrategy(
-            _supportedStrategies[_strategyId].strategyAddress
-        );
+        IStrategy strategy = IStrategy(strategyAddress);
 
         shares = strategy.withdraw(amount, address(this), address(this));
 
@@ -2885,25 +2909,23 @@ abstract contract Executor is
     function _fulfillWithdrawRequest(bytes32 intentionId) internal virtual {}
 }
 
-// src/core/vault/Vault.sol
+// src/core/vault/TokenVault.sol
 
 // Must inherit from most basic ones to most derived contracts!
 // Otherwise "Linearization of inheritance graph impossible" will occur
 // https://docs.soliditylang.org/en/develop/contracts.html#multiple-inheritance-and-linearization
-abstract contract Vault is
+abstract contract TokenVault is
     Ownable,
     AddressProviderKeeper,
     FeeManager,
     TokenKeeper,
     ERC20,
-    ITokenVault,
+    IMaatVaultV1,
     ERC165Registry,
     ReentrancyGuard
 {
     using Math for uint256;
     using SafeERC20 for ERC20;
-
-    ERC20 public underlyingToken;
 
     uint public minAmount;
 
@@ -2927,7 +2949,6 @@ abstract contract Vault is
         ERC20(_getVaultName(assetAddress), _getVaultSymbol(assetAddress))
     {
         minAmount = minAmount_;
-        underlyingToken = ERC20(assetAddress);
 
         _registerInterface(type(IERC4626).interfaceId);
     }
@@ -2941,7 +2962,7 @@ abstract contract Vault is
     ) external nonReentrant returns (uint shares) {
         _validateMinAmount(_assets);
 
-        require(_receiver != address(0), "TokenVault: Mint To Zero Address");
+        require(_receiver != address(0), "MaatVaultV1: Mint To Zero Address");
 
         uint sharesWithoutFee = convertToShares(_assets);
 
@@ -2952,7 +2973,7 @@ abstract contract Vault is
         uint shares,
         address receiver
     ) external nonReentrant returns (uint assets) {
-        require(receiver != address(0), "TokenVault: Mint To Zero Address");
+        require(receiver != address(0), "MaatVaultV1: Mint To Zero Address");
 
         uint assetsWithoutFee = convertToAssets(shares);
 
@@ -2993,9 +3014,9 @@ abstract contract Vault is
         address _owner,
         address receiver
     ) internal returns (uint adjustedAssets, uint adjustedShares) {
-        underlyingToken.safeTransferFrom(_owner, address(this), assets);
+        token.safeTransferFrom(_owner, address(this), assets);
 
-        adjustedShares = shares - _calculateFee(shares, feeIn);
+        adjustedShares = shares - _calculateFee(shares, feeIn());
         adjustedAssets = convertToAssets(adjustedShares);
 
         _mint(address(this), shares);
@@ -3017,7 +3038,7 @@ abstract contract Vault is
             this.transferFrom(_owner, address(this), _shares);
         }
 
-        uint adjustedShares = _shares - _calculateFee(_shares, feeOut);
+        uint adjustedShares = _shares - _calculateFee(_shares, feeOut());
 
         assets = _convertToAssetsByPrevPPS(adjustedShares);
 
@@ -3032,7 +3053,7 @@ abstract contract Vault is
         address _owner
     ) internal returns (uint adjustedShares) {
         uint shares = _convertToSharesByPrevPPS(_assets);
-        adjustedShares = shares + _calculateFee(shares, feeOut);
+        adjustedShares = shares + _calculateFee(shares, feeOut());
         this.transferFrom(_owner, address(this), adjustedShares);
 
         _sendFunds(_receiver, _assets, shares, adjustedShares - shares);
@@ -3048,7 +3069,7 @@ abstract contract Vault is
     ) internal {
         _burn(address(this), _shares);
 
-        underlyingToken.safeTransfer(_receiver, _assets);
+        token.safeTransfer(_receiver, _assets);
 
         _decreaseIdle(_assets);
 
@@ -3058,9 +3079,9 @@ abstract contract Vault is
     /* ====== FEES ====== */
 
     function _sendFee(uint fee) internal {
-        if (feeTo == address(0) || fee == 0) return;
+        if (feeTo() == address(0) || fee == 0) return;
 
-        this.transfer(feeTo, fee);
+        this.transfer(feeTo(), fee);
     }
 
     /* ====== ONLY OWNER ====== */
@@ -3075,7 +3096,7 @@ abstract contract Vault is
         address _asset
     ) internal view returns (string memory) {
         //MAAT USDC VAULT
-        return string.concat("MAAT ", ERC20(_asset).symbol(), " Vault");
+        return string.concat("MAAT ", ERC20(_asset).symbol(), " MaatVaultV1");
     }
 
     function _getVaultSymbol(
@@ -3090,7 +3111,7 @@ abstract contract Vault is
     }
 
     function asset() public view returns (address) {
-        return address(underlyingToken);
+        return address(token);
     }
 
     function totalAssets() external view virtual returns (uint) {
@@ -3163,22 +3184,22 @@ abstract contract Vault is
 
     function previewDeposit(uint assets) external view virtual returns (uint) {
         uint shares = convertToShares(assets);
-        return shares - _calculateFee(shares, feeIn);
+        return shares - _calculateFee(shares, feeIn());
     }
 
     function previewMint(uint shares) external view virtual returns (uint) {
-        return convertToAssets(shares + _calculateFee(shares, feeIn));
+        return convertToAssets(shares + _calculateFee(shares, feeIn()));
     }
 
     function previewWithdraw(uint assets) public view virtual returns (uint) {
         uint shares = _convertToSharesByPrevPPS(assets);
 
-        return (shares + _calculateFee(shares, feeOut));
+        return (shares + _calculateFee(shares, feeOut()));
     }
 
     function previewRedeem(uint shares) public view virtual returns (uint) {
         return
-            _convertToAssetsByPrevPPS(shares - _calculateFee(shares, feeOut));
+            _convertToAssetsByPrevPPS(shares - _calculateFee(shares, feeOut()));
     }
 
     function decimals()
@@ -3187,7 +3208,7 @@ abstract contract Vault is
         override(ERC20, IERC20Metadata)
         returns (uint8)
     {
-        return underlyingToken.decimals();
+        return token.decimals();
     }
 
     /* ======== VALIDATION ======== */
@@ -3201,7 +3222,7 @@ abstract contract Vault is
     }
 }
 
-// src/core/TokenVault.sol
+// src/core/MaatVaultV1.sol
 
 /* ====== External ====== */
 
@@ -3209,11 +3230,10 @@ abstract contract Vault is
 
 /* ====== Contracts ====== */
 
-contract TokenVault is ITokenVault, Vault, Executor {
+contract MaatVaultV1 is IMaatVaultV1, TokenVault, Executor {
     using SafeERC20 for ERC20;
 
-    bytes4 constant TokenVaultInterfaceId =
-        bytes4(keccak256("MAAT.V1.TokenVault"));
+    bytes4 constant vaultInterfaceId = type(IMaatVaultV1).interfaceId;
 
     constructor(
         address owner,
@@ -3224,10 +3244,11 @@ contract TokenVault is ITokenVault, Vault, Executor {
         address watcher,
         uint32 chainEid
     )
-        Executor(commander, watcher, assetAddress, chainEid)
-        Vault(owner, assetAddress, addressProvider, minAmount)
+        TokenKeeper(assetAddress)
+        Executor(commander, watcher, chainEid)
+        TokenVault(owner, assetAddress, addressProvider, minAmount)
     {
-        _registerInterface(TokenVaultInterfaceId);
+        _registerInterface(vaultInterfaceId);
         _registerInterface(type(IERC165).interfaceId);
     }
 
@@ -3248,7 +3269,7 @@ contract TokenVault is ITokenVault, Vault, Executor {
 
         require(
             _supportedDstEidToWithdraw[dstEid],
-            "TokenVault: Chain is not supported for withdrawal"
+            "MaatVaultV1: Chain is not supported for withdrawal"
         );
 
         intentionId = getIntentionId(address(_owner), RequestType.WITHDRAW);
@@ -3288,14 +3309,12 @@ contract TokenVault is ITokenVault, Vault, Executor {
     }
 
     function _fulfillWithdrawRequest(bytes32 intentionId) internal override {
-        WithdrawRequestInfo memory request = _withdrawRequests[intentionId];
-
-        require(request.owner != address(0), "TokenVault: Request not found");
+        WithdrawRequestInfo memory request = getWithdrawRequest(intentionId);
 
         uint amountOut = _redeem(request.shares, address(this), address(this));
 
         if (request.dstEid == chainEid) {
-            underlyingToken.safeTransfer(request.receiver, amountOut);
+            token.safeTransfer(request.receiver, amountOut);
         } else {
             _bridgeToUser(amountOut, request.receiver, request.dstEid);
         }
@@ -3327,7 +3346,7 @@ contract TokenVault is ITokenVault, Vault, Executor {
             keccak256(
                 abi.encodePacked(
                     sender,
-                    address(underlyingToken),
+                    address(token),
                     block.number,
                     block.timestamp,
                     chainId,

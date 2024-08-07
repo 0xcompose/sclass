@@ -6,28 +6,31 @@ classDiagram
 
 	class Ownable {
 		🔒 address _owner
-		❗ owner() address 
-		⚙️ _checkOwner() 
+		❗👀 owner() address 
+		⚙️👀 _checkOwner() 
 		❗ renounceOwnership() 
 		❗ transferOwnership(address newOwner) 
 		⚙️ _transferOwnership(address newOwner) 
 	}
 
 	class FeeManager {
-		❗ uint112 feeIn
-		❗ uint112 feeOut
+		🔒 uint112 _feeIn
+		🔒 uint112 _feeOut
 		❗ uint32 feePrecision
-		❗ address feeTo
-		⚙️ _calculateFee(uint amount, uint112 fee) uint 
-		❗ setFees(uint112 _feeIn, uint112 _feeOut) 
-		❗ setFeeTo(address _feeTo) 
+		🔒 address _feeTo
+		❗ setFees(uint112 feeIn_, uint112 feeOut_) 
+		❗ setFeeTo(address feeTo_) 
+		⚙️🧮 _calculateFee(uint amount, uint112 fee) uint 
+		❗👀 feeIn() uint112 
+		❗👀 feeOut() uint112 
+		❗👀 feeTo() address 
 	}
 
 	class AddressProviderKeeper {
 		🔒 IMaatAddressProvider _addressProvider
 		❗ bytes4 AddressProviderInterfaceId
-		🔒 _validateAddressProviderInterface(address addressProvider_) 
-		❗ addressProvider() IMaatAddressProvider 
+		🔒👀 _validateAddressProviderInterface(address addressProvider_) 
+		❗👀 addressProvider() IMaatAddressProvider 
 	}
 
 	class Roles {
@@ -41,15 +44,16 @@ classDiagram
 		❗ uint cancelWithdrawTimer
 		❗ uint32 chainEid
 		⚙️ mapping(uint32 => bool) _supportedDstEidToWithdraw
-		⚙️ mapping(bytes32 => WithdrawRequestInfo) _withdrawRequests
+		🔒 mapping(bytes32 => WithdrawRequestInfo) _withdrawRequests
 		❗ setWithdrawCancelTimer(uint timer) 
 		⚙️ _createWithdrawRequest(bytes32 intentionId, address _owner, address receiver, address asset, uint32 dstEid, uint shares) 
 		⚙️ _cancelWithdrawRequest(bytes32 intentionId) owner shares 
 		⚙️ _cleanRequestInfo(address owner, bytes32 intentionId) 
 		❗ addChainToWithdraw(uint32 _dstEid) 
 		❗ removeChainToWithdraw(uint32 _dstEid) 
-		❗ getWithdrawRequest(bytes32 intentionId) WithdrawRequestInfo 
-		❗ getSupportedDstEidToWithdraw(uint32 _dstEid) bool 
+		❗👀 getWithdrawRequest(bytes32 intentionId) WithdrawRequestInfo 
+		❗👀 getSupportedDstEidToWithdraw(uint32 _dstEid) bool 
+		⚙️👀 _validateWithdrawRequestExistence(bytes32 intentionId) 
 	}
 
 	class TokenKeeper {
@@ -57,24 +61,26 @@ classDiagram
 		🔒 uint _idle
 		⚙️ _increaseIdle(uint value) 
 		⚙️ _decreaseIdle(uint value) 
-		❗ idle() uint 
+		❗👀 idle() uint 
 	}
 
 	class StrategyManager {
-		⚙️ mapping(bytes32 => Strategy) _supportedStrategies
-		⚙️ mapping(address => bytes32) _strategyAddressToId
+		🔒 mapping(bytes32 => Strategy) _supportedStrategies
+		🔒 mapping(address => bytes32) _strategyAddressToId
 		❗ addStrategy(address strategy) 
 		❗ removeStrategy(bytes32 strategyId) 
 		❗ enableStrategy(bytes32 strategyId) 
 		❗ disableStrategy(bytes32 strategyId) 
-		⚙️ _deleteStrategy(bytes32 _strategyId, address strategy) 
-		⚙️ _toggleStrategy(bytes32 _strategyId, bool _isActive) 
-		❗ getStrategyByAddress(address _strategy) bytes32 bool 
-		❗ getStrategyById(bytes32 _strategyId) address bool 
+		⚙️ _deleteStrategy(bytes32 strategyId, address strategy) 
+		⚙️ _toggleStrategy(bytes32 strategyId, bool isActive) 
+		❗👀 getStrategyByAddress(address strategy) bytes32 bool 
+		❗👀 getStrategyById(bytes32 strategyId) address bool 
+		⚙️👀 _validateStrategyExistence(bytes32 strategyId) 
+		⚙️👀 _validateStrategyExistence(address strategy) 
 	}
 
 	class BridgeLogic {
-		❗ stargateAdapter() IStargateAdapter 
+		❗👀 stargateAdapter() IStargateAdapter 
 		❗ finishBridge(uint256 amountBridged, bytes32 intentionId) 
 		⚙️ _finishBridge(uint amountBridged, address sender) 
 		⚙️ _bridge(uint256 _amount, uint256 dstEid, bytes32 intentionId) 
@@ -89,8 +95,7 @@ classDiagram
 		⚙️ _fulfillWithdrawRequest(bytes32 intentionId) 
 	}
 
-	class Vault {
-		❗ ERC20 underlyingToken
+	class TokenVault {
 		❗ uint minAmount
 		❗ deposit(uint _assets, address _receiver) shares 
 		❗ mint(uint shares, address receiver) assets 
@@ -102,40 +107,38 @@ classDiagram
 		⚙️ _sendFunds(address _receiver, uint _assets, uint _shares, uint fee) 
 		⚙️ _sendFee(uint fee) 
 		❗ setMinAmount(uint amount) 
-		⚙️ _getVaultName(address _asset) string 
-		⚙️ _getVaultSymbol(address _asset) string 
-		❗ oracle() IMaatOracleGlobalPPS 
-		❗ asset() address 
-		❗ totalAssets() uint 
-		❗ convertToShares(uint assets) uint 
-		⚙️ _convertToSharesByPrevPPS(uint assets) uint 
-		❗ convertToAssets(uint shares) uint 
-		⚙️ _convertToAssetsByPrevPPS(uint shares) uint 
-		❗ maxDeposit(address receiver) uint256 
-		❗ maxMint(address receiver) uint256 
-		❗ maxRedeem(address receiver) uint 
-		❗ maxWithdraw(address receiver) uint 
-		❗ previewDeposit(uint assets) uint 
-		❗ previewMint(uint shares) uint 
-		❗ previewWithdraw(uint assets) uint 
-		❗ previewRedeem(uint shares) uint 
-		❗ decimals() uint8 
-		⚙️ _validateUser(address _owner, address sender) 
-		⚙️ _validateMinAmount(uint amount) 
+		⚙️👀 _getVaultName(address _asset) string 
+		⚙️👀 _getVaultSymbol(address _asset) string 
+		❗👀 oracle() IMaatOracleGlobalPPS 
+		❗👀 asset() address 
+		❗👀 totalAssets() uint 
+		❗👀 convertToShares(uint assets) uint 
+		⚙️👀 _convertToSharesByPrevPPS(uint assets) uint 
+		❗👀 convertToAssets(uint shares) uint 
+		⚙️👀 _convertToAssetsByPrevPPS(uint shares) uint 
+		❗👀 maxDeposit(address receiver) uint256 
+		❗👀 maxMint(address receiver) uint256 
+		❗👀 maxRedeem(address receiver) uint 
+		❗👀 maxWithdraw(address receiver) uint 
+		❗👀 previewDeposit(uint assets) uint 
+		❗👀 previewMint(uint shares) uint 
+		❗👀 previewWithdraw(uint assets) uint 
+		❗👀 previewRedeem(uint shares) uint 
+		❗👀 decimals() uint8 
+		⚙️🧮 _validateUser(address _owner, address sender) 
+		⚙️👀 _validateMinAmount(uint amount) 
 	}
 
-	class TokenVault {
-		⚙️ bytes4 TokenVaultInterfaceId
+	class MaatVaultV1 {
+		⚙️ bytes4 vaultInterfaceId
 		❗ requestWithdraw(uint shares, uint32 dstEid, address _owner, address receiver) intentionId 
 		❗ requestRebalance() intentionId 
 		❗ cancelWithdrawal(bytes32 intentionId) owner shares 
 		⚙️ _fulfillWithdrawRequest(bytes32 intentionId) 
-		❗ getIntentionId(address sender, RequestType _type) bytes32 
+		❗👀 getIntentionId(address sender, RequestType _type) bytes32 
 	}
 
 
-
-	Context <|-- Ownable
 
 	Ownable <|-- FeeManager
 
@@ -161,14 +164,14 @@ classDiagram
 
 	WithdrawRequestLogic <|-- Executor
 
-	Ownable <|-- Vault
+	Ownable <|-- TokenVault
 
-	AddressProviderKeeper <|-- Vault
+	AddressProviderKeeper <|-- TokenVault
 
-	FeeManager <|-- Vault
+	FeeManager <|-- TokenVault
 
-	TokenKeeper <|-- Vault
+	TokenKeeper <|-- TokenVault
 
-	Vault <|-- TokenVault
+	TokenVault <|-- MaatVaultV1
 
-	Executor <|-- TokenVault
+	Executor <|-- MaatVaultV1
