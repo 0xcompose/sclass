@@ -1,5 +1,3 @@
-import { getClassDiagramString } from "./diagram"
-
 export interface Field {
     type: string
     name: string
@@ -7,10 +5,16 @@ export interface Field {
 }
 
 export enum Visibility {
-    external = "+",
-    public = "+",
-    internal = "-",
-    private = "#",
+    external = "❗ ",
+    public = "❗ ",
+    internal = "⚙️ ",
+    private = "🔒 ",
+}
+
+export enum FunctionMutability {
+    mutable = "",
+    view = " ",
+    pure = "⚙️",
 }
 
 export interface Declaration {
@@ -63,8 +67,7 @@ export class Contract {
         let fields: string = ""
 
         for (const field of this.fields) {
-            fields +=
-                margin + `\t${field.visibility}${field.type} ${field.name}\n`
+            fields += `${margin}\t${field.visibility}${field.type} ${field.name}\n`
         }
 
         /* ====== Insert Methods ====== */
@@ -72,17 +75,12 @@ export class Contract {
         let methods: string = ""
 
         for (const method of this.methods) {
-            const params = method.params
-                .map(
-                    (param) =>
-                        (disableFunctionParamType ? "" : param.type + " ") +
-                        param.name
-                )
-                .join(", ")
+            const params = this.getParamsString(
+                method.params,
+                disableFunctionParamType
+            )
 
-            methods +=
-                margin +
-                `\t${method.visibility}${method.name}(${params}) ${method.returnType}\n`
+            methods += `${margin}\t${method.visibility}${method.name}(${params}) ${method.returnType}\n`
         }
 
         /* ====== Insert Mappings ====== */
@@ -90,9 +88,7 @@ export class Contract {
         let mappings: string = ""
 
         for (const mapping of this.mappings) {
-            mappings +=
-                margin +
-                `\t${mapping.visibility}mapping(${mapping.key} => ${mapping.value}) ${mapping.name}\n`
+            mappings += `${margin}\t${mapping.visibility}mapping(${mapping.key} => ${mapping.value}) ${mapping.name}\n`
         }
 
         /* ====== End ====== */
@@ -102,6 +98,16 @@ export class Contract {
         /* ====== Construction ====== */
 
         return start + fields + mappings + methods + end
+    }
+
+    getParamsString(params: Declaration[], disableFunctionParamType: boolean) {
+        return params
+            .map(
+                (param) =>
+                    (disableFunctionParamType ? "" : param.type + " ") +
+                    param.name
+            )
+            .join(", ")
     }
 }
 

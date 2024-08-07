@@ -160,7 +160,7 @@ export const layerZeroContract = [
     "UltraLightNodeV2",
     "OFTAdapter",
     "EndpointV2",
-    "Executor",
+    // "Executor",
     "Treasury",
     "MockToken",
     "TreasuryV2Radar",
