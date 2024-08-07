@@ -13,8 +13,13 @@ import {
     Method,
     Mapping,
     Declaration,
-} from "./mermaid/contract"
-import { validateFunction, validateMapping, validateVariable } from "./validate"
+    StateMutability,
+} from "../mermaid/contract"
+import {
+    validateFunction,
+    validateMapping,
+    validateVariable,
+} from "../validate"
 
 export function convertContractDefinitionToContract(
     astContract: ContractDefinition
@@ -132,13 +137,26 @@ function parseFunction(func: FunctionDefinition): Method | null {
 
     let visibility: Visibility = parseVisibility(func.visibility)
 
+    /* ====== Mutability ====== */
+
+    let stateMutability =
+        func.stateMutability === null
+            ? StateMutability.mutative
+            : StateMutability[func.stateMutability]
+
     /* ====== Return Type ====== */
 
     let returnType = parseFunctionReturnType(func)
 
     /* ====== Construction ====== */
 
-    const method: Method = { name, returnType, visibility, params }
+    const method: Method = {
+        name,
+        returnType,
+        visibility,
+        params,
+        stateMutability,
+    }
 
     /* ====== Validation ====== */
 
