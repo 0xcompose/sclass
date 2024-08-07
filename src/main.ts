@@ -4,7 +4,7 @@ import {
     ASTNode,
     ContractDefinition,
 } from "@solidity-parser/parser/dist/src/ast-types"
-import { convertContractDefinitionToContract } from "./astContractDefinitionToContract"
+import { convertContractDefinitionToContract } from "./ast/astContractDefinitionToContract"
 import { parse } from "@solidity-parser/parser"
 import { getClassDiagramString } from "./mermaid/diagram"
 import { Contract } from "./mermaid/contract"
@@ -19,7 +19,12 @@ const filterLayerZero = true
 
 export const disableFunctionParamType = false
 
-const excludeContracts = ["ERC165Registry", "ERC20", "ReentrancyGuard"]
+const excludeContracts = [
+    "ERC165Registry",
+    "ERC20",
+    "ReentrancyGuard",
+    "Context",
+]
 const includeContracts = ["Ownable"]
 
 // Flatten Solidity files
@@ -58,8 +63,6 @@ function main() {
     let parsedContracts: Contract[] = []
 
     for (const contract of filteredContracts) {
-        if (contract.name === "Vault") console.log(contract.baseContracts)
-
         parsedContracts.push(convertContractDefinitionToContract(contract))
     }
 
