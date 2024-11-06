@@ -1,5 +1,4 @@
 import fs from "fs"
-import { ozContracts } from "./collections/openzeppelin"
 import {
     ASTNode,
     ContractDefinition,
@@ -8,54 +7,26 @@ import { convertContractDefinitionToContract } from "./ast/astContractDefinition
 import { parse } from "@solidity-parser/parser"
 import { getClassDiagramString } from "./mermaid/diagram"
 import { Contract } from "./mermaid/contract"
-import { layerZeroContract } from "./collections/layerzero"
-import { stargateContracts } from "./collections/stargate"
-
-const filterInterfaces = true
-const filterLibraries = true
-const filterOz = true
-const filterStargate = true
-const filterLayerZero = true
-
-export const disableFunctionParamType = false
-
-const excludeContracts = [
-    "ERC165Registry",
-    "ERC20",
-    "ReentrancyGuard",
-    "Context",
-]
-const includeContracts = ["Ownable"]
-
-// Flatten Solidity files
-const files = [
-    // "./contracts/AddressProvider.flatten.sol",
-    "./contracts/TokenVault.flatten.sol",
-    // "./contracts/StargateAdapter.flatten.sol",
-    // "./contracts/OracleGlobalPPS.flatten.sol",
-]
+import { inspect } from "util"
+import { CONTRACTS_DIR, OUTPUT_DIAGRAM_FILE } from "./misc/constants"
+import { shouldFilterContract } from "./utils/filter"
+import { config } from "../config"
 
 function main() {
-    let contracts: ContractDefinition[] = []
-
     /* ======= READ FILES ======= */
 
-    for (const file of files) {
-        const buffer = fs.readFileSync(file)
-        const solidityCode = buffer.toString()
-
-        let ast = parse(solidityCode)
-        contracts.push(...(ast.children as ContractDefinition[]))
-    }
+    const contracts = readFileAndParse(config)
 
     /* ======= FILTER ======= */
 
     const filteredContracts: ContractDefinition[] = []
+    const excludedContractNames: Map<string, boolean> = new Map()
 
     for (const contract of contracts) {
-        const shouldFilter = shouldFilterContract(contract)
+        const shouldFilter = shouldFilterContract(contract, config)
 
         if (!shouldFilter) filteredContracts.push(contract)
+        else excludedContractNames.set(contract.name, true)
     }
 
     /* ======= PARSE CONTRACTS ======= */
@@ -63,107 +34,57 @@ function main() {
     let parsedContracts: Contract[] = []
 
     for (const contract of filteredContracts) {
-        parsedContracts.push(convertContractDefinitionToContract(contract))
+        if (parsedContracts.find((c) => c.className === contract.name)) continue
+
+        parsedContracts.push(
+            convertContractDefinitionToContract(contract, config),
+        )
     }
 
     /* ======= PARSE INHERITANCE ======= */
 
     let relations: string[] = []
-
     for (const contract of filteredContracts) {
         for (const base of contract.baseContracts) {
-            const parentName = base.baseName.namePath
-            if (parentName[0] == "I") continue
-            if (excludeContracts.includes(parentName)) continue
+            if (excludedContractNames.get(base.baseName.namePath)) continue
 
-            relations.push(`\t${base.baseName.namePath} <|-- ${contract.name}`)
+            const relationStr = `\t${base.baseName.namePath} <|-- ${contract.name}`
+
+            if (relations.includes(relationStr)) continue
+
+            relations.push(relationStr)
         }
     }
 
-    /* ======= DIAGRAM ======= */
+    // /* ======= DIAGRAM ======= */
 
     const diagram = getClassDiagramString(
         parsedContracts,
         relations,
-        disableFunctionParamType
+        config.disableFunctionParamType,
     )
 
     console.log(diagram)
-
-    fs.writeFileSync("./diagram.mmd", diagram)
+    fs.writeFileSync(OUTPUT_DIAGRAM_FILE, diagram)
 }
 
-function parseContract(node: ASTNode) {
-    return node as ContractDefinition
-}
+export function readFileAndParse(config: Config) {
+    const contracts: ContractDefinition[] = []
 
-// function isContract(node: ASTNode) {
-// 	return node.type === "ContractDefinition";
-// }
+    for (const file of config.inputContracts) {
+        const path = `${CONTRACTS_DIR}/${file}.sol`
 
-function isContractFromCollection(
-    contract: ContractDefinition,
-    collection: string[]
-) {
-    return collection.includes(contract.name)
-}
+        const buffer = fs.readFileSync(path)
+        const solidityCode = buffer.toString()
 
-function shouldFilterContract(node: ASTNode): boolean {
-    let contract: ContractDefinition | null = null
+        let ast = parse(solidityCode)
 
-    if (node.type !== "ContractDefinition") return true
+        // console.log(`Parsed ${file}`)
+        // console.log(inspect(ast, { depth: 10 }))
+        contracts.push(...(ast.children as ContractDefinition[]))
+    }
 
-    contract = node
-
-    /* ====== INCLUDE ====== */
-
-    if (includeContracts.includes(contract.name)) return false
-
-    /* ====== LIBRARY ====== */
-
-    if (filterLibraries && isLibrary(contract)) return true
-
-    /* ====== INTERFACE ====== */
-
-    if (filterInterfaces && isInterface(node)) return true
-
-    /* ====== COLLECTIONS ====== */
-
-    if (filterOz && isContractFromCollection(contract, ozContracts)) return true
-    if (
-        filterLayerZero &&
-        isContractFromCollection(contract, layerZeroContract)
-    )
-        return true
-    if (filterStargate && isContractFromCollection(contract, stargateContracts))
-        return true
-
-    /* ====== EXCLUDE ====== */
-
-    if (isContractFromCollection(contract, excludeContracts)) return true
-
-    return false
-}
-
-function isInterface(node: ContractDefinition) {
-    return node.kind === "interface"
-}
-
-function isContract(node: ContractDefinition) {
-    return node.kind === "contract"
-}
-
-function isAbstract(node: ContractDefinition) {
-    return node.kind === "abstract"
-}
-
-function isLibrary(node: ContractDefinition) {
-    return node.kind === "library"
+    return contracts
 }
 
 main()
-// .then(() => process.exit(0))
-// .catch((error) => {
-//     console.error(error)
-//     process.exit(1)
-// })

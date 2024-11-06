@@ -19,17 +19,19 @@ import {
     validateFunction,
     validateMapping,
     validateVariable,
-} from "../validate"
+} from "../utils/validate"
+import { shouldFilterMethod } from "../utils/filter"
 
 export function convertContractDefinitionToContract(
-    astContract: ContractDefinition
+    astContract: ContractDefinition,
+    config: Config,
 ): Contract {
     const contract = new Contract(astContract.name)
 
     /* ====== Variables ====== */
 
     const variables = astContract.subNodes.filter(
-        (node) => node.type === "StateVariableDeclaration"
+        (node) => node.type === "StateVariableDeclaration",
     ) as StateVariableDeclaration[]
 
     for (const variable of variables) {
@@ -48,14 +50,13 @@ export function convertContractDefinitionToContract(
     /* ====== Functions ====== */
 
     const functions = astContract.subNodes.filter(
-        (node) => node.type === "FunctionDefinition"
+        (node) => node.type === "FunctionDefinition",
     ) as FunctionDefinition[]
 
     for (const func of functions) {
         const method = parseFunction(func)
 
-        // Null if constructor
-        if (!method) continue
+        if (shouldFilterMethod(method, config)) continue
 
         contract.addMethod(method)
     }

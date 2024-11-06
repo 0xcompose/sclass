@@ -3,14 +3,20 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "generate": "npx mmdc --input diagram.mmd --output diagram.svg --theme dark",
-        "start": "npx ts-node src/main.ts && npm run generate",
-        "class": "npx ts-node src/class.ts",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "parse": "npx ts-node src/main.ts",
+        "render": "npx mmdc --input out/diagram.mmd --output out/diagram.svg --theme dark",
+        "start": "npm run parse && npm run render",
+        "test": "TS_NODE_FILES=true npx ts-node node_modules/mocha/bin/mocha 'test/**/*.ts'"
     },
     "author": "",
     "license": "ISC",
     "description": "",
+    "devDependencies": {
+        "@types/chai": "^4.3.16",
+        "@types/mocha": "^10.0.6",
+        "chai": "^4.2.0",
+        "ts-mocha": "^10.0.0"
+    },
     "dependencies": {
         "@mermaid-js/mermaid-cli": "^10.9.1",
         "@solidity-parser/parser": "^0.18.0",

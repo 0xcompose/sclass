@@ -1,0 +1,51 @@
+
+---
+title: Testing generation of schemes
+---
+classDiagram
+
+	class Base {
+		❗🧮 baseFunc() uint256 
+	}
+
+	class MiddleInInheritance {
+		❗🧮 middleFunc() uint256 
+	}
+
+	class ContractInCollection {
+		❗👀 contractToFilterFunc() address 
+	}
+
+	class Relayer {
+	}
+
+	class ExampleContract1 {
+		❗ uint256 uint256PublicVar
+		🔒 address addressPrivateVar
+		❗ setUint256PublicVar(uint256 _uint256PublicVar) 
+	}
+
+	class Base {
+		❗🧮 baseFunc() uint256 
+	}
+
+	class MiddleInInheritance {
+		❗🧮 middleFunc() uint256 
+	}
+
+	class ExampleContract2 {
+		❗🧮 testContract2Func() uint256 
+		❗🧮 exceptionRegExp() uint256 
+	}
+
+
+
+	Base <|-- MiddleInInheritance
+
+	MiddleInInheritance <|-- ExampleContract1
+
+	ContractInCollection <|-- ExampleContract1
+
+	Relayer <|-- ExampleContract1
+
+	MiddleInInheritance <|-- ExampleContract2

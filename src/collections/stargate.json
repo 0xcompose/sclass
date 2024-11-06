@@ -1,4 +1,4 @@
-export const stargateContracts = [
+[
     "OFTProxyMock",
     "MultiRewarderIntegration.t",
     "OFTProxyMock",
@@ -170,5 +170,5 @@ export const stargateContracts = [
     "USDT",
     "USDC",
     "Path",
-    "Bus",
+    "Bus"
 ]
