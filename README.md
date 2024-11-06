@@ -6,6 +6,8 @@ Parses Solidity files using [@solidity-parser/parser](https://www.npmjs.com/pack
 
 Load your **flattened** and **compilable** smart contracts into `/contracts` folder
 
+Setup configuration in `config.ts` as described in [Configuration](#configuration) section
+
 Then run following commands:
 
 ```bash
@@ -13,27 +15,45 @@ npm install
 npm run start
 ```
 
-You can open resulting diagram.svg in browser or [preview extension](https://marketplace.visualstudio.com/items?itemName=vitaliymaz.vscode-svg-previewer)
+After running the script, two files will be generated in the `/out` directory:
+
+-   diagram.mmd (source diagram file)
+-   diagram.svg (rendered diagram)
+
+You can view the diagram.svg in any web browser or using this [preview extension](https://marketplace.visualstudio.com/items?itemName=vitaliymaz.vscode-svg-previewer)
 
 ## Configuration
 
-Basically interpreter parses only contracts, excluding Interfaces and Libraries.
+Setup configuration in `config.ts` file.
+
+### inputContracts
+
+Array of **file names** without `.sol` extension of contracts to be included in the diagram, you can put your contracts in `/contracts` folder and add them here
+
+### excludeContracts
+
+If you want to exclude some contracts, you can setup object with following fields:
+
+-   interfaces: boolean - whether to exclude interfaces
+-   libraries: boolean - whether to exclude libraries
+-   collections: array of collection **file names** to exclude
+    > **ℹ️ Note:** Collections are groups of related contracts that can be defined in `src/collections`. We've already have LayerZero, OpenZeppelin and Stargate collections. You can create your own collections by adding new file in `src/collections` folder.
+-   contracts: array of contract names to exclude
+    > You don't need to create a new collection, you can just add contract names here
+-   exceptions: array of contract names to be included in the diagram despite of being excluded by other fields
+
+### excludeFunctions
+
+Object with following fields:
+
+-   regExps: array of regular expressions to exclude functions by name
+-   exceptions: array of function names to be included in the diagram despite of being excluded by other fields
+
+### disableFunctionParamType
+
+Boolean - whether to disable function parameter type rendering
 
 Also filters out OpenZeppelin, LayerZero and Stargate contracts.
-
-New contracts to filter out can be added in `main.ts` array `excludeContracts: string[] = []`. Or by adding contract collection in `src/collections` and adding new filter in `filterNodes(nodes)` in `main.ts`
-
-You can change basic behavior by changing boolean values of variables at the top of `main.ts` file:
-
-```typescript
-const filterInterfaces = true
-const filterLibraries = true
-const filterOz = true
-const filterStargate = true
-const filterLayerZero = true
-
-export const disableFunctionParamType = false
-```
 
 ## Making custom validation
 

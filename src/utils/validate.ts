@@ -1,4 +1,4 @@
-import { Field, Mapping, Method, Visibility } from "./mermaid/contract"
+import { Field, Mapping, Method, Visibility } from "../mermaid/contract"
 import pc from "picocolors"
 
 const warn = "[WARN]"
