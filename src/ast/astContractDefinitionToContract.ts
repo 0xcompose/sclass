@@ -24,14 +24,14 @@ import { shouldFilterMethod } from "../utils/filter"
 
 export function convertContractDefinitionToContract(
     astContract: ContractDefinition,
-    config: Config,
+    config: Config
 ): Contract {
     const contract = new Contract(astContract.name)
 
     /* ====== Variables ====== */
 
     const variables = astContract.subNodes.filter(
-        (node) => node.type === "StateVariableDeclaration",
+        (node) => node.type === "StateVariableDeclaration"
     ) as StateVariableDeclaration[]
 
     for (const variable of variables) {
@@ -50,7 +50,7 @@ export function convertContractDefinitionToContract(
     /* ====== Functions ====== */
 
     const functions = astContract.subNodes.filter(
-        (node) => node.type === "FunctionDefinition",
+        (node) => node.type === "FunctionDefinition"
     ) as FunctionDefinition[]
 
     for (const func of functions) {
@@ -83,12 +83,12 @@ function parseTypeName(typeName: TypeName | null): string {
         case "ElementaryTypeName":
             return typeName.name
 
-        // It is incorrect to handle Mapping as variable
-        // At least in implementation, where Mapping is not compatible with Field
-        // case "Mapping":
-        //     const key = parseTypeName(typeName.keyType)
-        //     const value = parseTypeName(typeName.valueType)
-        //     return key + " " + value
+        case "Mapping":
+            // Handle mapping with named parameters
+            const mapping = typeName as MappingType
+            const key = parseTypeName(mapping.keyType)
+            const value = parseTypeName(mapping.valueType)
+            return `mapping(${key} => ${value})`
 
         case "UserDefinedTypeName":
             return typeName.namePath
