@@ -1,13 +1,11 @@
 import fs from "fs"
 import {
-    ASTNode,
     ContractDefinition,
 } from "@solidity-parser/parser/dist/src/ast-types"
 import { convertContractDefinitionToContract } from "./ast/astContractDefinitionToContract"
 import { parse } from "@solidity-parser/parser"
 import { getClassDiagramString } from "./mermaid/diagram"
 import { Contract } from "./mermaid/contract"
-import { inspect } from "util"
 import { CONTRACTS_DIR, OUTPUT_DIAGRAM_FILE } from "./misc/constants"
 import { shouldFilterContract } from "./utils/filter"
 import { config } from "../config"

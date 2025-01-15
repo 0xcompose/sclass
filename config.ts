@@ -4,7 +4,7 @@ export const config: Config = {
     excludeContracts: {
         interfaces: true,
         libraries: false,
-        collections: ["layerzero"],
+        collections: ["layerzero", "common-utils", "openzeppelin"],
         contracts: ["Excluded"],
         exceptions: ["Relayer"],
     },
