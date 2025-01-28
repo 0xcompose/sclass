@@ -15,8 +15,9 @@
 		"bin",
 		"README.md"
 	],
+	"main": "bin/index.js",
 	"bin": {
-		"sclass": "bin/src/index.js"
+		"sclass": "bin/index.js"
 	},
 	"scripts": {
 		"start": "npx ts-node src/index.ts contracts/ExampleContract1.sol",
