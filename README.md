@@ -2,6 +2,12 @@
 
 Parses Solidity files using [@solidity-parser/parser](https://www.npmjs.com/package/@solidity-parser/parser) and creates .mmd (Mermaid) Class Diagrams.
 
+Supports Foundry projects, doesn't support Hardhat project (create issue to request hardhat support)
+
+## Dependencies
+
+-   `foundry` - used for flattening contracts (`forge` command MUST be available in console)
+
 ## Getting Started
 
 Load your **flattened** and **compilable** smart contracts into `/contracts` folder

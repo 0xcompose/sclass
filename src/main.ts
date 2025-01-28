@@ -1,88 +1,85 @@
 import fs from "fs"
-import {
-    ContractDefinition,
-} from "@solidity-parser/parser/dist/src/ast-types"
+import { ContractDefinition } from "@solidity-parser/parser/dist/src/ast-types"
 import { convertContractDefinitionToContract } from "./ast/astContractDefinitionToContract"
 import { parse } from "@solidity-parser/parser"
 import { getClassDiagramString } from "./mermaid/diagram"
 import { Contract } from "./mermaid/contract"
-import { CONTRACTS_DIR, OUTPUT_DIAGRAM_FILE } from "./misc/constants"
+import { CONTRACTS_DIR } from "./misc/constants"
 import { shouldFilterContract } from "./utils/filter"
-import { config } from "../config"
+import { exec, execSync } from "child_process"
+import { promisify } from "util"
 
-function main() {
-    /* ======= READ FILES ======= */
+export type Diagram = string
 
-    const contracts = readFileAndParse(config)
+export async function parseContracts(config: Config): Promise<string> {
+	/* ======= READ FILES ======= */
 
-    /* ======= FILTER ======= */
+	const contracts = await readFileAndParse(config.inputContractFilePath)
 
-    const filteredContracts: ContractDefinition[] = []
-    const excludedContractNames: Map<string, boolean> = new Map()
+	/* ======= FILTER ======= */
 
-    for (const contract of contracts) {
-        const shouldFilter = shouldFilterContract(contract, config)
+	const filteredContracts: ContractDefinition[] = []
+	const excludedContractNames: Map<string, boolean> = new Map()
 
-        if (!shouldFilter) filteredContracts.push(contract)
-        else excludedContractNames.set(contract.name, true)
-    }
+	for (const contract of contracts) {
+		const shouldFilter = shouldFilterContract(contract, config)
 
-    /* ======= PARSE CONTRACTS ======= */
+		if (!shouldFilter) filteredContracts.push(contract)
+		else excludedContractNames.set(contract.name, true)
+	}
 
-    let parsedContracts: Contract[] = []
+	/* ======= PARSE CONTRACTS ======= */
 
-    for (const contract of filteredContracts) {
-        if (parsedContracts.find((c) => c.className === contract.name)) continue
+	let parsedContracts: Contract[] = []
 
-        parsedContracts.push(
-            convertContractDefinitionToContract(contract, config),
-        )
-    }
+	for (const contract of filteredContracts) {
+		if (parsedContracts.find((c) => c.className === contract.name)) continue
 
-    /* ======= PARSE INHERITANCE ======= */
+		parsedContracts.push(
+			convertContractDefinitionToContract(contract, config),
+		)
+	}
 
-    let relations: string[] = []
-    for (const contract of filteredContracts) {
-        for (const base of contract.baseContracts) {
-            if (excludedContractNames.get(base.baseName.namePath)) continue
+	/* ======= PARSE INHERITANCE ======= */
 
-            const relationStr = `\t${base.baseName.namePath} <|-- ${contract.name}`
+	let relations: string[] = []
+	for (const contract of filteredContracts) {
+		for (const base of contract.baseContracts) {
+			if (excludedContractNames.get(base.baseName.namePath)) continue
 
-            if (relations.includes(relationStr)) continue
+			const relationStr = `\t${base.baseName.namePath} <|-- ${contract.name}`
 
-            relations.push(relationStr)
-        }
-    }
+			if (relations.includes(relationStr)) continue
 
-    // /* ======= DIAGRAM ======= */
+			relations.push(relationStr)
+		}
+	}
 
-    const diagram = getClassDiagramString(
-        parsedContracts,
-        relations,
-        config.disableFunctionParamType,
-    )
+	// /* ======= DIAGRAM ======= */
 
-    console.log(diagram)
-    fs.writeFileSync(OUTPUT_DIAGRAM_FILE, diagram)
+	const diagram = getClassDiagramString(
+		parsedContracts,
+		relations,
+		config.disableFunctionParamType,
+	)
+
+	return diagram
 }
 
-export function readFileAndParse(config: Config) {
-    const contracts: ContractDefinition[] = []
+export async function readFileAndParse(filePath: string) {
+	const contracts: ContractDefinition[] = []
 
-    for (const file of config.inputContracts) {
-        const path = `${CONTRACTS_DIR}/${file}.sol`
+	// const path = filePath
+	const execAsync = promisify(exec)
+	const { stdout, stderr } = await execAsync(`forge flatten ${filePath}`)
+	// const buffer = fs.readFileSync(path)
+	const solidityCode = stdout
 
-        const buffer = fs.readFileSync(path)
-        const solidityCode = buffer.toString()
+	let ast = parse(solidityCode)
 
-        let ast = parse(solidityCode)
+	// console.log(`Parsed ${file}`)
+	// console.log(inspect(ast, { depth: 10 }))
+	contracts.push(...(ast.children as ContractDefinition[]))
 
-        // console.log(`Parsed ${file}`)
-        // console.log(inspect(ast, { depth: 10 }))
-        contracts.push(...(ast.children as ContractDefinition[]))
-    }
-
-    return contracts
+	return contracts
 }
-
-main()

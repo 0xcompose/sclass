@@ -1,73 +1,76 @@
 import {
-    ASTNode,
-    ContractDefinition,
+	ASTNode,
+	ContractDefinition,
 } from "@solidity-parser/parser/dist/src/ast-types"
 import { COLLECTIONS_DIR } from "../misc/constants"
 import fs from "fs"
 import { Method } from "../mermaid/contract"
 
 export function shouldFilterContract(node: ASTNode, config: Config): boolean {
-    if (node.type !== "ContractDefinition") return true
+	if (node.type !== "ContractDefinition") return true
 
-    /* ====== EXClUDE EXCEPTIONS ====== */
+	/* ====== EXClUDE EXCEPTIONS ====== */
 
-    if (config.excludeContracts.exceptions.includes(node.name)) return false
+	if (config.excludeContracts.exceptions.includes(node.name)) return false
 
-    /* ====== LIBRARY ====== */
+	/* ====== LIBRARY ====== */
 
-    if (config.excludeContracts.libraries && isLibrary(node)) return true
+	if (config.excludeContracts.libraries && isLibrary(node)) return true
 
-    /* ====== INTERFACE ====== */
+	/* ====== INTERFACE ====== */
 
-    if (config.excludeContracts.interfaces && isInterface(node)) return true
+	if (config.excludeContracts.interfaces && isInterface(node)) return true
 
-    /* ====== COLLECTIONS ====== */
+	/* ====== COLLECTIONS ====== */
 
-    if (isContractFromCollections(node, config)) return true
+	if (isContractFromCollections(node, config)) return true
 
-    /* ====== EXCLUDE ====== */
+	/* ====== EXCLUDE ====== */
 
-    if (config.excludeContracts.contracts.includes(node.name)) return true
+	if (config.excludeContracts.contracts.includes(node.name)) return true
 
-    return false
+	return false
 }
 
 export function isContractFromCollections(
-    contract: ContractDefinition,
-    config: Config,
+	contract: ContractDefinition,
+	config: Config,
 ) {
-    for (const collectionName of config.excludeContracts.collections) {
-        const file = `${COLLECTIONS_DIR}/${collectionName}.json`
+	for (const collectionName of config.excludeContracts.collections) {
+		const file = `${COLLECTIONS_DIR}/${collectionName}.json`
 
-        const collection = fs.readFileSync(file)
+		const collection = fs.readFileSync(file)
 
-        const parsedCollection = JSON.parse(collection.toString())
+		const parsedCollection = JSON.parse(collection.toString())
 
-        if (parsedCollection.includes(contract.name)) return true
-    }
+		if (parsedCollection.includes(contract.name)) return true
+	}
 
-    return false
+	return false
 }
 
 function isInterface(node: ContractDefinition) {
-    return node.kind === "interface"
+	return node.kind === "interface"
 }
 
 function isLibrary(node: ContractDefinition) {
-    return node.kind === "library"
+	return node.kind === "library"
 }
 
-export function shouldFilterMethod(method: Method | null, config: Config) {
-    // Method is null if constructor
-    if (!method) return true
+export function shouldFilterMethod(
+	method: Method | null,
+	config: Config,
+): boolean {
+	// Method is null if constructor
+	if (!method) return true
 
-    /* ====== EXCEPTIONS ====== */
+	/* ====== EXCEPTIONS ====== */
 
-    if (config.excludeFunctions.exceptions.includes(method.name)) return false
+	if (config.excludeFunctions.exceptions.includes(method.name)) return false
 
-    /* ====== REGEX ====== */
+	/* ====== REGEX ====== */
 
-    const regExps = config.excludeFunctions.regExps
+	const regExps = config.excludeFunctions.regExps
 
-    return regExps.some((regExp) => regExp.test(method.name))
+	return regExps.some((regExp) => regExp.test(method.name))
 }
