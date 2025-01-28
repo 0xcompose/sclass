@@ -21,7 +21,7 @@
 		"sclass": "bin/index.js"
 	},
 	"scripts": {
-		"start": "npx ts-node src/index.ts contracts/ExampleContract1.sol",
+		"start": "npx tsc && node bin/index.js contracts/ExampleContract1.sol",
 		"start:help": "npx ts-node src/index.ts --help",
 		"start:svg": "npx ts-node src/index.ts contracts/ExampleContract1.sol -o out/Example.svg -f svg",
 		"start:png": "npx ts-node src/index.ts contracts/ExampleContract1.sol -o out/Example.png -f png",

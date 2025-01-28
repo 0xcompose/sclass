@@ -1,13 +1,9 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.shouldFilterContract = shouldFilterContract;
 exports.isContractFromCollections = isContractFromCollections;
 exports.shouldFilterMethod = shouldFilterMethod;
-const constants_1 = require("../misc/constants");
-const fs_1 = __importDefault(require("fs"));
+const collections_1 = require("../collections");
 function shouldFilterContract(node, config) {
     if (node.type !== "ContractDefinition")
         return true;
@@ -30,10 +26,9 @@ function shouldFilterContract(node, config) {
 }
 function isContractFromCollections(contract, config) {
     for (const collectionName of config.excludeContracts.collections) {
-        const file = `${constants_1.COLLECTIONS_DIR}/${collectionName}.json`;
-        const collection = fs_1.default.readFileSync(file);
-        const parsedCollection = JSON.parse(collection.toString());
-        if (parsedCollection.includes(contract.name))
+        // Get absolute path of collections
+        const collection = collections_1.collections[collectionName];
+        if (collection.includes(contract.name))
             return true;
     }
     return false;

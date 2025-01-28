@@ -1,5 +1,4 @@
 export declare const CONTRACTS_DIR = "./contracts";
-export declare const COLLECTIONS_DIR = "./collections";
 export declare enum Format {
     MMD = "mmd",
     SVG = "svg",
