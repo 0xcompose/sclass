@@ -12,6 +12,6 @@
         "sourceMap": true,
         "rootDir": "./src"
     },
-    "include": ["src/**/*", "src/**/*.json"],
+    "include": ["src/**/*", "collections/**/*"],
     "exclude": ["node_modules"]
 }

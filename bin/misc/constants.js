@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HELP_MESSAGE = exports.Theme = exports.Format = exports.COLLECTIONS_DIR = exports.CONTRACTS_DIR = void 0;
 exports.CONTRACTS_DIR = "./contracts";
-exports.COLLECTIONS_DIR = "./src/collections";
+exports.COLLECTIONS_DIR = "./collections";
 var Format;
 (function (Format) {
     Format["MMD"] = "mmd";
