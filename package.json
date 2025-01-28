@@ -28,7 +28,7 @@
 		"start:mmd": "npx ts-node src/index.ts contracts/ExampleContract1.sol -o out/Example.mmd -f mmd",
 		"start:mmd:file": "npx ts-node src/index.ts contracts/ExampleContract1.sol -o out/Example.mmd",
 		"start:format": "npx ts-node src/index.ts contracts/ExampleContract1.sol --format mmd",
-		"update": "yarn run build && yarn publish",
+		"update": "npx tsc && yarn publish",
 		"test": "TS_NODE_FILES=true npx ts-node node_modules/mocha/bin/mocha 'test/**/*.ts'"
 	},
 	"license": "ISC",
@@ -44,6 +44,7 @@
 		"@mermaid-js/mermaid-cli": "^10.9.1",
 		"@solidity-parser/parser": "^0.18.0",
 		"chalk": "^5.3.0",
-		"picocolors": "^1.0.1"
+		"picocolors": "^1.0.1",
+		"typescript": "^5.7.3"
 	}
 }
