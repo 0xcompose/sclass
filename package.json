@@ -1,7 +1,23 @@
 {
-	"name": "solidity-parsing",
+	"name": "@0xcompose/sclass",
 	"version": "1.0.0",
-	"main": "index.js",
+	"author": "0xcompose",
+	"description": "Solidity to Class Diagram Interpreter",
+	"keywords": [
+		"sclass",
+		"solidity",
+		"class",
+		"diagram",
+		"mermaid",
+		"foundry"
+	],
+	"files": [
+		"bin",
+		"README.md"
+	],
+	"bin": {
+		"sclass": "bin/src/index.js"
+	},
 	"scripts": {
 		"start": "npx ts-node src/index.ts contracts/ExampleContract1.sol",
 		"start:help": "npx ts-node src/index.ts --help",
@@ -12,23 +28,22 @@
 		"start:mmd": "npx ts-node src/index.ts contracts/ExampleContract1.sol -o out/Example.mmd -f mmd",
 		"start:mmd:file": "npx ts-node src/index.ts contracts/ExampleContract1.sol -o out/Example.mmd",
 		"start:format": "npx ts-node src/index.ts contracts/ExampleContract1.sol --format mmd",
+		"update": "yarn run build && yarn publish",
 		"test": "TS_NODE_FILES=true npx ts-node node_modules/mocha/bin/mocha 'test/**/*.ts'"
 	},
-	"author": "0xcompose",
 	"license": "ISC",
-	"description": "",
 	"devDependencies": {
 		"@types/chai": "^4.3.16",
 		"@types/mocha": "^10.0.6",
 		"@types/node": "^22.10.6",
 		"chai": "^4.2.0",
-		"ts-mocha": "^10.0.0"
+		"ts-mocha": "^10.0.0",
+		"ts-node": "^10.9.2"
 	},
 	"dependencies": {
 		"@mermaid-js/mermaid-cli": "^10.9.1",
 		"@solidity-parser/parser": "^0.18.0",
 		"chalk": "^5.3.0",
-		"picocolors": "^1.0.1",
-		"ts-node": "^10.9.2"
+		"picocolors": "^1.0.1"
 	}
 }
