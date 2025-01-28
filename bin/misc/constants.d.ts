@@ -13,4 +13,4 @@ export declare enum Theme {
     DARK = "dark",
     NEUTRAL = "neutral"
 }
-export declare const HELP_MESSAGE = "\nUsage: sol-class [FILE PATH] [OPTIONS]\n\nOptions:\n  --help, -h  Show help\n  --output, -o  Write diagram to file (default is output to stdout)\n  --format, -f  Output format (mmd, svg, png, pdf, md)\n  --theme, -t  Theme for mermaid (default is white)\n\nFile:\n  Path to the .sol file to parse\n";
+export declare const HELP_MESSAGE = "\nUsage: sclass [FILE PATH] [OPTIONS]\n\nOptions:\n  --help, -h  Show help\n  --output, -o  Write diagram to file (default is output to stdout)\n  --format, -f  Output format (mmd, svg, png, pdf, md)\n  --theme, -t  Theme for mermaid (default is white)\n\nFile:\n  Path to the .sol file to parse\n";

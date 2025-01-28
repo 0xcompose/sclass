@@ -19,7 +19,7 @@ var Theme;
     Theme["NEUTRAL"] = "neutral";
 })(Theme || (exports.Theme = Theme = {}));
 exports.HELP_MESSAGE = `
-Usage: sol-class [FILE PATH] [OPTIONS]
+Usage: sclass [FILE PATH] [OPTIONS]
 
 Options:
   --help, -h  Show help
