@@ -1,6 +1,6 @@
 {
 	"name": "sclass",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"author": "0xcompose",
 	"description": "Solidity to Class Diagram Interpreter",
 	"keywords": [
