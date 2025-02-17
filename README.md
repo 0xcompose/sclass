@@ -2,6 +2,15 @@
 
 Parses Solidity files using [@solidity-parser/parser](https://www.npmjs.com/package/@solidity-parser/parser) and creates .mmd (Mermaid) Class Diagrams.
 
+## CLI
+
+You can use `sclass` from CLI by installing [NPM package](https://www.npmjs.com/package/sclass)
+
+```
+npm install -g sclass
+sclass --help
+```
+
 ## Getting Started
 
 Load your **flattened** and **compilable** smart contracts into `/contracts` folder
