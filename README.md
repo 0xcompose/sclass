@@ -1,23 +1,23 @@
 # Solidity to Class Diagram Interpreter (sclass)
 
-Parses Solidity files using [@solidity-parser/parser](https://www.npmjs.com/package/@solidity-parser/parser) and creates .mmd (Mermaid) Class Diagrams.
+Parses Solidity files using [@solidity-parser/parser](https://www.npmjs.com/package/@solidity-parser/parser) and creates .mmd (Mermaid) class diagrams.
 
 ## CLI
 
-You can use `sclass` from CLI by installing [NPM package](https://www.npmjs.com/package/sclass)
+You can use `sclass` from the CLI by installing the [NPM package](https://www.npmjs.com/package/sclass):
 
 ```
 npm install -g sclass
-sclass --help
+sclass --helps
 ```
 
 ## Getting Started
 
-Load your **flattened** and **compilable** smart contracts into `/contracts` folder
+Load your **flattened** and **compilable** smart contracts into the `/contracts` folder.
 
-Setup configuration in `config.ts` as described in [Configuration](#configuration) section
+Set up the configuration in `config.ts` as described in the [Configuration](#configuration) section.
 
-Then run following commands:
+Then run the following commands:
 
 ```bash
 npm install
@@ -26,69 +26,69 @@ npm run start
 
 After running the script, two files will be generated in the `/out` directory:
 
--   diagram.mmd (source diagram file)
--   diagram.svg (rendered diagram)
+-   `diagram.mmd` (source diagram file)
+-   `diagram.svg` (rendered diagram)
 
-You can view the diagram.svg in any web browser or using this [preview extension](https://marketplace.visualstudio.com/items?itemName=vitaliymaz.vscode-svg-previewer)
+You can view `diagram.svg` in any web browser or using this [preview extension](https://marketplace.visualstudio.com/items?itemName=vitaliymaz.vscode-svg-previewer).
 
 ## Configuration
 
-Setup configuration in `config.ts` file.
+Set up the configuration in the `config.ts` file.
 
 ### inputContracts
 
-Array of **file names** without `.sol` extension of contracts to be included in the diagram, you can put your contracts in `/contracts` folder and add them here
+An array of **file names** without the `.sol` extension of contracts to be included in the diagram. You can place your contracts in the `/contracts` folder and add them here.
 
 ### excludeContracts
 
-If you want to exclude some contracts, you can setup object with following fields:
+If you want to exclude some contracts, you can set up an object with the following fields:
 
--   interfaces: boolean - whether to exclude interfaces
--   libraries: boolean - whether to exclude libraries
--   collections: array of collection **file names** to exclude
-    > **ℹ️ Note:** Collections are groups of related contracts that can be defined in `src/collections`. We've already have LayerZero, OpenZeppelin and Stargate collections. You can create your own collections by adding new file in `src/collections` folder.
--   contracts: array of contract names to exclude
-    > You don't need to create a new collection, you can just add contract names here
--   exceptions: array of contract names to be included in the diagram despite of being excluded by other fields
+-   `interfaces`: boolean - whether to exclude interfaces
+-   `libraries`: boolean - whether to exclude libraries
+-   `collections`: array of collection **file names** to exclude
+    > **ℹ️ Note:** Collections are groups of related contracts that can be defined in `src/collections`. We already have LayerZero, OpenZeppelin, and Stargate collections. You can create your own collections by adding a new file in the `src/collections` folder.
+-   `contracts`: array of contract names to exclude
+    > You don't need to create a new collection; you can just add contract names here.
+-   `exceptions`: array of contract names to be included in the diagram despite being excluded by other fields.
 
 ### excludeFunctions
 
-Object with following fields:
+An object with the following fields:
 
--   regExps: array of regular expressions to exclude functions by name
--   exceptions: array of function names to be included in the diagram despite of being excluded by other fields
+-   `regExps`: array of regular expressions to exclude functions by name
+-   `exceptions`: array of function names to be included in the diagram despite being excluded by other fields.
 
 ### disableFunctionParamType
 
-Boolean - whether to disable function parameter type rendering
+Boolean - whether to disable function parameter type rendering.
 
-Also filters out OpenZeppelin, LayerZero and Stargate contracts.
+This also filters out OpenZeppelin, LayerZero, and Stargate contracts.
 
-## Making custom validation
+## Making Custom Validation
 
-`/src/validate.ts` contains functions for variables, mappings and functions validation.
+`/src/validate.ts` contains functions for validating variables, mappings, and functions.
 
-You can add your own validations to this functions to warn or throw errors about misguiding code style or best practice in namings
+You can add your own validations to these functions to warn or throw errors about misleading code style or best practices in naming.
 
-## Use cases
+## Use Cases
 
--   Contracts high level review
+-   High-level review of contracts
 -   Source code validation
--   Finding unused variables, imports, functions
--   Finding deprecated code blocks
+-   Finding unused variables, imports, and functions
+-   Identifying deprecated code blocks
 
-## Error handling
+## Error Handling
 
-If interpreter stumbles across unhandled code variation it will put "empty" to type/name or throw Error with data about unhandled invariant.
+If the interpreter encounters unhandled code variations, it will set "empty" for type/name or throw an error with data about the unhandled invariant.
 
-Doesn't support nested mappings.
+It does not support nested mappings.
 
-## Possible features
+## Possible Features
 
--   Enforcing code style and best practices
-    -   defining comments formatting
-    -   enforcing internal variable and function name to start with "\_"
-    -   validating requirements existence for address (null address) in functions with address param
--   Generating full inheritance tree for contract
+-   Enforcing code style and best practices:
+    -   Defining comment formatting
+    -   Enforcing that internal variable and function names start with "\_"
+    -   Validating the existence of requirements for addresses (null address) in functions with address parameters
+-   Generating a full inheritance tree for contracts
 -   Generating other types of Mermaid diagrams from Solidity code (Flowchart, Sequence, Use Case, Entity Relationship)
--   Linking diagram elements to source code to use diagram as a navigation
+-   Linking diagram elements to source code to use the diagram as navigation
