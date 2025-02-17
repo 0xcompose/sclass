@@ -1,4 +1,4 @@
-# Solidity to Class Diagram Interpreter
+# Solidity to Class Diagram Interpreter (sclass)
 
 Parses Solidity files using [@solidity-parser/parser](https://www.npmjs.com/package/@solidity-parser/parser) and creates .mmd (Mermaid) Class Diagrams.
 
