@@ -1,211 +1,197 @@
 import {
-    ContractDefinition,
-    FunctionDefinition,
-    Mapping as MappingType,
-    StateVariableDeclaration,
-    TypeName,
-    VariableDeclaration,
+	ContractDefinition,
+	FunctionDefinition,
+	Mapping as MappingType,
+	StateVariableDeclaration,
+	TypeName,
+	VariableDeclaration,
 } from "@solidity-parser/parser/dist/src/ast-types"
 import {
-    Contract,
-    Field,
-    Visibility,
-    Method,
-    Mapping,
-    Declaration,
-    StateMutability,
+	Contract,
+	Field,
+	Visibility,
+	Method,
+	Mapping,
+	Declaration,
+	StateMutability,
 } from "../mermaid/contract"
-import {
-    validateFunction,
-    validateMapping,
-    validateVariable,
-} from "../utils/validate"
 import { shouldFilterMethod } from "../utils/filter"
 
 export function convertContractDefinitionToContract(
-    astContract: ContractDefinition,
-    config: Config
+	astContract: ContractDefinition,
+	config: Config,
 ): Contract {
-    const contract = new Contract(astContract.name)
+	const contract = new Contract(astContract.name)
 
-    /* ====== Variables ====== */
+	/* ====== Variables ====== */
 
-    const variables = astContract.subNodes.filter(
-        (node) => node.type === "StateVariableDeclaration"
-    ) as StateVariableDeclaration[]
+	const variables = astContract.subNodes.filter(
+		(node) => node.type === "StateVariableDeclaration",
+	) as StateVariableDeclaration[]
 
-    for (const variable of variables) {
-        // Special process for mapping
+	for (const variable of variables) {
+		// Special process for mapping
 
-        if (variable.variables[0].typeName?.type === "Mapping") {
-            const mapping = parseMapping(variable)
-            contract.addMapping(mapping)
-            validateMapping(mapping)
-            continue
-        }
+		if (variable.variables[0].typeName?.type === "Mapping") {
+			const mapping = parseMapping(variable)
+			contract.addMapping(mapping)
+			continue
+		}
 
-        contract.addField(parseVariable(variable))
-    }
+		contract.addField(parseVariable(variable))
+	}
 
-    /* ====== Functions ====== */
+	/* ====== Functions ====== */
 
-    const functions = astContract.subNodes.filter(
-        (node) => node.type === "FunctionDefinition"
-    ) as FunctionDefinition[]
+	const functions = astContract.subNodes.filter(
+		(node) => node.type === "FunctionDefinition",
+	) as FunctionDefinition[]
 
-    for (const func of functions) {
-        const method = parseFunction(func)
+	for (const func of functions) {
+		const method = parseFunction(func)
 
-        if (shouldFilterMethod(method, config)) continue
+		if (shouldFilterMethod(method, config)) continue
 
-        contract.addMethod(method)
-    }
+		contract.addMethod(method)
+	}
 
-    return contract
+	return contract
 }
 
 function parseMapping(variable: StateVariableDeclaration): Mapping {
-    const mapping = variable.variables[0].typeName as MappingType
+	const mapping = variable.variables[0].typeName as MappingType
 
-    return {
-        name: variable.variables[0].name ?? "empty",
-        key: parseTypeName(mapping.keyType),
-        value: parseTypeName(mapping.valueType),
-        visibility: parseVisibility(variable.variables[0].visibility ?? ""),
-    }
+	return {
+		name: variable.variables[0].name ?? "empty",
+		key: parseTypeName(mapping.keyType),
+		value: parseTypeName(mapping.valueType),
+		visibility: parseVisibility(variable.variables[0].visibility ?? ""),
+	}
 }
 
 // Returns name of type, prefers user defined names instead of elementary ones
 function parseTypeName(typeName: TypeName | null): string {
-    if (!typeName) return "empty"
+	if (!typeName) return "empty"
 
-    switch (typeName.type) {
-        case "ElementaryTypeName":
-            return typeName.name
+	switch (typeName.type) {
+		case "ElementaryTypeName":
+			return typeName.name
 
-        case "Mapping":
-            // Handle mapping with named parameters
-            const mapping = typeName as MappingType
-            const key = parseTypeName(mapping.keyType)
-            const value = parseTypeName(mapping.valueType)
-            return `mapping(${key} => ${value})`
+		case "Mapping":
+			// Handle mapping with named parameters
+			const mapping = typeName as MappingType
+			const key = parseTypeName(mapping.keyType)
+			const value = parseTypeName(mapping.valueType)
+			return `mapping(${key} => ${value})`
 
-        case "UserDefinedTypeName":
-            return typeName.namePath
+		case "UserDefinedTypeName":
+			return typeName.namePath
 
-        case "ArrayTypeName":
-            return parseTypeName(typeName.baseTypeName) + "[]"
+		case "ArrayTypeName":
+			return parseTypeName(typeName.baseTypeName) + "[]"
 
-        default:
-            throw new Error(`Unhandled typeName: ${typeName.type}`)
-    }
+		default:
+			throw new Error(`Unhandled typeName: ${typeName.type}`)
+	}
 }
 
 function parseVariable(variable: StateVariableDeclaration): Field {
-    if (variable.variables.length != 1)
-        throw Error("More than 1 variable!\n" + JSON.stringify(variable))
+	if (variable.variables.length != 1)
+		throw Error("More than 1 variable!\n" + JSON.stringify(variable))
 
-    const name = variable.variables[0].name ?? "empty"
-    const type = parseTypeName(variable.variables[0].typeName) || "empty"
-    const visibility = parseVisibility(variable.variables[0].visibility)
+	const name = variable.variables[0].name ?? "empty"
+	const type = parseTypeName(variable.variables[0].typeName) || "empty"
+	const visibility = parseVisibility(variable.variables[0].visibility)
 
-    const field: Field = { name, type, visibility }
-
-    validateVariable(field)
-
-    return field
+	return { name, type, visibility }
 }
 
 function parseFunction(func: FunctionDefinition): Method | null {
-    /* ====== Name ====== */
-    let name = func.name
+	/* ====== Name ====== */
+	let name = func.name
 
-    // function name can be null - then it's constructor
-    if (!name) return null
+	// function name can be null - then it's constructor
+	if (!name) return null
 
-    /* ====== Visibility ====== */
+	/* ====== Visibility ====== */
 
-    let params: Declaration[] = []
+	let params: Declaration[] = []
 
-    for (const param of func.parameters) {
-        params.push({
-            type: parseTypeName(param.typeName),
-            name: param.name ?? "empty",
-        })
-    }
+	for (const param of func.parameters) {
+		params.push({
+			type: parseTypeName(param.typeName),
+			name: param.name ?? "empty",
+		})
+	}
 
-    /* ====== Visibility ====== */
+	/* ====== Visibility ====== */
 
-    let visibility: Visibility = parseVisibility(func.visibility)
+	let visibility: Visibility = parseVisibility(func.visibility)
 
-    /* ====== Mutability ====== */
+	/* ====== Mutability ====== */
 
-    let stateMutability =
-        func.stateMutability === null
-            ? StateMutability.mutative
-            : StateMutability[func.stateMutability]
+	let stateMutability =
+		func.stateMutability === null
+			? StateMutability.mutative
+			: StateMutability[func.stateMutability]
 
-    /* ====== Return Type ====== */
+	/* ====== Return Type ====== */
 
-    let returnType = parseFunctionReturnType(func)
+	let returnType = parseFunctionReturnType(func)
 
-    /* ====== Construction ====== */
+	/* ====== Construction ====== */
 
-    const method: Method = {
-        name,
-        returnType,
-        visibility,
-        params,
-        stateMutability,
-    }
+	const method: Method = {
+		name,
+		returnType,
+		visibility,
+		params,
+		stateMutability,
+	}
 
-    /* ====== Validation ====== */
-
-    validateFunction(method)
-
-    return method
+	return method
 }
 
 function parseFunctionReturnType(func: FunctionDefinition): string {
-    if (!func.returnParameters || func.returnParameters.length == 0) {
-        return ""
-    }
+	if (!func.returnParameters || func.returnParameters.length == 0) {
+		return ""
+	}
 
-    // Struct
-    // named variable
-    // unnamed type
-    // array
-    // Contract Instance
-    const returnParams = func.returnParameters
+	// Struct
+	// named variable
+	// unnamed type
+	// array
+	// Contract Instance
+	const returnParams = func.returnParameters
 
-    let returnType = ""
+	let returnType = ""
 
-    for (const param of returnParams) {
-        returnType += getReturnTypeName(param) + " "
-    }
+	for (const param of returnParams) {
+		returnType += getReturnTypeName(param) + " "
+	}
 
-    return returnType
+	return returnType
 }
 
 function getReturnTypeName(param: VariableDeclaration): string {
-    // Return positive one
-    return (
-        param.name || // Named return params like: returns(uint shares)
-        parseTypeName(param.typeName)
-    )
+	// Return positive one
+	return (
+		param.name || // Named return params like: returns(uint shares)
+		parseTypeName(param.typeName)
+	)
 }
 
 function parseVisibility(visibility: string | undefined): Visibility {
-    switch (visibility) {
-        case "external":
-            return Visibility.external
-        case "public":
-            return Visibility.public
-        case "internal":
-            return Visibility.internal
-        case "private":
-            return Visibility.private
-        default:
-            return Visibility.internal
-    }
+	switch (visibility) {
+		case "external":
+			return Visibility.external
+		case "public":
+			return Visibility.public
+		case "internal":
+			return Visibility.internal
+		case "private":
+			return Visibility.private
+		default:
+			return Visibility.internal
+	}
 }

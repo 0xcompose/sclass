@@ -1,6 +1,8 @@
-# Solidity to Class Diagram Interpreter
+# S Class
 
-Parses Solidity files using [@solidity-parser/parser](https://www.npmjs.com/package/@solidity-parser/parser) and creates .mmd (Mermaid) Class Diagrams.
+Solidity to Class Diagram Interpreter
+
+Parses Solidity files using [@solidity-parser/parser](https://www.npmjs.com/package/@solidity-parser/parser) and generates mermaid markdown, or rendered files (SVG, PNG, PDF, MD, MMD) class diagrams.
 
 Supports Foundry projects, doesn't support Hardhat project (create issue to request hardhat support)
 
@@ -10,7 +12,9 @@ Supports Foundry projects, doesn't support Hardhat project (create issue to requ
 
 ## Getting Started
 
-Load your **flattened** and **compilable** smart contracts into `/contracts` folder
+```
+npm i @0xcompose/sclass
+```
 
 Setup configuration in `config.ts` as described in [Configuration](#configuration) section
 
@@ -61,17 +65,10 @@ Boolean - whether to disable function parameter type rendering
 
 Also filters out OpenZeppelin, LayerZero and Stargate contracts.
 
-## Making custom validation
-
-`/src/validate.ts` contains functions for variables, mappings and functions validation.
-
-You can add your own validations to this functions to warn or throw errors about misguiding code style or best practice in namings
-
 ## Use cases
 
 -   Contracts high level review
--   Source code validation
--   Finding unused variables, imports, functions
+-   Finding unused variables, functions
 -   Finding deprecated code blocks
 
 ## Error handling
@@ -89,3 +86,7 @@ Doesn't support nested mappings.
 -   Generating full inheritance tree for contract
 -   Generating other types of Mermaid diagrams from Solidity code (Flowchart, Sequence, Use Case, Entity Relationship)
 -   Linking diagram elements to source code to use diagram as a navigation
+
+## Related
+
+-   [sspec](https://github.com/0xcompose/sspec) - smart contract specification generator for Foundry

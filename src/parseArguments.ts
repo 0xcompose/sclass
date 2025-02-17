@@ -3,13 +3,15 @@ import fs from "fs"
 
 export function parseArguments(config: Config) {
 	// Skip node and script path
-	const [, , smartContractFilePath, ...additionalArgs] = process.argv
+	const [, , ...args] = process.argv
 
 	// If help flag is provided, print help message and exit
-	if (containsHelpFlag(additionalArgs)) {
+	if (containsHelpFlag(args)) {
 		console.log(HELP_MESSAGE)
 		process.exit(0)
 	}
+
+	const [smartContractFilePath, ...additionalArgs] = args
 
 	// Parse first argument - smart contract file path
 	// Validate smart contract file path

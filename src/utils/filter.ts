@@ -2,9 +2,8 @@ import {
 	ASTNode,
 	ContractDefinition,
 } from "@solidity-parser/parser/dist/src/ast-types"
-import { COLLECTIONS_DIR } from "../misc/constants"
-import fs from "fs"
 import { Method } from "../mermaid/contract"
+import { collections } from "../collections"
 
 export function shouldFilterContract(node: ASTNode, config: Config): boolean {
 	if (node.type !== "ContractDefinition") return true
@@ -37,13 +36,11 @@ export function isContractFromCollections(
 	config: Config,
 ) {
 	for (const collectionName of config.excludeContracts.collections) {
-		const file = `${COLLECTIONS_DIR}/${collectionName}.json`
+		// Get absolute path of collections
 
-		const collection = fs.readFileSync(file)
+		const collection = collections[collectionName]
 
-		const parsedCollection = JSON.parse(collection.toString())
-
-		if (parsedCollection.includes(contract.name)) return true
+		if (collection.includes(contract.name)) return true
 	}
 
 	return false
