@@ -31,7 +31,11 @@
 		"start:mmd:file": "npx ts-node src/index.ts contracts/ExampleContract1.sol -o out/Example.mmd",
 		"start:format": "npx ts-node src/index.ts contracts/ExampleContract1.sol --format mmd",
 		"update": "npx tsc && yarn publish",
-		"test": "TS_NODE_FILES=true npx ts-node node_modules/mocha/bin/mocha 'test/**/*.ts'"
+		"test": "TS_NODE_FILES=true npx ts-node node_modules/mocha/bin/mocha 'test/**/*.ts'",
+		"prepare": "husky",
+		"lint": "npx eslint src/**/*.ts",
+		"lint:fix": "npx eslint src/**/*.ts --fix",
+		"format": "npx prettier --write src/**/*.ts"
 	},
 	"license": "ISC",
 	"devDependencies": {
@@ -39,6 +43,7 @@
 		"@types/mocha": "^10.0.6",
 		"@types/node": "^22.10.6",
 		"chai": "^4.2.0",
+		"husky": "^9.1.7",
 		"ts-mocha": "^10.0.0",
 		"ts-node": "^10.9.2"
 	},

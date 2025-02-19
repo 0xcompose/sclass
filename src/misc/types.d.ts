@@ -11,6 +11,12 @@ interface Config {
 		readonly exceptions: string[]
 	}
 
+	// readonly executionTime: boolean
+
+	readonly collections: {
+		[key: string]: string[]
+	}
+
 	readonly excludeFunctions: {
 		readonly regExps: RegExp[]
 		readonly exceptions: string[]

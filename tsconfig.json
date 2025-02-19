@@ -10,8 +10,8 @@
         "outDir": "./bin",
         "declaration": true,
         "sourceMap": true,
-        "rootDir": "./src"
+        "rootDir": "./"
     },
-    "include": ["src/**/*", "collections/**/*"],
+    "include": ["src/**/*", "collections/**/*", "test/**/*"],
     "exclude": ["node_modules"]
 }
