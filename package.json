@@ -31,7 +31,7 @@
 		"start:mmd:file": "npx ts-node src/index.ts contracts/ExampleContract1.sol -o out/Example.mmd",
 		"start:format": "npx ts-node src/index.ts contracts/ExampleContract1.sol --format mmd",
 		"update": "npx tsc && yarn publish",
-		"test": "TS_NODE_FILES=true npx ts-node node_modules/mocha/bin/mocha 'test/**/*.ts' --timeout 20000",
+		"test": "TS_NODE_FILES=true NODE_ENV=test npx ts-node node_modules/mocha/bin/mocha 'test/**/*.ts' --timeout 20000",
 		"prepare": "husky",
 		"lint": "npx eslint src/**/*.ts",
 		"lint:fix": "npx eslint src/**/*.ts --fix",

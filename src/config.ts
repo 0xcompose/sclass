@@ -16,15 +16,18 @@ export interface ExcludeConfig {
 		interfaces: boolean
 		libraries: boolean
 		collections: string[]
-		contracts: string[]
-		exceptions: string[]
+		contracts?: string[]
+		exceptions?: string[]
 	}
 	functions: {
-		regExps: RegExp[]
-		exceptions: string[]
+		regExps?: RegExp[]
+		exceptions?: string[]
 	}
 }
 
+/**
+ * @description Singleton wrapper class for the CliConfig class
+ */
 export class Config {
 	private static instance: CliConfig
 
@@ -61,8 +64,55 @@ export class Config {
 		const instance = Config.getInstance()
 		return instance.disableFunctionParamType
 	}
+
+	/* ===== SETTERS FOR UNIT TESTING ===== */
+
+	public static set inputContractFilePath(filePath: string) {
+		this._checkIfTesting()
+		Config.getInstance().inputContractFilePath = filePath
+	}
+
+	public static set exclude(exclude: ExcludeConfig) {
+		this._checkIfTesting()
+		Config.getInstance().exclude = exclude
+	}
+
+	public static set excludeContracts(exclude: ExcludeConfig["contracts"]) {
+		this._checkIfTesting()
+		Config.getInstance().excludeContracts = exclude
+	}
+
+	public static set excludeFunctions(exclude: ExcludeConfig["functions"]) {
+		this._checkIfTesting()
+		Config.getInstance().excludeFunctions = exclude
+	}
+
+	public static set collections(collections: Record<string, string[]>) {
+		this._checkIfTesting()
+		Config.getInstance().collections = collections
+	}
+
+	public static set output(output: OutputConfig) {
+		this._checkIfTesting()
+		Config.getInstance().output = output
+	}
+
+	public static set disableFunctionParamType(disable: boolean) {
+		this._checkIfTesting()
+		Config.getInstance().disableFunctionParamType = disable
+	}
+
+	private static _checkIfTesting() {
+		if (process.env.NODE_ENV !== "test") {
+			throw new Error("This function is only available in testing mode")
+		}
+	}
 }
 
+/**
+ * @description Global config class used throughout the application,
+ * parses arguments from the CLI and provides it to the rest of the application
+ */
 class CliConfig {
 	private _inputContractFilePath: string | undefined
 
@@ -90,10 +140,18 @@ class CliConfig {
 		theme: Theme.DEFAULT,
 	}
 
-	disableFunctionParamType: boolean = false
+	private _disableFunctionParamType: boolean = false
 
 	constructor() {
-		this.parseCliArguments()
+		if (process.env.NODE_ENV === "test") {
+			try {
+				this.parseCliArguments()
+			} catch (error) {
+				// Ignore errors during testing
+			}
+		} else {
+			this.parseCliArguments()
+		}
 	}
 
 	/* ===== FUNCTIONS ===== */
@@ -197,6 +255,53 @@ class CliConfig {
 
 	public get collections(): Readonly<Record<string, string[]>> {
 		return Object.freeze(this._collections)
+	}
+
+	public get disableFunctionParamType(): boolean {
+		return this._disableFunctionParamType
+	}
+
+	/* ===== SETTERS FOR UNIT TESTING ===== */
+
+	set inputContractFilePath(filePath: string) {
+		this._checkIfTesting()
+		this._inputContractFilePath = filePath
+	}
+
+	set exclude(exclude: ExcludeConfig) {
+		this._checkIfTesting()
+		this._exclude = exclude
+	}
+
+	set excludeContracts(exclude: ExcludeConfig["contracts"]) {
+		this._checkIfTesting()
+		this._exclude.contracts = exclude
+	}
+
+	set excludeFunctions(exclude: ExcludeConfig["functions"]) {
+		this._checkIfTesting()
+		this._exclude.functions = exclude
+	}
+
+	set collections(collections: Record<string, string[]>) {
+		this._checkIfTesting()
+		this._collections = collections
+	}
+
+	set output(output: OutputConfig) {
+		this._checkIfTesting()
+		this._output = output
+	}
+
+	set disableFunctionParamType(disable: boolean) {
+		this._checkIfTesting()
+		this._disableFunctionParamType = disable
+	}
+
+	private _checkIfTesting() {
+		if (process.env.NODE_ENV !== "test") {
+			throw new Error("This function is only available in testing mode")
+		}
 	}
 }
 
