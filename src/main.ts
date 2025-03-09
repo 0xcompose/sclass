@@ -1,20 +1,17 @@
-import fs from "fs"
 import { ContractDefinition } from "@solidity-parser/parser/dist/src/ast-types"
 import { convertContractDefinitionToContract } from "./ast/astContractDefinitionToContract"
 import { parse } from "@solidity-parser/parser"
 import { getClassDiagramString } from "./mermaid/diagram"
 import { Contract } from "./mermaid/contract"
-import { CONTRACTS_DIR } from "./misc/constants"
 import { shouldFilterContract } from "./utils/filter"
-import { exec, execSync } from "child_process"
+import { exec } from "child_process"
 import { promisify } from "util"
+import { Config } from "./config"
 
-export type Diagram = string
-
-export async function parseContracts(config: Config): Promise<string> {
+export async function parseContracts(): Promise<Diagram> {
 	/* ======= READ FILES ======= */
 
-	const contracts = await readFileAndParse(config.inputContractFilePath)
+	const contracts = await readInputFileAndParse()
 
 	/* ======= FILTER ======= */
 
@@ -22,7 +19,7 @@ export async function parseContracts(config: Config): Promise<string> {
 	const excludedContractNames: Map<string, boolean> = new Map()
 
 	for (const contract of contracts) {
-		const shouldFilter = shouldFilterContract(contract, config)
+		const shouldFilter = shouldFilterContract(contract)
 
 		if (!shouldFilter) filteredContracts.push(contract)
 		else excludedContractNames.set(contract.name, true)
@@ -35,9 +32,7 @@ export async function parseContracts(config: Config): Promise<string> {
 	for (const contract of filteredContracts) {
 		if (parsedContracts.find((c) => c.className === contract.name)) continue
 
-		parsedContracts.push(
-			convertContractDefinitionToContract(contract, config),
-		)
+		parsedContracts.push(convertContractDefinitionToContract(contract))
 	}
 
 	/* ======= PARSE INHERITANCE ======= */
@@ -57,16 +52,18 @@ export async function parseContracts(config: Config): Promise<string> {
 
 	// /* ======= DIAGRAM ======= */
 
-	const diagram = getClassDiagramString(
-		parsedContracts,
-		relations,
-		config.disableFunctionParamType,
-	)
+	const diagram = getClassDiagramString(parsedContracts, relations)
 
 	return diagram.trim()
 }
 
-export async function readFileAndParse(filePath: string) {
+export async function readInputFileAndParse() {
+	const filePath = Config.inputContractFilePath
+
+	if (!filePath) {
+		throw new Error("Input file path is not set")
+	}
+
 	const contracts: ContractDefinition[] = []
 
 	// const path = filePath

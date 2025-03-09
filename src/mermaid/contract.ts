@@ -113,10 +113,3 @@ export class Contract {
 			.join(", ")
 	}
 }
-
-// Testing code
-// const contract = new Contract("ContractName")
-// contract.addField("uint", "var")
-// contract.addField("address", "addr")
-// contract.addMethod("getAddress", Visibility.external, "bool")
-// console.log(getClassDiagramString([contract]))

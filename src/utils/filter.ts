@@ -3,41 +3,43 @@ import {
 	ContractDefinition,
 } from "@solidity-parser/parser/dist/src/ast-types"
 import { Method } from "../mermaid/contract"
+import { Config } from "../config"
 
-export function shouldFilterContract(node: ASTNode, config: Config): boolean {
+export function shouldFilterContract(node: ASTNode): boolean {
+	const contracts = Config.exclude.contracts
+
 	if (node.type !== "ContractDefinition") return true
 
 	/* ====== EXClUDE EXCEPTIONS ====== */
 
-	if (config.excludeContracts.exceptions.includes(node.name)) return false
+	if (contracts.exceptions.includes(node.name)) return false
 
 	/* ====== LIBRARY ====== */
 
-	if (config.excludeContracts.libraries && isLibrary(node)) return true
+	if (contracts.libraries && isLibrary(node)) return true
 
 	/* ====== INTERFACE ====== */
 
-	if (config.excludeContracts.interfaces && isInterface(node)) return true
+	if (contracts.interfaces && isInterface(node)) return true
 
 	/* ====== COLLECTIONS ====== */
 
-	if (isContractFromCollections(node, config)) return true
+	if (isContractFromCollections(node)) return true
 
 	/* ====== EXCLUDE ====== */
 
-	if (config.excludeContracts.contracts.includes(node.name)) return true
+	if (contracts.contracts.includes(node.name)) return true
 
 	return false
 }
 
-export function isContractFromCollections(
-	contract: ContractDefinition,
-	config: Config,
-) {
-	for (const collectionName of config.excludeContracts.collections) {
+export function isContractFromCollections(contract: ContractDefinition) {
+	const collections = Config.exclude.contracts.collections
+
+	for (const collectionName of collections) {
 		// Get absolute path of collections
 
-		const collection = config.collections[collectionName]
+		const collection = Config.collections[collectionName]
 
 		if (!collection) return false
 
@@ -55,20 +57,19 @@ function isLibrary(node: ContractDefinition) {
 	return node.kind === "library"
 }
 
-export function shouldFilterMethod(
-	method: Method | null,
-	config: Config,
-): boolean {
+export function shouldFilterMethod(method: Method | null): boolean {
+	const functions = Config.exclude.functions
+
 	// Method is null if constructor
 	if (!method) return true
 
 	/* ====== EXCEPTIONS ====== */
 
-	if (config.excludeFunctions.exceptions.includes(method.name)) return false
+	if (functions.exceptions.includes(method.name)) return false
 
 	/* ====== REGEX ====== */
 
-	const regExps = config.excludeFunctions.regExps
+	const regExps = functions.regExps
 
 	return regExps.some((regExp) => regExp.test(method.name))
 }

@@ -16,10 +16,10 @@ import {
 	StateMutability,
 } from "../mermaid/contract"
 import { shouldFilterMethod } from "../utils/filter"
+import { Config } from "../config"
 
 export function convertContractDefinitionToContract(
 	astContract: ContractDefinition,
-	config: Config,
 ): Contract {
 	const contract = new Contract(astContract.name)
 
@@ -50,7 +50,7 @@ export function convertContractDefinitionToContract(
 	for (const func of functions) {
 		const method = parseFunction(func)
 
-		if (shouldFilterMethod(method, config)) continue
+		if (shouldFilterMethod(method)) continue
 
 		contract.addMethod(method)
 	}

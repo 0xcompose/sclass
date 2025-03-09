@@ -1,20 +1,28 @@
 import path from "path"
-import { config } from "../config"
+import { Config } from "../config"
 import { Contract } from "./contract"
 
-const classDiagram = `
+function getDiagramTemplate() {
+	const inputContractFilePath = Config.inputContractFilePath
+
+	const fileName = path.basename(inputContractFilePath).split(".")[0]
+
+	return `
 ---
-title: ${config.inputContractFilePath} Class Diagram
+title: ${fileName} Class Diagram
 ---
 classDiagram
 
 `
+}
+
 export function getClassDiagramString(
 	classes: Contract[],
 	relations: string[],
-	disableFunctionParamType: boolean,
 ) {
-	let str = classDiagram
+	const disableFunctionParamType = Config.disableFunctionParamType
+
+	let str = getDiagramTemplate()
 
 	for (const contract of classes) {
 		str += contract.toMermaidString(disableFunctionParamType)

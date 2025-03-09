@@ -4,31 +4,30 @@ import { exec } from "child_process"
 import { promisify } from "util"
 import pc from "picocolors"
 import { parseContracts } from "./main"
-import { config } from "./config"
 import { Format } from "./misc/constants"
 import fs from "fs"
 import path from "path"
-import { parseArguments } from "./parseArguments"
+import { Config } from "./config"
 
 const execAsync = promisify(exec)
 
 async function main() {
 	// console.time("Total Execution Time")
 
-	parseArguments(config)
+	const output = Config.output
 
-	const diagram = await parseContracts(config)
+	const diagram = await parseContracts()
 
-	switch (config.output.format) {
+	switch (output.format) {
 		case Format.MMD:
-			if (config.output.filePath.length > 0) {
-				writeToFile(diagram, config.output.filePath)
+			if (output.filePath) {
+				writeToFile(diagram, output.filePath)
 			} else {
 				console.log(diagram)
 			}
 			break
 		default:
-			await generatePictureFile(diagram, config.output)
+			await generatePictureFile(diagram)
 			break
 	}
 
@@ -36,12 +35,10 @@ async function main() {
 	// console.timeEnd("Total Execution Time")
 }
 
-async function generatePictureFile(
-	diagram: string,
-	output: typeof config.output,
-) {
+async function generatePictureFile(diagram: string) {
 	console.log("Generating picture file")
-	const { filePath, theme } = output
+
+	const { filePath, theme } = Config.output
 
 	const { stderr } = await execAsync(
 		`echo "${diagram}" | npx mmdc --input - --output ${filePath} --theme ${theme}`,

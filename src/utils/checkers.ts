@@ -15,3 +15,13 @@ export function checkIfCollectionsExist(collections: string[]) {
 		}
 	}
 }
+
+export function isSolidityFile(filePath: string): boolean {
+	// Validate file path
+	if (!filePath.endsWith(".sol")) return false
+
+	// Validate file exists
+	if (!fs.existsSync(filePath)) return false
+
+	return true
+}
