@@ -30,26 +30,22 @@ export function parseArguments(config: Config) {
 		parsePairOfArguments(config, arg, nextArg)
 	}
 
-	console.log("Config.output.format", config.output.format)
-	console.log("Config.output.filePath", config.output.filePath)
+	// console.log("Config.output.format", config.output.format)
+	// console.log("Config.output.filePath", config.output.filePath)
 
 	// If format is a file, but output file path is not provided, throw an error
 	if (config.output.format != Format.MMD && config.output.filePath === "") {
-		console.log(
-			"Config.inputContractFilePath",
-			config.inputContractFilePath,
-		)
-		console.log(
-			"path.basename(config.inputContractFilePath)",
-			path.basename(config.inputContractFilePath),
-		)
+		const fileName = path
+			.basename(config.inputContractFilePath)
+			.split(".")[0]
+
 		config.output.filePath = path.join(
 			"./",
-			path.basename(config.inputContractFilePath) +
-				"." +
-				config.output.format,
+			fileName + "." + config.output.format,
 		)
 	}
+
+	if (config.output.filePath.length === 0) return
 
 	// Append file extension to output file path, if it is not provided
 	const filePath = path.parse(config.output.filePath)

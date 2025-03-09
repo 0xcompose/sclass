@@ -8,6 +8,7 @@ import {
 	expectToBeSVG,
 	expectToBePDF,
 } from "../utils/expectFile"
+
 export function outputTest() {
 	// it("should generate mermaid code in stdout", () => {
 	// 	const result = sclass()
@@ -123,8 +124,8 @@ export function outputTest() {
 					flags: "-f svg",
 				})
 
-				expectToBeSVG(`./TestContract.sol.svg`)
-				cleanUpTempFile(`./TestContract.sol.svg`)
+				expectToBeSVG(`./TestContract.svg`)
+				cleanUpTempFile(`./TestContract.svg`)
 			})
 
 			it("PNG", function () {

@@ -27,8 +27,6 @@ export function formatTest() {
 
 		const result = readTempFile(`Test.${format}`)
 
-		// console.log(result)
-
 		compareMermaidSchemes(result, TEST_CONTRACT_MERMAID)
 	})
 
