@@ -1,5 +1,5 @@
 import { StateMutability, Visibility } from "../../src/mermaid/contract"
-
+// TODO: fix empty Contract name in Class Diagram title
 export const TEST_CONTRACT_MERMAID = `\
 ---
 title:  Class Diagram

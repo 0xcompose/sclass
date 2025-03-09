@@ -63,7 +63,7 @@ export async function parseContracts(config: Config): Promise<string> {
 		config.disableFunctionParamType,
 	)
 
-	return diagram
+	return diagram.trim()
 }
 
 export async function readFileAndParse(filePath: string) {

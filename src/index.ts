@@ -13,11 +13,11 @@ import { parseArguments } from "./parseArguments"
 const execAsync = promisify(exec)
 
 async function main() {
-	// console.time("Total Execution Time")
+	console.time("Total Execution Time")
 
 	parseArguments(config)
 
-	const diagram = (await parseContracts(config)).trim()
+	const diagram = await parseContracts(config)
 
 	switch (config.output.format) {
 		case Format.MMD:
@@ -33,13 +33,14 @@ async function main() {
 	}
 
 	console.log()
-	// console.timeEnd("Total Execution Time")
+	console.timeEnd("Total Execution Time")
 }
 
 async function generatePictureFile(
 	diagram: string,
 	output: typeof config.output,
 ) {
+	console.log("Generating picture file")
 	const { filePath, theme } = output
 
 	const { stderr } = await execAsync(

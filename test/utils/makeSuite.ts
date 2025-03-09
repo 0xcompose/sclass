@@ -3,6 +3,7 @@ import { COLLECTIONS_DIR } from "../../src/misc/constants"
 
 export const TEST_CONTRACT_PATH = "./test/constants/TestContract.sol"
 export const TEST_COLLECTION_PATH = "./test/constants/TestCollection.json"
+export const TEST_OUTPUT_DIR = "./test/temp"
 
 export function makeSuite(
 	name: string,
@@ -47,6 +48,10 @@ async function makeEnv() {
 	/* ======== COPY TEST COLLECTION ======== */
 	const collectionContent = fs.readFileSync(TEST_COLLECTION_PATH)
 
+	if (!fs.existsSync(TEST_OUTPUT_DIR)) {
+		fs.mkdirSync(TEST_OUTPUT_DIR)
+	}
+
 	fs.writeFileSync(
 		`${COLLECTIONS_DIR}/TestCollection.json`,
 		collectionContent,
@@ -62,5 +67,12 @@ async function cleanup() {
 
 	if (fs.existsSync(collectionPath)) {
 		fs.unlinkSync(collectionPath)
+	}
+
+	// If output directory exists - delete it
+	const outputDirPath = `${TEST_OUTPUT_DIR}`
+
+	if (fs.existsSync(outputDirPath)) {
+		fs.rmSync(outputDirPath, { recursive: true })
 	}
 }

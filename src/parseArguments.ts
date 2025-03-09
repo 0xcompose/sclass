@@ -1,3 +1,4 @@
+import path from "path"
 import { HELP_MESSAGE, Theme, Format } from "./misc/constants"
 import fs from "fs"
 
@@ -27,6 +28,37 @@ export function parseArguments(config: Config) {
 		const nextArg = additionalArgs[i + 1]
 
 		parsePairOfArguments(config, arg, nextArg)
+	}
+
+	console.log("Config.output.format", config.output.format)
+	console.log("Config.output.filePath", config.output.filePath)
+
+	// If format is a file, but output file path is not provided, throw an error
+	if (config.output.format != Format.MMD && config.output.filePath === "") {
+		console.log(
+			"Config.inputContractFilePath",
+			config.inputContractFilePath,
+		)
+		console.log(
+			"path.basename(config.inputContractFilePath)",
+			path.basename(config.inputContractFilePath),
+		)
+		config.output.filePath = path.join(
+			"./",
+			path.basename(config.inputContractFilePath) +
+				"." +
+				config.output.format,
+		)
+	}
+
+	// Append file extension to output file path, if it is not provided
+	const filePath = path.parse(config.output.filePath)
+
+	if (filePath.ext === "") {
+		config.output.filePath = path.join(
+			filePath.dir,
+			filePath.base + "." + config.output.format,
+		)
 	}
 }
 
