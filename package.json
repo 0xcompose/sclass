@@ -31,7 +31,7 @@
 		"start:mmd:file": "npx ts-node src/index.ts contracts/ExampleContract1.sol -o out/Example.mmd",
 		"start:format": "npx ts-node src/index.ts contracts/ExampleContract1.sol --format mmd",
 		"update": "npx tsc && yarn publish",
-		"test": "TS_NODE_FILES=true NODE_ENV=test npx ts-node node_modules/mocha/bin/mocha 'test/**/*.ts' --timeout 20000",
+		"test": "TS_NODE_FILES=true NODE_ENV=test ts-mocha 'test/**/*.ts' --timeout 20000",
 		"prepare": "husky",
 		"lint": "npx eslint src/**/*.ts",
 		"lint:fix": "npx eslint src/**/*.ts --fix",
@@ -44,8 +44,10 @@
 		"@types/node": "^22.10.6",
 		"chai": "^4.2.0",
 		"husky": "^9.1.7",
+		"mocha": "^11.1.0",
 		"ts-mocha": "^10.0.0",
-		"ts-node": "^10.9.2"
+		"ts-node": "^10.9.2",
+		"tsconfig-paths": "^4.2.0"
 	},
 	"dependencies": {
 		"@mermaid-js/mermaid-cli": "^10.9.1",
