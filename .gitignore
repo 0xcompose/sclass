@@ -5,7 +5,7 @@ node_modules
 out
 
 # Build
-bin
+bin/
 
 test/temp
 
