@@ -8,3 +8,15 @@ out
 bin
 
 test/temp
+
+# Temp Test Files
+TestContract.pdf
+TestContract.png
+TestContract.svg
+TestContract.mmd
+TestContract.md
+TestContract.mmd
+TestContract.md
+
+# Cursor
+.cursorrules
