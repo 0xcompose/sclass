@@ -1,12 +1,12 @@
-import { ContractDefinition } from "@solidity-parser/parser/dist/src/ast-types"
-import { convertContractDefinitionToContract } from "./ast/astContractDefinitionToContract"
-import { parse } from "@solidity-parser/parser"
-import { getClassDiagramString } from "./mermaid/diagram"
-import { Contract } from "./mermaid/contract"
-import { shouldFilterContract } from "./utils/filter"
-import { exec } from "child_process"
-import { promisify } from "util"
-import { Config } from "./config"
+import { convertContractDefinitionToContract } from "./parse/convertContractDefinitionToContract.js"
+import { getClassDiagramString } from "./mermaid/diagram.js"
+import { Contract } from "./mermaid/contract.js"
+import { shouldFilterContract } from "./utils/filter.js"
+import { Config } from "./config.js"
+import { buildCompilationUnit } from "./parse/buildCompilationUnit.js"
+import assert from "assert"
+import { findDefinitionsInFile } from "./parse/find-definitions.js"
+import { ContractDefinition } from "@solidity-parser/parser/dist/src/ast-types.js"
 
 export async function parseContracts(): Promise<Diagram> {
 	/* ======= READ FILES ======= */
@@ -64,19 +64,29 @@ export async function readInputFileAndParse() {
 		throw new Error("Input file path is not set")
 	}
 
+	const unit = await buildCompilationUnit(filePath)
+
 	const contracts: ContractDefinition[] = []
 
-	// const path = filePath
-	const execAsync = promisify(exec)
-	const { stdout, stderr } = await execAsync(`forge flatten ${filePath}`)
-	// const buffer = fs.readFileSync(path)
-	const solidityCode = stdout
+	const definitions = findDefinitionsInFile(unit, filePath)
 
-	let ast = parse(solidityCode)
+	for (const definition of definitions) {
+		console.log(definition.nameLocation)
+	}
+
+	console.log(JSON.stringify(definitions, null, 4))
+
+	const path = filePath
+	// const execAsync = promisify(exec)
+	// const { stdout, stderr } = await execAsync(`forge flatten ${filePath}`)
+	// const buffer = fs.readFileSync(path)
+	// const solidityCode = stdout
+
+	// let ast = parse(solidityCode)
 
 	// console.log(`Parsed ${file}`)
 	// console.log(inspect(ast, { depth: 10 }))
-	contracts.push(...(ast.children as ContractDefinition[]))
+	// contracts.push(...(ast.children as ContractDefinition[]))
 
 	return contracts
 }

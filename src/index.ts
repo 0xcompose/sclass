@@ -3,7 +3,7 @@
 import { exec } from "child_process"
 import { promisify } from "util"
 import pc from "picocolors"
-import { parseContracts } from "./main"
+import { parseContracts } from "./main.js"
 import { Format } from "./misc/constants"
 import fs from "fs"
 import path from "path"

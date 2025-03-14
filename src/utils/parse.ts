@@ -1,5 +1,5 @@
-import { Theme } from "../misc/constants"
-import { Format } from "../misc/constants"
+import { Theme } from "../misc/constants.js"
+import { Format } from "../misc/constants.js"
 
 export function parseTheme(value: string): Theme {
 	const isTheme = Object.values(Theme).includes(value as Theme)

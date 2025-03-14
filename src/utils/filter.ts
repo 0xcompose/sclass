@@ -2,8 +2,8 @@ import {
 	ASTNode,
 	ContractDefinition,
 } from "@solidity-parser/parser/dist/src/ast-types"
-import { Method } from "../mermaid/contract"
-import { Config } from "../config"
+import { Method } from "../mermaid/contract.js"
+import { Config } from "../config.js"
 
 export function shouldFilterContract(node: ASTNode): boolean {
 	const contracts = Config.exclude.contracts

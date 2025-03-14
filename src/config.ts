@@ -1,9 +1,9 @@
-import { Format, HELP_MESSAGE, Theme } from "./misc/constants"
+import { Format, HELP_MESSAGE, Theme } from "./misc/constants.js"
 import path from "path"
 import fs from "fs"
-import { isSolidityFile } from "./utils/checkers"
-import { parseTheme } from "./utils/parse"
-import { parseFormat } from "./utils/parse"
+import { isSolidityFile } from "./utils/checkers.js"
+import { parseTheme } from "./utils/parse.js"
+import { parseFormat } from "./utils/parse.js"
 
 export interface OutputConfig {
 	filePath: string

@@ -1,15 +1,15 @@
 import { expect } from "chai"
 import { makeSuite, TEST_CONTRACT_PATH } from "./utils/makeSuite"
 
-import { checkIfCollectionsExist } from "../src/utils/checkers"
+import { checkIfCollectionsExist } from "../src/utils/checkers.js"
 import { ContractDefinition } from "@solidity-parser/parser/dist/src/ast-types"
 import {
 	isContractFromCollections,
 	shouldFilterMethod,
-} from "../src/utils/filter"
-import { readInputFileAndParse } from "../src/main"
-import { Method } from "../src/mermaid/contract"
-import { Config } from "../src/config"
+} from "../src/utils/filter.js"
+import { readInputFileAndParse } from "../src/main.js"
+import { Method } from "../src/mermaid/contract.js"
+import { Config } from "../src/config.js"
 
 function checkIfCollectionsExistTest() {
 	it("shouldn't return an error", async () => {

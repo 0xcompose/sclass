@@ -1,7 +1,6 @@
 import {
 	ContractDefinition,
 	FunctionDefinition,
-	Mapping as MappingType,
 	StateVariableDeclaration,
 	TypeName,
 	VariableDeclaration,
@@ -15,8 +14,7 @@ import {
 	Declaration,
 	StateMutability,
 } from "../mermaid/contract"
-import { shouldFilterMethod } from "../utils/filter"
-import { Config } from "../config"
+import { shouldFilterMethod } from "../utils/filter.js"
 
 export function convertContractDefinitionToContract(
 	astContract: ContractDefinition,

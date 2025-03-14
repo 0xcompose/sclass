@@ -1,4 +1,4 @@
-import { Format } from "../../src/misc/constants"
+import { Format } from "../../src/misc/constants.js"
 import { sclass } from "../utils/cli"
 import { TEST_OUTPUT_DIR } from "../utils/makeSuite"
 import { TEST_CONTRACT_MERMAID } from "../constants/TestContractMermaid"

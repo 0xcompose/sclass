@@ -1,6 +1,6 @@
 import path from "path"
-import { Config } from "../config"
-import { Contract } from "./contract"
+import { Config } from "../config.js"
+import { Contract } from "./contract.js"
 
 function getDiagramTemplate() {
 	const inputContractFilePath = Config.inputContractFilePath
