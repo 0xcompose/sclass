@@ -5,10 +5,9 @@
     },
     "compilerOptions": {
         "target": "ES2022",
-        // "module": "module",
+        "module": "NodeNext",
         "esModuleInterop": true,
-        "moduleResolution": "bundler",
-        // "resolveJsonModule": true,
+        "moduleResolution": "NodeNext",
         "outDir": "./bin",
         "declaration": true,
         "sourceMap": true,
