@@ -1,8 +1,8 @@
 import { expect } from "chai"
-import { makeSuite, TEST_CONTRACT_PATH } from "./utils/makeSuite"
+import { makeSuite, TEST_CONTRACT_PATH } from "./utils/makeSuite.js"
 
 import { checkIfCollectionsExist } from "../src/utils/checkers.js"
-import { ContractDefinition } from "@solidity-parser/parser/dist/src/ast-types"
+import { ContractDefinition } from "@solidity-parser/parser/dist/src/ast-types.js"
 import {
 	isContractFromCollections,
 	shouldFilterMethod,

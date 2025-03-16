@@ -1,6 +1,6 @@
 import { expect } from "chai"
 import { HELP_MESSAGE } from "../../src/misc/constants.js"
-import { sclass } from "../utils/cli"
+import { sclass } from "../utils/cli.js"
 
 export function helpFlagTest() {
 	it("should print help with --help flag", () => {

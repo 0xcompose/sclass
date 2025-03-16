@@ -7,6 +7,8 @@ import { buildCompilationUnit } from "./parse/buildCompilationUnit.js"
 import assert from "assert"
 import { findDefinitionsInFile } from "./parse/find-definitions.js"
 import { ContractDefinition } from "@solidity-parser/parser/dist/src/ast-types.js"
+import { parseDefinitions } from "./parse/parse-definitions.js"
+import { filterDefinitions } from "./parse/filter-definitions.js"
 
 export async function parseContracts(): Promise<Diagram> {
 	/* ======= READ FILES ======= */
@@ -70,11 +72,19 @@ export async function readInputFileAndParse() {
 
 	const definitions = findDefinitionsInFile(unit, filePath)
 
-	for (const definition of definitions) {
-		console.log(definition.nameLocation)
+	const found = parseDefinitions(definitions)
+
+	for (const definition of found) {
+		console.log(definition.name, definition.kind)
 	}
 
-	console.log(JSON.stringify(definitions, null, 4))
+	console.log("\n====== FILTERED DEFINITIONS ======\n")
+
+	const filtered = filterDefinitions(found)
+
+	for (const definition of filtered) {
+		console.log(definition.name, definition.kind)
+	}
 
 	const path = filePath
 	// const execAsync = promisify(exec)

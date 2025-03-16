@@ -1,6 +1,6 @@
-import { TEST_CONTRACT_MERMAID } from "../constants/TestContractMermaid"
-import { sclass } from "../utils/cli"
-import { compareMermaidSchemes } from "../utils/compareMermaidSchemes"
+import { TEST_CONTRACT_MERMAID } from "../constants/TestContractMermaid.js"
+import { sclass } from "../utils/cli.js"
+import { compareMermaidSchemes } from "../utils/compareMermaidSchemes.js"
 
 export function mermaidGenerationTest() {
 	it("should generate mermaid code", () => {

@@ -4,10 +4,10 @@ import { exec } from "child_process"
 import { promisify } from "util"
 import pc from "picocolors"
 import { parseContracts } from "./main.js"
-import { Format } from "./misc/constants"
+import { Format } from "./misc/constants.js"
 import fs from "fs"
 import path from "path"
-import { Config } from "./config"
+import { Config } from "./config.js"
 
 const execAsync = promisify(exec)
 

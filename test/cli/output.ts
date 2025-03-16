@@ -1,13 +1,13 @@
-import { sclass } from "../utils/cli"
+import { sclass } from "../utils/cli.js"
 import fs from "fs"
-import { makeSuite, TEST_OUTPUT_DIR } from "../utils/makeSuite"
-import { compareMermaidSchemes } from "../utils/compareMermaidSchemes"
-import { TEST_CONTRACT_MERMAID } from "../constants/TestContractMermaid"
+import { makeSuite, TEST_OUTPUT_DIR } from "../utils/makeSuite.js"
+import { compareMermaidSchemes } from "../utils/compareMermaidSchemes.js"
+import { TEST_CONTRACT_MERMAID } from "../constants/TestContractMermaid.js"
 import {
 	expectToBePNG,
 	expectToBeSVG,
 	expectToBePDF,
-} from "../utils/expectFile"
+} from "../utils/expectFile.js"
 
 export function outputTest() {
 	// it("should generate mermaid code in stdout", () => {

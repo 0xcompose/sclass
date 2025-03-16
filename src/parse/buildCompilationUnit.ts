@@ -6,6 +6,7 @@ import {
 import { assertNonterminalNode } from "@nomicfoundation/slang/cst"
 import assert from "assert"
 import { NonterminalKind } from "@nomicfoundation/slang/cst"
+import path from "path"
 
 export async function buildCompilationUnit(
 	fileId: string,
@@ -15,9 +16,7 @@ export async function buildCompilationUnit(
 		readFile,
 		resolveImport,
 	})
-	console.log("Adding file", fileId)
 	await builder.addFile(fileId)
-	console.log("Building compilation unit")
 
 	const unit = builder.build()
 
@@ -25,7 +24,7 @@ export async function buildCompilationUnit(
 
 	assert.equal(files.length, 1)
 
-	assert.equal(files[0].id, "test/constants/TestContract.sol")
+	assert.deepEqual(path.parse(files[0].id), path.parse(fileId))
 	assertNonterminalNode(files[0].tree, NonterminalKind.SourceUnit)
 
 	return unit
@@ -38,7 +37,5 @@ function resolveImport(importPath: string) {
 }
 
 async function readFile(filePath: string): Promise<string> {
-	console.log(filePath)
-	console.log(fs.readFileSync(filePath, "utf-8"))
 	return fs.readFileSync(filePath, "utf-8")
 }

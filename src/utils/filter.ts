@@ -1,7 +1,7 @@
 import {
 	ASTNode,
 	ContractDefinition,
-} from "@solidity-parser/parser/dist/src/ast-types"
+} from "@solidity-parser/parser/dist/src/ast-types.js"
 import { Method } from "../mermaid/contract.js"
 import { Config } from "../config.js"
 

@@ -1,10 +1,10 @@
 import { Format } from "../../src/misc/constants.js"
-import { sclass } from "../utils/cli"
-import { TEST_OUTPUT_DIR } from "../utils/makeSuite"
-import { TEST_CONTRACT_MERMAID } from "../constants/TestContractMermaid"
-import { readTempFile } from "../utils/readTempFile"
+import { sclass } from "../utils/cli.js"
+import { TEST_OUTPUT_DIR } from "../utils/makeSuite.js"
+import { TEST_CONTRACT_MERMAID } from "../constants/TestContractMermaid.js"
+import { readTempFile } from "../utils/readTempFile.js"
 import { expect } from "chai"
-import { compareMermaidSchemes } from "../utils/compareMermaidSchemes"
+import { compareMermaidSchemes } from "../utils/compareMermaidSchemes.js"
 
 export function formatTest() {
 	it("should generate mermaid code in mmd format", () => {

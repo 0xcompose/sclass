@@ -1,6 +1,6 @@
 import { execSync } from "child_process"
 import { PathLike } from "fs"
-import { TEST_CONTRACT_PATH } from "./makeSuite"
+import { TEST_CONTRACT_PATH } from "./makeSuite.js"
 
 interface Args {
 	input?: PathLike

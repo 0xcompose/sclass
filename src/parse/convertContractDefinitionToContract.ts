@@ -4,7 +4,7 @@ import {
 	StateVariableDeclaration,
 	TypeName,
 	VariableDeclaration,
-} from "@solidity-parser/parser/dist/src/ast-types"
+} from "@solidity-parser/parser/dist/src/ast-types.js"
 import {
 	Contract,
 	Field,
@@ -13,7 +13,7 @@ import {
 	Mapping,
 	Declaration,
 	StateMutability,
-} from "../mermaid/contract"
+} from "../mermaid/contract.js"
 import { shouldFilterMethod } from "../utils/filter.js"
 
 export function convertContractDefinitionToContract(
