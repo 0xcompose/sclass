@@ -1,6 +1,6 @@
 import { assert, expect } from "chai"
-import { findDefinitionsInFile } from "../../src/parse/find-definitions.js"
-import { parseDefinitions } from "../../src/parse/parse-definitions.js"
+import { findDefinitionsInFile } from "../../src/parse/findDefinitions.js"
+import { parseDefinitions } from "../../src/parse/parseDefinitions.js"
 import { TEST_CONTRACT_PATH } from "../utils/makeSuite.js"
 import { buildCompilationUnit } from "../../src/parse/buildCompilationUnit.js"
 

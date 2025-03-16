@@ -2,22 +2,19 @@ import { convertContractDefinitionToContract } from "./parse/convertContractDefi
 import { getClassDiagramString } from "./mermaid/diagram.js"
 import { Contract } from "./mermaid/contract.js"
 import { shouldFilterContract } from "./utils/filter.js"
-import { Config } from "./config.js"
-import { buildCompilationUnit } from "./parse/buildCompilationUnit.js"
-import assert from "assert"
-import { findDefinitionsInFile } from "./parse/find-definitions.js"
 import { ContractDefinition } from "@solidity-parser/parser/dist/src/ast-types.js"
-import { parseDefinitions } from "./parse/parse-definitions.js"
-import { filterDefinitions } from "./parse/filter-definitions.js"
+import { readInputFileAndParse } from "./parse/readInputFileAndParse.js"
+import { ParsedContractDefinition } from "./parse/types.js"
+import { getDefinitionName } from "./utils/getDefinitionName.js"
 
 export async function parseContracts(): Promise<Diagram> {
-	/* ======= READ FILES ======= */
+	/* ======= READ INPUT FILE ======= */
 
-	const contracts = await readInputFileAndParse()
+	const { contracts, interfaces, libraries } = await readInputFileAndParse()
 
 	/* ======= FILTER ======= */
 
-	const filteredContracts: ContractDefinition[] = []
+	const filteredContracts: ParsedContractDefinition[] = []
 	const excludedContractNames: Map<string, boolean> = new Map()
 
 	for (const contract of contracts) {
@@ -31,6 +28,8 @@ export async function parseContracts(): Promise<Diagram> {
 
 	let parsedContracts: Contract[] = []
 
+	return ""
+
 	for (const contract of filteredContracts) {
 		if (parsedContracts.find((c) => c.className === contract.name)) continue
 
@@ -41,10 +40,11 @@ export async function parseContracts(): Promise<Diagram> {
 
 	let relations: string[] = []
 	for (const contract of filteredContracts) {
-		for (const base of contract.baseContracts) {
-			if (excludedContractNames.get(base.baseName.namePath)) continue
+		for (const parent of contract.inheritsFrom) {
+			const parentName = getDefinitionName(parent)
+			if (excludedContractNames.get(parentName)) continue
 
-			const relationStr = `\t${base.baseName.namePath} <|-- ${contract.name}`
+			const relationStr = `\t${parentName} <|-- ${contract.name}`
 
 			if (relations.includes(relationStr)) continue
 
@@ -57,46 +57,4 @@ export async function parseContracts(): Promise<Diagram> {
 	const diagram = getClassDiagramString(parsedContracts, relations)
 
 	return diagram.trim()
-}
-
-export async function readInputFileAndParse() {
-	const filePath = Config.inputContractFilePath
-
-	if (!filePath) {
-		throw new Error("Input file path is not set")
-	}
-
-	const unit = await buildCompilationUnit(filePath)
-
-	const contracts: ContractDefinition[] = []
-
-	const definitions = findDefinitionsInFile(unit, filePath)
-
-	const found = parseDefinitions(definitions)
-
-	for (const definition of found) {
-		console.log(definition.name, definition.kind)
-	}
-
-	console.log("\n====== FILTERED DEFINITIONS ======\n")
-
-	const filtered = filterDefinitions(found)
-
-	for (const definition of filtered) {
-		console.log(definition.name, definition.kind)
-	}
-
-	const path = filePath
-	// const execAsync = promisify(exec)
-	// const { stdout, stderr } = await execAsync(`forge flatten ${filePath}`)
-	// const buffer = fs.readFileSync(path)
-	// const solidityCode = stdout
-
-	// let ast = parse(solidityCode)
-
-	// console.log(`Parsed ${file}`)
-	// console.log(inspect(ast, { depth: 10 }))
-	// contracts.push(...(ast.children as ContractDefinition[]))
-
-	return contracts
 }

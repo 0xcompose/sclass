@@ -1,39 +1,39 @@
-import {
-	ASTNode,
-	ContractDefinition,
-} from "@solidity-parser/parser/dist/src/ast-types.js"
 import { Method } from "../mermaid/contract.js"
 import { Config } from "../config.js"
+import { ParsedDefinition } from "../parse/types.js"
+import { NonterminalKind } from "@nomicfoundation/slang/cst"
 
-export function shouldFilterContract(node: ASTNode): boolean {
+export function shouldFilterContract(
+	definition: ParsedDefinition<any>,
+): boolean {
 	const contracts = Config.exclude.contracts
 
-	if (node.type !== "ContractDefinition") return true
+	if (definition.kind !== NonterminalKind.ContractDefinition) return true
 
 	/* ====== EXClUDE EXCEPTIONS ====== */
 
-	if (contracts.exceptions.includes(node.name)) return false
+	if (contracts.exceptions.includes(definition.name)) return false
 
 	/* ====== LIBRARY ====== */
 
-	if (contracts.libraries && isLibrary(node)) return true
+	if (contracts.libraries && isLibrary(definition)) return true
 
 	/* ====== INTERFACE ====== */
 
-	if (contracts.interfaces && isInterface(node)) return true
+	if (contracts.interfaces && isInterface(definition)) return true
 
 	/* ====== COLLECTIONS ====== */
 
-	if (isContractFromCollections(node)) return true
+	if (isContractFromCollections(definition)) return true
 
 	/* ====== EXCLUDE ====== */
 
-	if (contracts.contracts.includes(node.name)) return true
+	if (contracts.contracts.includes(definition.name)) return true
 
 	return false
 }
 
-export function isContractFromCollections(contract: ContractDefinition) {
+export function isContractFromCollections(definition: ParsedDefinition<any>) {
 	const collections = Config.exclude.contracts.collections
 
 	for (const collectionName of collections) {
@@ -43,18 +43,18 @@ export function isContractFromCollections(contract: ContractDefinition) {
 
 		if (!collection) return false
 
-		if (collection.includes(contract.name)) return true
+		if (collection.includes(definition.name)) return true
 	}
 
 	return false
 }
 
-function isInterface(node: ContractDefinition) {
-	return node.kind === "interface"
+function isInterface(node: ParsedDefinition<any>) {
+	return node.kind === NonterminalKind.InterfaceDefinition
 }
 
-function isLibrary(node: ContractDefinition) {
-	return node.kind === "library"
+function isLibrary(node: ParsedDefinition<any>) {
+	return node.kind === NonterminalKind.LibraryDefinition
 }
 
 export function shouldFilterMethod(method: Method | null): boolean {

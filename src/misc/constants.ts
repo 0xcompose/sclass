@@ -1,4 +1,5 @@
 import { Definition } from "@nomicfoundation/slang/bindings"
+import { NonterminalKind } from "@nomicfoundation/slang/cst"
 
 export const CONTRACTS_DIR = "./contracts"
 export const COLLECTIONS_DIR = "./collections"
@@ -31,29 +32,28 @@ File:
   Path to the .sol file to parse
 `
 
-export enum DefinitionKind {
-	// Contract-level definitions
-	Contract = "ContractDefinition",
-	Interface = "InterfaceDefinition",
-	Library = "LibraryDefinition",
+export const DefinitionsCollection: NonterminalKind[] = [
+	NonterminalKind.ContractDefinition,
+	NonterminalKind.InterfaceDefinition,
+	NonterminalKind.LibraryDefinition,
 
 	// Contract member definitions
-	Function = "FunctionDefinition",
-	Constructor = "ConstructorDefinition",
-	Receive = "ReceiveFunctionDefinition",
-	Fallback = "FallbackFunctionDefinition",
-	Modifier = "ModifierDefinition",
-	StateVariable = "StateVariableDefinition",
+	NonterminalKind.FunctionDefinition,
+	NonterminalKind.ConstructorDefinition,
+	NonterminalKind.ReceiveFunctionDefinition,
+	NonterminalKind.FallbackFunctionDefinition,
+	NonterminalKind.ModifierDefinition,
+	NonterminalKind.StateVariableDefinition,
 
 	// Function parameters
-	Parameter = "Parameter",
+	NonterminalKind.Parameter,
 
 	// Type definitions
-	Struct = "StructDefinition",
-	Enum = "EnumDefinition",
-	UserDefinedValueType = "UserDefinedValueTypeDefinition",
+	NonterminalKind.StructDefinition,
+	NonterminalKind.EnumDefinition,
+	NonterminalKind.UserDefinedValueTypeDefinition,
 
 	// Event and error definitions
-	Event = "EventDefinition",
-	Error = "ErrorDefinition",
-}
+	NonterminalKind.EventDefinition,
+	NonterminalKind.ErrorDefinition,
+]

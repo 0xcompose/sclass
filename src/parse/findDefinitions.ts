@@ -2,13 +2,14 @@ import assert from "node:assert"
 import {
 	assertTerminalNode,
 	TerminalKindExtensions,
+	NonterminalKind,
 } from "@nomicfoundation/slang/cst"
 import { CompilationUnit } from "@nomicfoundation/slang/compilation"
 import {
 	assertUserFileLocation,
 	Definition,
 } from "@nomicfoundation/slang/bindings"
-import { DefinitionKind } from "../misc/constants.js"
+import { getDefinitionKind } from "../utils/getDefinitionKind.js"
 
 export function findDefinitionsInFile(
 	unit: CompilationUnit,
@@ -55,7 +56,7 @@ export function findDefinitionsInFile(
 export function findDefinitionsOfKindsInFile(
 	unit: CompilationUnit,
 	fileId: string,
-	definitionKinds: DefinitionKind[],
+	definitionKinds: NonterminalKind[],
 ): Definition[] {
 	const file = unit.file(fileId)
 
@@ -80,11 +81,9 @@ export function findDefinitionsOfKindsInFile(
 
 		if (!definition) continue
 
-		const kind =
-			definition.definiensLocation.asUserFileLocation().cursor.node.kind
+		const kind = getDefinitionKind(definition)
 
-		if (!definitionKinds.includes(kind as unknown as DefinitionKind))
-			continue
+		if (!definitionKinds.includes(kind)) continue
 
 		// name should be located in the file we queried
 		assertUserFileLocation(definition.nameLocation)

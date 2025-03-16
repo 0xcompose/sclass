@@ -15,45 +15,47 @@ import {
 	StateMutability,
 } from "../mermaid/contract.js"
 import { shouldFilterMethod } from "../utils/filter.js"
+import { ParsedContractDefinition } from "./types.js"
 
 export function convertContractDefinitionToContract(
-	astContract: ContractDefinition,
+	astContract: ParsedContractDefinition,
 ): Contract {
 	const contract = new Contract(astContract.name)
 
+	return contract
 	/* ====== Variables ====== */
 
-	const variables = astContract.subNodes.filter(
-		(node) => node.type === "StateVariableDeclaration",
-	) as StateVariableDeclaration[]
+	// const variables = astContract.subNodes.filter(
+	// 	(node) => node.type === "StateVariableDeclaration",
+	// ) as StateVariableDeclaration[]
 
-	for (const variable of variables) {
-		// Special process for mapping
+	// for (const variable of variables) {
+	// 	// Special process for mapping
 
-		if (variable.variables[0].typeName?.type === "Mapping") {
-			const mapping = parseMapping(variable)
-			contract.addMapping(mapping)
-			continue
-		}
+	// 	if (variable.variables[0].typeName?.type === "Mapping") {
+	// 		const mapping = parseMapping(variable)
+	// 		contract.addMapping(mapping)
+	// 		continue
+	// 	}
 
-		contract.addField(parseVariable(variable))
-	}
+	// 	contract.addField(parseVariable(variable))
+	// }
 
-	/* ====== Functions ====== */
+	// /* ====== Functions ====== */
 
-	const functions = astContract.subNodes.filter(
-		(node) => node.type === "FunctionDefinition",
-	) as FunctionDefinition[]
+	// const functions = astContract.subNodes.filter(
+	// 	(node) => node.type === "FunctionDefinition",
+	// ) as FunctionDefinition[]
 
-	for (const func of functions) {
-		const method = parseFunction(func)
+	// for (const func of functions) {
+	// 	const method = parseFunction(func)
 
-		if (shouldFilterMethod(method)) continue
+	// 	if (shouldFilterMethod(method)) continue
 
-		contract.addMethod(method)
-	}
+	// 	contract.addMethod(method)
+	// }
 
-	return contract
+	// return contracts
 }
 
 function parseMapping(variable: StateVariableDeclaration): Mapping {

@@ -33,7 +33,7 @@
 		"start:mmd:file": "npx tsx src/index.ts test/constants/TestContract.sol -o out/Example.mmd",
 		"start:format": "npx tsx src/index.ts test/constants/TestContract.sol --format mmd",
 		"update": "yarn build && yarn publish",
-		"test": " yarn build && NODE_ENV=test mocha 'bin/test/**/*.js' --timeout 20000",
+		"test": " yarn build && NODE_ENV=test mocha 'bin/test/**/*.spec.js' --timeout 20000",
 		"prepare": "husky",
 		"lint": "npx eslint src/**/*.ts",
 		"lint:fix": "npx eslint src/**/*.ts --fix",
