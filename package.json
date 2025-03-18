@@ -1,6 +1,6 @@
 {
 	"name": "sclass",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"type": "module",
 	"author": "0xcompose",
 	"description": "Solidity to Class Diagram Interpreter",
@@ -13,13 +13,13 @@
 		"foundry"
 	],
 	"files": [
-		"bin",
+		"bin/src",
 		"collections",
 		"README.md"
 	],
-	"main": "bin/index.js",
+	"main": "bin/src/index.js",
 	"bin": {
-		"sclass": "bin/index.js"
+		"sclass": "bin/src/index.js"
 	},
 	"scripts": {
 		"build": "rm -rf bin/src && rm -rf bin/test && npx tsc",
