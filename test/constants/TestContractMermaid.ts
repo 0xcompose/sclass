@@ -80,5 +80,7 @@ classDiagram
 
 	ContractInCollection <|-- TestContract1
 
+	ITestContract <|-- TestContract1
+
 	MiddleInInheritance <|-- TestContract2\
 `

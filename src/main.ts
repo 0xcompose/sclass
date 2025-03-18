@@ -11,10 +11,12 @@ import {
 	shouldIncludeLibrary,
 } from "./utils/filter.js"
 import { parseFileForDefinitions } from "./parse/parseFileForDefinitions.js"
-import { getDefinitionName } from "./utils/definitions.js"
+import { getDefinitionKind, getDefinitionName } from "./utils/definitions.js"
 import { Definition } from "@nomicfoundation/slang/bindings"
 import { Config } from "./config.js"
 import { buildCompilationUnit } from "./parse/buildCompilationUnit.js"
+import { CompilationUnit } from "@nomicfoundation/slang/compilation"
+import { NonterminalKind } from "@nomicfoundation/slang/cst"
 
 type Diagram = string
 
@@ -49,46 +51,68 @@ export async function parseContracts(): Promise<Diagram> {
 
 	/* ======= PARSE CONTRACTS ======= */
 
-	let preparedContracts: Map<number, Contract> = new Map()
+	const classDefinitions = [
+		...filteredContracts,
+		...filteredInterfaces,
+		...filteredLibraries,
+	]
 
-	for (const contract of filteredContracts) {
-		// If contract is already prepared, skip
-		// this case is relevant for multiple contracts referenced in inheritance
-		if (preparedContracts.has(contract.id)) continue
-
-		preparedContracts.set(
-			contract.id,
-			convertContractDefinitionToContract(unit, contract),
-		)
-	}
-
-	for (const interfaceDef of filteredInterfaces) {
-		if (preparedContracts.has(interfaceDef.id)) continue
-
-		preparedContracts.set(
-			interfaceDef.id,
-			convertInterfaceDefinitionToInterface(unit, interfaceDef),
-		)
-	}
-
-	for (const library of filteredLibraries) {
-		if (preparedContracts.has(library.id)) continue
-
-		preparedContracts.set(
-			library.id,
-			convertLibraryDefinitionToLibrary(unit, library),
-		)
-	}
+	const preparedContracts = prepareContracts(unit, classDefinitions)
 
 	/* ======= PARSE INHERITANCE ======= */
 
+	// /* ======= DIAGRAM ======= */
+
+	const diagram = getClassDiagramString(
+		Array.from(preparedContracts.values()),
+		constructMermaidRelations(preparedContracts),
+	)
+
+	return diagram.trim()
+}
+
+function prepareContracts(
+	unit: CompilationUnit,
+	filteredContracts: Definition[],
+): Map<number, Contract> {
+	const preparedContracts: Map<number, Contract> = new Map()
+
+	for (const contract of filteredContracts) {
+		if (preparedContracts.has(contract.id)) continue
+
+		const convert = getConverter(contract)
+
+		const convertedContract = convert(unit, contract)
+
+		preparedContracts.set(contract.id, convertedContract)
+	}
+
+	return preparedContracts
+}
+
+function getConverter(definition: Definition) {
+	switch (getDefinitionKind(definition)) {
+		case NonterminalKind.ContractDefinition:
+			return convertContractDefinitionToContract
+		case NonterminalKind.InterfaceDefinition:
+			return convertInterfaceDefinitionToInterface
+		case NonterminalKind.LibraryDefinition:
+			return convertLibraryDefinitionToLibrary
+		default:
+			throw new Error(
+				`Incorrect definition kind passed: ${getDefinitionKind(
+					definition,
+				)}, expected contracts`,
+			)
+	}
+}
+
+function constructMermaidRelations(preparedContracts: Map<number, Contract>) {
 	let relations: string[] = []
 
 	for (const contract of preparedContracts.values()) {
 		for (const parent of contract.inheritsFrom) {
 			const parentName = getDefinitionName(parent)
-
-			if (!isInFilteredList(parent, filteredContracts)) continue
 
 			const relationStr = `\t${parentName} <|-- ${contract.className}`
 
@@ -98,16 +122,5 @@ export async function parseContracts(): Promise<Diagram> {
 		}
 	}
 
-	// /* ======= DIAGRAM ======= */
-
-	const diagram = getClassDiagramString(
-		Array.from(preparedContracts.values()),
-		relations,
-	)
-
-	return diagram.trim()
-}
-
-function isInFilteredList(definition: Definition, filteredList: Definition[]) {
-	return filteredList.find((d) => d.id === definition.id)
+	return relations
 }

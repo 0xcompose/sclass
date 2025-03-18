@@ -1,6 +1,3 @@
-import { Definition } from "@nomicfoundation/slang/bindings"
-import { NonterminalKind } from "@nomicfoundation/slang/cst"
-
 export const CONTRACTS_DIR = "./contracts"
 export const COLLECTIONS_DIR = "./collections"
 

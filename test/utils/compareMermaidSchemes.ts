@@ -4,18 +4,11 @@ export function compareMermaidSchemes(generated: string, expected: string) {
 	const generatedLines = generated.trim().split("\n")
 	const expectedLines = expected.trim().split("\n")
 
-	// Log differences in a more readable way
+	// console.log("Generated:")
+	// console.log(generated)
 
-	const maxLines = Math.max(generatedLines.length, expectedLines.length)
-	for (let i = 0; i < maxLines; i++) {
-		const genLine = generatedLines[i]?.trim() || "<missing>"
-		const expLine = expectedLines[i]?.trim() || "<missing>"
-		if (genLine !== expLine) {
-			console.log(`Line ${i + 1}:`)
-			console.log(`  Generated: "${genLine}"`)
-			console.log(`  Expected:  "${expLine}"`)
-		}
-	}
+	// console.log("Expected:")
+	// console.log(expected)
 
 	expect(generatedLines.length).to.eq(
 		expectedLines.length,

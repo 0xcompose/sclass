@@ -120,6 +120,15 @@ export function findInheritanceIdentifiers(
 
 		if (!definition) continue
 
+		const kind = getDefinitionKind(definition)
+
+		const kindsToFind = [
+			NonterminalKind.ContractDefinition,
+			NonterminalKind.InterfaceDefinition,
+		]
+
+		if (!kindsToFind.includes(kind)) continue
+
 		inheritanceDefinitions.push(definition)
 	}
 
