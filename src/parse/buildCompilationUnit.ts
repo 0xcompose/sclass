@@ -32,7 +32,7 @@ export async function buildCompilationUnit(
 
 // TODO: Implement to support non flattened files
 function resolveImport(importPath: string) {
-	console.log("Resolving import path", importPath)
+	// console.log("Resolving import path", importPath)
 	return undefined
 }
 

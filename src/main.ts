@@ -1,39 +1,46 @@
 import { convertContractDefinitionToContract } from "./parse/convertContractDefinitionToContract.js"
 import { getClassDiagramString } from "./mermaid/diagram.js"
 import { Contract } from "./mermaid/contract.js"
-import { shouldFilterContract } from "./utils/filter.js"
-import { ContractDefinition } from "@solidity-parser/parser/dist/src/ast-types.js"
-import { readInputFileAndParse } from "./parse/readInputFileAndParse.js"
-import { ParsedContractDefinition } from "./parse/types.js"
+import {
+	shouldIncludeContract,
+	shouldIncludeInterface,
+	shouldIncludeLibrary,
+} from "./utils/filter.js"
+import { parseFileForDefinitions } from "./parse/parseFileForDefinitions.js"
+import { ParsedDefinition } from "./parse/types.js"
 import { getDefinitionName } from "./utils/getDefinitionName.js"
+import { Definition } from "@nomicfoundation/slang/bindings"
 
 export async function parseContracts(): Promise<Diagram> {
 	/* ======= READ INPUT FILE ======= */
 
-	const { contracts, interfaces, libraries } = await readInputFileAndParse()
+	const { contracts, interfaces, libraries } = await parseFileForDefinitions()
 
 	/* ======= FILTER ======= */
 
-	const filteredContracts: ParsedContractDefinition[] = []
-	const excludedContractNames: Map<string, boolean> = new Map()
+	const filteredContracts = contracts.filter((contract) =>
+		shouldIncludeContract(contract),
+	)
 
-	for (const contract of contracts) {
-		const shouldFilter = shouldFilterContract(contract)
+	const filteredInterfaces = interfaces.filter((interfaceDef) =>
+		shouldIncludeInterface(interfaceDef),
+	)
 
-		if (!shouldFilter) filteredContracts.push(contract)
-		else excludedContractNames.set(contract.name, true)
-	}
+	const filteredLibraries = libraries.filter((library) =>
+		shouldIncludeLibrary(library),
+	)
 
 	/* ======= PARSE CONTRACTS ======= */
 
-	let parsedContracts: Contract[] = []
-
-	return ""
+	let preparedContracts: Contract[] = []
 
 	for (const contract of filteredContracts) {
-		if (parsedContracts.find((c) => c.className === contract.name)) continue
+		// If contract is already prepared, skip
+		// this case is relevant for multiple contracts referenced in inheritance
+		if (preparedContracts.find((c) => c.className === contract.name))
+			continue
 
-		parsedContracts.push(convertContractDefinitionToContract(contract))
+		preparedContracts.push(convertContractDefinitionToContract(contract))
 	}
 
 	/* ======= PARSE INHERITANCE ======= */
@@ -42,7 +49,8 @@ export async function parseContracts(): Promise<Diagram> {
 	for (const contract of filteredContracts) {
 		for (const parent of contract.inheritsFrom) {
 			const parentName = getDefinitionName(parent)
-			if (excludedContractNames.get(parentName)) continue
+
+			if (!isInFilteredList(parent, filteredContracts)) continue
 
 			const relationStr = `\t${parentName} <|-- ${contract.name}`
 
@@ -54,7 +62,14 @@ export async function parseContracts(): Promise<Diagram> {
 
 	// /* ======= DIAGRAM ======= */
 
-	const diagram = getClassDiagramString(parsedContracts, relations)
+	const diagram = getClassDiagramString(preparedContracts, relations)
 
 	return diagram.trim()
+}
+
+function isInFilteredList(
+	definition: Definition,
+	filteredList: ParsedDefinition<any>[],
+) {
+	return filteredList.find((d) => d.definition.id === definition.id)
 }

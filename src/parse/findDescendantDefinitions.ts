@@ -148,11 +148,6 @@ export function findInheritanceIdentifiers(
 	const childCursor = getDefinitionCursor(contractDefinition).spawn()
 	const inheritanceDefinitions: Definition[] = []
 
-	console.log(
-		"Finding inheritance identifiers for",
-		childCursor.node.unparse(),
-	)
-
 	while (childCursor.goToNextTerminal()) {
 		assertTerminalNode(childCursor.node)
 

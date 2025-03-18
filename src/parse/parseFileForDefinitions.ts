@@ -14,9 +14,13 @@ import { getDefinitionName } from "../utils/getDefinitionName.js"
 import { getDefinitionKind } from "../utils/getDefinitionKind.js"
 import assert from "node:assert"
 import { CompilationUnit } from "@nomicfoundation/slang/compilation"
-import { findInheritanceIdentifiers } from "./findDescendantDefinitions.js"
+import {
+	findFunctionDefinitions,
+	findInheritanceIdentifiers,
+	findStateVariableDefinitions,
+} from "./findDescendantDefinitions.js"
 
-export async function readInputFileAndParse(): Promise<{
+export async function parseFileForDefinitions(): Promise<{
 	contracts: ParsedContractDefinition[]
 	interfaces: ParsedInterfaceDefinition[]
 	libraries: ParsedLibraryDefinition[]
@@ -29,58 +33,28 @@ export async function readInputFileAndParse(): Promise<{
 
 	const unit = await buildCompilationUnit(filePath)
 
-	const contractDefinitions = findDefinitionsOfKindsInFile(unit, filePath, [
+	// Find and Parse ContractDefinitions
+
+	const contracts = findDefinitionsOfKindsInFile(unit, filePath, [
 		NonterminalKind.ContractDefinition,
-	])
+	]).map((contract) => parseContractDefinition(unit, filePath, contract))
 
-	const libraryDefinitions = findDefinitionsOfKindsInFile(unit, filePath, [
+	// Find and Parse LibraryDefinitions
+
+	const libraries = findDefinitionsOfKindsInFile(unit, filePath, [
 		NonterminalKind.LibraryDefinition,
-	])
+	]).map((lib) => parseLibraryDefinition(unit, lib))
 
-	const interfaceDefinitions = findDefinitionsOfKindsInFile(unit, filePath, [
+	// Find and Parse InterfaceDefinitions
+
+	const interfaces = findDefinitionsOfKindsInFile(unit, filePath, [
 		NonterminalKind.InterfaceDefinition,
-	])
-
-	const contracts: ParsedContractDefinition[] = []
-
-	for (const contractDefinition of contractDefinitions) {
-		const contract = parseContractDefinition(
-			unit,
-			filePath,
-			contractDefinition,
-		)
-
-		contracts.push(contract)
-	}
-
-	const libraries: ParsedLibraryDefinition[] = []
-
-	for (const libraryDefinition of libraryDefinitions) {
-		const library = parseLibraryDefinition(
-			unit,
-			filePath,
-			libraryDefinition,
-		)
-
-		libraries.push(library)
-	}
-
-	const interfaces: ParsedInterfaceDefinition[] = []
-
-	for (const interfaceDefinition of interfaceDefinitions) {
-		const parsedInterface = parseInterfaceDefinition(
-			unit,
-			filePath,
-			interfaceDefinition,
-		)
-
-		interfaces.push(parsedInterface)
-	}
+	]).map((interfaceDef) => parseInterfaceDefinition(unit, interfaceDef))
 
 	return { contracts, interfaces, libraries }
 }
 
-function parseContractDefinition(
+export function parseContractDefinition(
 	unit: CompilationUnit,
 	filePath: string,
 	contractDefinition: Definition,
@@ -93,19 +67,19 @@ function parseContractDefinition(
 		"ContractDefinition expected",
 	)
 
-	const stateVariableDefinitions = findDefinitionsOfKindsInFile(
+	const stateVariableDefinitions = findStateVariableDefinitions(
 		unit,
-		filePath,
-		[NonterminalKind.StateVariableDefinition],
+		contractDefinition,
 	)
 
 	const parsedStateVariables = parseStateVariableDefinitions(
 		stateVariableDefinitions,
 	)
 
-	const functionDefinitions = findDefinitionsOfKindsInFile(unit, filePath, [
-		NonterminalKind.FunctionDefinition,
-	])
+	const functionDefinitions = findFunctionDefinitions(
+		unit,
+		contractDefinition,
+	)
 
 	const parsedFunctions = parseFunctionDefinitions(functionDefinitions)
 
@@ -124,9 +98,8 @@ function parseContractDefinition(
 	return contract
 }
 
-function parseLibraryDefinition(
+export function parseLibraryDefinition(
 	unit: CompilationUnit,
-	filePath: string,
 	libraryDefinition: Definition,
 ): ParsedLibraryDefinition {
 	const name = getDefinitionName(libraryDefinition)
@@ -137,9 +110,7 @@ function parseLibraryDefinition(
 		"LibraryDefinition expected",
 	)
 
-	const functionDefinitions = findDefinitionsOfKindsInFile(unit, filePath, [
-		NonterminalKind.FunctionDefinition,
-	])
+	const functionDefinitions = findFunctionDefinitions(unit, libraryDefinition)
 
 	const parsedFunctions = parseFunctionDefinitions(functionDefinitions)
 
@@ -153,9 +124,8 @@ function parseLibraryDefinition(
 	return library
 }
 
-function parseInterfaceDefinition(
+export function parseInterfaceDefinition(
 	unit: CompilationUnit,
-	filePath: string,
 	interfaceDefinition: Definition,
 ): ParsedInterfaceDefinition {
 	const name = getDefinitionName(interfaceDefinition)
@@ -166,9 +136,10 @@ function parseInterfaceDefinition(
 		"InterfaceDefinition expected",
 	)
 
-	const functionDefinitions = findDefinitionsOfKindsInFile(unit, filePath, [
-		NonterminalKind.FunctionDefinition,
-	])
+	const functionDefinitions = findFunctionDefinitions(
+		unit,
+		interfaceDefinition,
+	)
 
 	const parsedFunctions = parseFunctionDefinitions(functionDefinitions)
 

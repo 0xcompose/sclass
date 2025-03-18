@@ -2,7 +2,7 @@
 
 Solidity to Class Diagram Interpreter
 
-Parses Solidity files using [@solidity-parser/parser](https://www.npmjs.com/package/@solidity-parser/parser) and generates mermaid markdown, or rendered files (SVG, PNG, PDF, MD, MMD) class diagrams.
+Parses Solidity files using [@nomicfoundation/slang](https://github.com/NomicFoundation/slang) and generates mermaid markdown, or rendered files (SVG, PNG, PDF, MD, MMD) class diagrams.
 
 Supports Foundry projects, doesn't support Hardhat project (create issue to request hardhat support)
 
@@ -13,28 +13,21 @@ Supports Foundry projects, doesn't support Hardhat project (create issue to requ
 ## Getting Started
 
 ```
-npm i @0xcompose/sclass
+npm i -g sclass
+sclass --help
 ```
 
-Setup configuration in `config.ts` as described in [Configuration](#configuration) section
+## Usage example
 
-Then run following commands:
-
-```bash
-npm install
-npm run start
+```
+sclass src/Contract.sol --format svg --output ClassDiagram.svg
 ```
 
-After running the script, two files will be generated in the `/out` directory:
-
--   diagram.mmd (source diagram file)
--   diagram.svg (rendered diagram)
-
-You can view the diagram.svg in any web browser or using this [preview extension](https://marketplace.visualstudio.com/items?itemName=vitaliymaz.vscode-svg-previewer)
+You can view the ClassDiagram.svg in any web browser or using this [preview extension](https://marketplace.visualstudio.com/items?itemName=vitaliymaz.vscode-svg-previewer)
 
 ## Configuration
 
-Setup configuration in `config.ts` file.
+Configuration of diagram generation is evaluated via cli flags
 
 ### inputContracts
 
@@ -87,6 +80,6 @@ Doesn't support nested mappings.
 -   Generating other types of Mermaid diagrams from Solidity code (Flowchart, Sequence, Use Case, Entity Relationship)
 -   Linking diagram elements to source code to use diagram as a navigation
 
-## Related
+## Other tools by 0xCompose
 
 -   [sspec](https://github.com/0xcompose/sspec) - smart contract specification generator for Foundry

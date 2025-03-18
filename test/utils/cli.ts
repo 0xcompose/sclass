@@ -11,7 +11,7 @@ export function sclass(args?: Args): string {
 	const input = args?.input ? ` ${args.input}` : TEST_CONTRACT_PATH
 
 	return execSync(
-		`npx ts-node src/index.ts ${input} ${args?.flags ?? ""}`,
+		`node bin/src/index.js ${input} ${args?.flags ?? ""}`,
 	).toString()
 
 	// Get last line from response, it contains execution time

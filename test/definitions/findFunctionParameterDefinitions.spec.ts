@@ -19,9 +19,14 @@ describe("findFunctionParameterDefinitions()", () => {
 	})
 
 	it("MUST find FunctionParameterDefinitions in FunctionDefinition", async () => {
-		const functionDefinitions = findDefinitionsOfKindsInFile(unit, fileId, [
-			NonterminalKind.FunctionDefinition,
+		const contractDefinition = findDefinitionsOfKindsInFile(unit, fileId, [
+			NonterminalKind.ContractDefinition,
 		])
+
+		const functionDefinitions = findFunctionDefinitions(
+			unit,
+			contractDefinition[0],
+		)
 
 		const expectedFunctionCount = 6
 

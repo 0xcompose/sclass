@@ -6,7 +6,7 @@ import { CompilationUnit } from "@nomicfoundation/slang/compilation"
 import { findInheritanceIdentifiers } from "../../src/parse/findDescendantDefinitions.js"
 import { getDefinitionName } from "../../src/utils/getDefinitionName.js"
 
-describe.only("findInheritanceIdentifiers()", () => {
+describe("findInheritanceIdentifiers()", () => {
 	const fileId = "test/definitions/Inheritance.sol"
 	let unit: CompilationUnit
 
