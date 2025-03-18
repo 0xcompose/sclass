@@ -25,7 +25,6 @@ import {
 	TerminalKind,
 	TerminalNode,
 } from "@nomicfoundation/slang/cst"
-import { UserDefinedTypeName } from "@solidity-parser/parser/dist/src/ast-types.js"
 import { Definition } from "@nomicfoundation/slang/bindings"
 import {
 	findStateVariableDefinitions,
@@ -180,7 +179,7 @@ export function parseTypeName(typeName: TypeName | null): string {
 			return `mapping(${key} => ${value})`
 
 		case NonterminalKind.UserDefinedValueTypeDefinition:
-			return (typeName as unknown as UserDefinedTypeName).namePath
+			return typeName.variant.cst.unparse().trim()
 
 		case NonterminalKind.ArrayTypeName:
 			const array = new ArrayTypeName(variant.cst.asNonterminalNode())
