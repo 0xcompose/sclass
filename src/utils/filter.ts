@@ -1,21 +1,14 @@
 import { Method } from "../mermaid/contract.js"
 import { Config } from "../config.js"
-import {
-	ParsedContractDefinition,
-	ParsedDefinition,
-	ParsedInterfaceDefinition,
-	ParsedLibraryDefinition,
-} from "../parse/types.js"
-
-export function shouldIncludeContract(
-	definition: ParsedContractDefinition,
-): boolean {
+import { getDefinitionName } from "./definitions.js"
+import { Definition } from "@nomicfoundation/slang/bindings"
+export function shouldIncludeContract(definition: Definition): boolean {
 	if (isException(definition)) return true
 
 	return shouldFilter(definition)
 }
 
-export function shouldIncludeLibrary(definition: ParsedLibraryDefinition) {
+export function shouldIncludeLibrary(definition: Definition) {
 	if (isException(definition)) return true
 
 	const excludeLibs = Config.exclude.contracts.libraries
@@ -25,7 +18,7 @@ export function shouldIncludeLibrary(definition: ParsedLibraryDefinition) {
 	return shouldFilter(definition)
 }
 
-export function shouldIncludeInterface(definition: ParsedInterfaceDefinition) {
+export function shouldIncludeInterface(definition: Definition) {
 	if (isException(definition)) return true
 
 	const excludeInterfaces = Config.exclude.contracts.interfaces
@@ -35,12 +28,7 @@ export function shouldIncludeInterface(definition: ParsedInterfaceDefinition) {
 	return shouldFilter(definition)
 }
 
-function shouldFilter(
-	definition:
-		| ParsedContractDefinition
-		| ParsedLibraryDefinition
-		| ParsedInterfaceDefinition,
-) {
+function shouldFilter(definition: Definition) {
 	const contracts = Config.exclude.contracts
 
 	/* ====== COLLECTIONS ====== */
@@ -49,18 +37,19 @@ function shouldFilter(
 
 	/* ====== EXCLUDE ====== */
 
-	if (contracts.contracts.includes(definition.name)) return false
+	if (contracts.contracts.includes(getDefinitionName(definition)))
+		return false
 
 	return true
 }
 
-function isException(definition: ParsedDefinition<any>) {
+function isException(definition: Definition) {
 	const contracts = Config.exclude.contracts
 
-	return contracts.exceptions.includes(definition.name)
+	return contracts.exceptions.includes(getDefinitionName(definition))
 }
 
-export function isContractFromCollections(definition: ParsedDefinition<any>) {
+export function isContractFromCollections(definition: Definition) {
 	const collections = Config.exclude.contracts.collections
 
 	for (const collectionName of collections) {
@@ -70,7 +59,7 @@ export function isContractFromCollections(definition: ParsedDefinition<any>) {
 
 		if (!collection) return false
 
-		if (collection.includes(definition.name)) return true
+		if (collection.includes(getDefinitionName(definition))) return true
 	}
 
 	return false

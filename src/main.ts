@@ -11,14 +11,27 @@ import {
 	shouldIncludeLibrary,
 } from "./utils/filter.js"
 import { parseFileForDefinitions } from "./parse/parseFileForDefinitions.js"
-import { ParsedDefinition } from "./parse/types.js"
-import { getDefinitionName } from "./utils/getDefinitionName.js"
+import { getDefinitionName } from "./utils/definitions.js"
 import { Definition } from "@nomicfoundation/slang/bindings"
+import { Config } from "./config.js"
+import { buildCompilationUnit } from "./parse/buildCompilationUnit.js"
+
+type Diagram = string
 
 export async function parseContracts(): Promise<Diagram> {
+	const filePath = Config.inputContractFilePath
+	const unit = await buildCompilationUnit(filePath)
+
+	if (!filePath) {
+		throw new Error("Input file path is not set")
+	}
+
 	/* ======= READ INPUT FILE ======= */
 
-	const { contracts, interfaces, libraries } = await parseFileForDefinitions()
+	const { contracts, interfaces, libraries } = await parseFileForDefinitions(
+		unit,
+		filePath,
+	)
 
 	/* ======= FILTER ======= */
 
@@ -41,29 +54,29 @@ export async function parseContracts(): Promise<Diagram> {
 	for (const contract of filteredContracts) {
 		// If contract is already prepared, skip
 		// this case is relevant for multiple contracts referenced in inheritance
-		if (preparedContracts.has(contract.definition.id)) continue
+		if (preparedContracts.has(contract.id)) continue
 
 		preparedContracts.set(
-			contract.definition.id,
-			convertContractDefinitionToContract(contract),
+			contract.id,
+			convertContractDefinitionToContract(unit, contract),
 		)
 	}
 
 	for (const interfaceDef of filteredInterfaces) {
-		if (preparedContracts.has(interfaceDef.definition.id)) continue
+		if (preparedContracts.has(interfaceDef.id)) continue
 
 		preparedContracts.set(
-			interfaceDef.definition.id,
-			convertInterfaceDefinitionToInterface(interfaceDef),
+			interfaceDef.id,
+			convertInterfaceDefinitionToInterface(unit, interfaceDef),
 		)
 	}
 
 	for (const library of filteredLibraries) {
-		if (preparedContracts.has(library.definition.id)) continue
+		if (preparedContracts.has(library.id)) continue
 
 		preparedContracts.set(
-			library.definition.id,
-			convertLibraryDefinitionToLibrary(library),
+			library.id,
+			convertLibraryDefinitionToLibrary(unit, library),
 		)
 	}
 
@@ -95,9 +108,6 @@ export async function parseContracts(): Promise<Diagram> {
 	return diagram.trim()
 }
 
-function isInFilteredList(
-	definition: Definition,
-	filteredList: ParsedDefinition<any>[],
-) {
-	return filteredList.find((d) => d.definition.id === definition.id)
+function isInFilteredList(definition: Definition, filteredList: Definition[]) {
+	return filteredList.find((d) => d.id === definition.id)
 }

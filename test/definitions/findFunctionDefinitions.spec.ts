@@ -1,9 +1,8 @@
 import { NonterminalKind } from "@nomicfoundation/slang/cst"
 import { buildCompilationUnit } from "../../src/parse/buildCompilationUnit.js"
-import { findDefinitionsOfKindsInFile } from "../../src/parse/findDefinitions.js"
-import { findFunctionDefinitions } from "../../src/parse/findDescendantDefinitions.js"
+import { findDefinitionsOfKindsInFile } from "../../src/utils/definitions.js"
+import { findFunctionDefinitions } from "../../src/parse/findDescendingDefinitions.js"
 import { expect } from "chai"
-import { parseDefinitions } from "../../src/parse/parseDefinitions.js"
 import { CompilationUnit } from "@nomicfoundation/slang/compilation"
 
 describe("findFunctionDefinitions()", () => {
@@ -30,9 +29,7 @@ describe("findFunctionDefinitions()", () => {
 
 		const definitions = findFunctionDefinitions(unit, contractDefinition[0])
 
-		const parsedDefinitions = parseDefinitions(definitions)
-
-		expect(parsedDefinitions).to.have.lengthOf(
+		expect(definitions).to.have.lengthOf(
 			expectedFunctionCount,
 			`Expected ${expectedFunctionCount} FunctionDefinitions in ContractDefinition`,
 		)
@@ -55,9 +52,7 @@ describe("findFunctionDefinitions()", () => {
 			interfaceDefinition[0],
 		)
 
-		const parsedDefinitions = parseDefinitions(definitions)
-
-		expect(parsedDefinitions).to.have.lengthOf(
+		expect(definitions).to.have.lengthOf(
 			expectedFunctionCount,
 			`Expected ${expectedFunctionCount} FunctionDefinitions in ContractDefinition`,
 		)
@@ -77,9 +72,7 @@ describe("findFunctionDefinitions()", () => {
 
 		const definitions = findFunctionDefinitions(unit, libraryDefinition[0])
 
-		const parsedDefinitions = parseDefinitions(definitions)
-
-		expect(parsedDefinitions).to.have.lengthOf(
+		expect(definitions).to.have.lengthOf(
 			expectedFunctionCount,
 			`Expected ${expectedFunctionCount} FunctionDefinitions in ContractDefinition`,
 		)

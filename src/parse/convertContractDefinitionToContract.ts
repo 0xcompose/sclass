@@ -8,13 +8,6 @@ import {
 } from "../mermaid/contract.js"
 import { shouldFilterMethod } from "../utils/filter.js"
 import {
-	ParsedContractDefinition,
-	ParsedFunctionDefinition,
-	ParsedInterfaceDefinition,
-	ParsedLibraryDefinition,
-	ParsedParameterDefinition,
-} from "./types.js"
-import {
 	ArrayTypeName,
 	FunctionAttribute,
 	FunctionDefinition,
@@ -26,22 +19,32 @@ import {
 	StateVariableDefinition,
 	TypeName,
 } from "@nomicfoundation/slang/ast"
-import { getDefinitionNode } from "../utils/getDefinitionNode.js"
+import { getDefinitionName, getDefinitionNode } from "../utils/definitions.js"
 import {
 	NonterminalKind,
 	TerminalKind,
 	TerminalNode,
 } from "@nomicfoundation/slang/cst"
 import { UserDefinedTypeName } from "@solidity-parser/parser/dist/src/ast-types.js"
+import { Definition } from "@nomicfoundation/slang/bindings"
+import {
+	findStateVariableDefinitions,
+	findFunctionDefinitions,
+	findInheritanceIdentifiers,
+} from "./findDescendingDefinitions.js"
+import { CompilationUnit } from "@nomicfoundation/slang/compilation"
 
 export function convertContractDefinitionToContract(
-	contractDefinition: ParsedContractDefinition,
+	unit: CompilationUnit,
+	contractDefinition: Definition,
 ): Contract {
-	const contract = new Contract(contractDefinition.name)
+	const name = getDefinitionName(contractDefinition)
+
+	const contract = new Contract(name)
 
 	/* ====== Variables ====== */
 
-	const variables = contractDefinition.variables
+	const variables = findStateVariableDefinitions(unit, contractDefinition)
 
 	for (const variable of variables) {
 		// Special process for mapping
@@ -62,7 +65,7 @@ export function convertContractDefinitionToContract(
 
 	/* ====== Functions ====== */
 
-	const functions = contractDefinition.functions
+	const functions = findFunctionDefinitions(unit, contractDefinition)
 
 	for (const func of functions) {
 		const method = parseFunction(func)
@@ -74,19 +77,24 @@ export function convertContractDefinitionToContract(
 
 	/* ====== Inheritance ====== */
 
-	contract.addInheritance(contractDefinition.inheritsFrom)
+	const inheritsFrom = findInheritanceIdentifiers(unit, contractDefinition)
+
+	contract.addInheritance(inheritsFrom)
 
 	return contract
 }
 
 export function convertInterfaceDefinitionToInterface(
-	interfaceDefinition: ParsedInterfaceDefinition,
+	unit: CompilationUnit,
+	interfaceDefinition: Definition,
 ): Contract {
-	const contract = new Contract(interfaceDefinition.name)
+	const name = getDefinitionName(interfaceDefinition)
+
+	const contract = new Contract(name)
 
 	/* ====== Functions ====== */
 
-	const functions = interfaceDefinition.functions
+	const functions = findFunctionDefinitions(unit, interfaceDefinition)
 
 	for (const func of functions) {
 		const method = parseFunction(func)
@@ -98,19 +106,24 @@ export function convertInterfaceDefinitionToInterface(
 
 	/* ====== Inheritance ====== */
 
-	contract.addInheritance(interfaceDefinition.inheritsFrom)
+	const inheritsFrom = findInheritanceIdentifiers(unit, interfaceDefinition)
+
+	contract.addInheritance(inheritsFrom)
 
 	return contract
 }
 
 export function convertLibraryDefinitionToLibrary(
-	libraryDefinition: ParsedLibraryDefinition,
+	unit: CompilationUnit,
+	libraryDefinition: Definition,
 ): Contract {
-	const contract = new Contract(libraryDefinition.name)
+	const name = getDefinitionName(libraryDefinition)
+
+	const contract = new Contract(name)
 
 	/* ====== Functions ====== */
 
-	const functions = libraryDefinition.functions
+	const functions = findFunctionDefinitions(unit, libraryDefinition)
 
 	for (const func of functions) {
 		const method = parseFunction(func)
@@ -186,16 +199,16 @@ function parseVariable(variable: StateVariableDefinition): Field {
 	return { name, type, visibility }
 }
 
-function parseFunction(func: ParsedFunctionDefinition): Method | null {
+function parseFunction(func: Definition): Method | null {
 	/* ====== Name ====== */
-	let name = func.name
+	let name = getDefinitionName(func)
 
 	// function name can be null - then it's constructor
 	if (!name) return null
 
 	/* ====== Visibility ====== */
 
-	const node = getDefinitionNode(func.definition)
+	const node = getDefinitionNode(func)
 	const astFunc = new FunctionDefinition(node)
 
 	const params = astFunc.parameters.cst
@@ -229,8 +242,8 @@ function parseFunction(func: ParsedFunctionDefinition): Method | null {
 	return method
 }
 
-function parseFunctionReturnType(func: ParsedFunctionDefinition): string {
-	const node = getDefinitionNode(func.definition)
+function parseFunctionReturnType(func: Definition): string {
+	const node = getDefinitionNode(func)
 	const astFunc = new FunctionDefinition(node)
 
 	// Remove all new lines/tabs and trim
@@ -257,7 +270,7 @@ function parseVariableVisibility(
 	return parseVisibility(visibility)
 }
 
-function parseFunctionVisibility(func: ParsedFunctionDefinition): Visibility {
+function parseFunctionVisibility(func: Definition): Visibility {
 	const node = getDefinitionNode(func)
 	const astFunc = new FunctionDefinition(node)
 
@@ -287,9 +300,7 @@ function parseVisibility(visibility: string | undefined): Visibility {
 	}
 }
 
-function parseFunctionStateMutability(
-	func: ParsedFunctionDefinition,
-): StateMutability {
+function parseFunctionStateMutability(func: Definition): StateMutability {
 	const node = getDefinitionNode(func)
 	const astFunc = new FunctionDefinition(node)
 

@@ -1,10 +1,10 @@
 import { NonterminalKind } from "@nomicfoundation/slang/cst"
 import { buildCompilationUnit } from "../../src/parse/buildCompilationUnit.js"
-import { findDefinitionsOfKindsInFile } from "../../src/parse/findDefinitions.js"
+import { findDefinitionsOfKindsInFile } from "../../src/utils/definitions.js"
 import { expect } from "chai"
 import { CompilationUnit } from "@nomicfoundation/slang/compilation"
-import { findInheritanceIdentifiers } from "../../src/parse/findDescendantDefinitions.js"
-import { getDefinitionName } from "../../src/utils/getDefinitionName.js"
+import { findInheritanceIdentifiers } from "../../src/parse/findDescendingDefinitions.js"
+import { getDefinitionName } from "../../src/utils/definitions.js"
 
 describe("findInheritanceIdentifiers()", () => {
 	const fileId = "test/definitions/Inheritance.sol"

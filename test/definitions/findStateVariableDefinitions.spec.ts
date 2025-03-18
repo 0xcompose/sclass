@@ -1,9 +1,8 @@
 import { NonterminalKind } from "@nomicfoundation/slang/cst"
 import { buildCompilationUnit } from "../../src/parse/buildCompilationUnit.js"
-import { findDefinitionsOfKindsInFile } from "../../src/parse/findDefinitions.js"
-import { findStateVariableDefinitions } from "../../src/parse/findDescendantDefinitions.js"
+import { findDefinitionsOfKindsInFile } from "../../src/utils/definitions.js"
+import { findStateVariableDefinitions } from "../../src/parse/findDescendingDefinitions.js"
 import { expect } from "chai"
-import { parseDefinitions } from "../../src/parse/parseDefinitions.js"
 
 describe("findStateVariableDefinitions()", () => {
 	const fileId = "test/definitions/StateVariables.sol"
@@ -25,11 +24,9 @@ describe("findStateVariableDefinitions()", () => {
 		for (const [index, contract] of contractDefinition.entries()) {
 			const definitions = findStateVariableDefinitions(unit, contract)
 
-			const parsedDefinitions = parseDefinitions(definitions)
-
 			const expectedVariablesCount = definitionCountInEachContract[index]
 
-			expect(parsedDefinitions).to.have.lengthOf(
+			expect(definitions).to.have.lengthOf(
 				expectedVariablesCount,
 				`Expected ${expectedVariablesCount} StateVariableDefinitions in ContractDefinition ${index}`,
 			)

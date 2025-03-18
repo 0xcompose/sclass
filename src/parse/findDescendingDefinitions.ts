@@ -2,52 +2,11 @@ import assert from "node:assert"
 import {
 	assertTerminalNode,
 	TerminalKindExtensions,
-	Cursor,
 	NonterminalKind,
-	Query,
 } from "@nomicfoundation/slang/cst"
 import { CompilationUnit } from "@nomicfoundation/slang/compilation"
 import { Definition } from "@nomicfoundation/slang/bindings"
-import { getDefinitionKind } from "../utils/getDefinitionKind.js"
-import { getDefinitionCursor } from "../utils/getDefinitionCursor.js"
-
-/**
- * Finds all Parameter definitions within a function definition
- */
-export function findFunctionParameterDefinitions(
-	unit: CompilationUnit,
-	functionCursor: Cursor,
-): Definition[] {
-	assert(
-		functionCursor.node.kind === NonterminalKind.FunctionDefinition,
-		"Cursor must point to FunctionDefinition",
-	)
-
-	const definitions: Definition[] = []
-	const childCursor = functionCursor.spawn()
-
-	while (childCursor.goToNextTerminal()) {
-		assertTerminalNode(childCursor.node)
-
-		const isIdentifier = TerminalKindExtensions.isIdentifier(
-			childCursor.node.kind,
-		)
-
-		if (!isIdentifier) continue
-
-		const definition = unit.bindingGraph.definitionAt(childCursor)
-
-		if (!definition) continue
-
-		const kind = getDefinitionKind(definition)
-
-		if (kind !== NonterminalKind.Parameter) continue
-
-		definitions.push(definition)
-	}
-
-	return definitions
-}
+import { getDefinitionKind, getDefinitionCursor } from "../utils/definitions.js"
 
 /**
  * @note Finds all state variable definitions within a contract/interface/library
@@ -63,30 +22,9 @@ export function findStateVariableDefinitions(
 		"Definition must be a Contract definition",
 	)
 
-	const definitions: Definition[] = []
-	const childCursor = getDefinitionCursor(contractDefinition).spawn()
-
-	while (childCursor.goToNextTerminal()) {
-		assertTerminalNode(childCursor.node)
-
-		const isIdentifier = TerminalKindExtensions.isIdentifier(
-			childCursor.node.kind,
-		)
-
-		if (!isIdentifier) continue
-
-		const definition = unit.bindingGraph.definitionAt(childCursor)
-
-		if (!definition) continue
-
-		const kind = getDefinitionKind(definition)
-
-		if (kind !== NonterminalKind.StateVariableDefinition) continue
-
-		definitions.push(definition)
-	}
-
-	return definitions
+	return findDefinitionsOfKindInContract(unit, contractDefinition, [
+		NonterminalKind.StateVariableDefinition,
+	])
 }
 
 /**
@@ -115,6 +53,18 @@ export function findFunctionDefinitions(
 		"Definition must be a Contract/Interface/Library definition",
 	)
 
+	return findDefinitionsOfKindInContract(
+		unit,
+		contractDefinition,
+		expectedOutputDefinitionKinds,
+	)
+}
+
+function findDefinitionsOfKindInContract(
+	unit: CompilationUnit,
+	contractDefinition: Definition,
+	definitionKinds: NonterminalKind[],
+): Definition[] {
 	const definitions: Definition[] = []
 	const childCursor = getDefinitionCursor(contractDefinition).spawn()
 
@@ -133,7 +83,7 @@ export function findFunctionDefinitions(
 
 		const kind = getDefinitionKind(definition)
 
-		if (!expectedOutputDefinitionKinds.includes(kind)) continue
+		if (!definitionKinds.includes(kind)) continue
 
 		definitions.push(definition)
 	}

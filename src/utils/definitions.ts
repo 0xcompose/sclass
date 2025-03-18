@@ -1,15 +1,18 @@
-import assert from "node:assert"
+import {
+	Definition,
+	assertUserFileLocation,
+} from "@nomicfoundation/slang/bindings"
 import {
 	assertTerminalNode,
-	TerminalKindExtensions,
+	Cursor,
 	NonterminalKind,
+	NonterminalNode,
+	TerminalKindExtensions,
 } from "@nomicfoundation/slang/cst"
 import { CompilationUnit } from "@nomicfoundation/slang/compilation"
-import {
-	assertUserFileLocation,
-	Definition,
-} from "@nomicfoundation/slang/bindings"
-import { getDefinitionKind } from "../utils/getDefinitionKind.js"
+import { assert } from "chai"
+
+/* ====== FINDERS ====== */
 
 export function findDefinitionsInFile(
 	unit: CompilationUnit,
@@ -98,4 +101,32 @@ export function findDefinitionsOfKindsInFile(
 	}
 
 	return definitions
+}
+
+/* ====== GETTERS ====== */
+
+export function getDefinitionCursor(definition: Definition): Cursor {
+	const location = definition.definiensLocation.asUserFileLocation()
+
+	assertUserFileLocation(location)
+
+	return location.cursor
+}
+
+export function getDefinitionKind(definition: Definition): NonterminalKind {
+	const cursor = definition.definiensLocation.asUserFileLocation().cursor
+
+	return cursor.node.kind as NonterminalKind
+}
+
+export function getDefinitionName(definition: Definition): string {
+	const cursor = definition.nameLocation.asUserFileLocation().cursor
+
+	return cursor.node.unparse()
+}
+
+export function getDefinitionNode(definition: Definition): NonterminalNode {
+	const cursor = getDefinitionCursor(definition)
+
+	return cursor.node as NonterminalNode
 }
