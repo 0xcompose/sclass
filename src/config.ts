@@ -118,7 +118,7 @@ class CliConfig {
 
 	private _exclude: ExcludeConfig = {
 		contracts: {
-			interfaces: true,
+			interfaces: false,
 			libraries: false,
 			collections: ["layerzero", "common-utils", "openzeppelin"],
 			contracts: ["Excluded"],
@@ -161,8 +161,20 @@ class CliConfig {
 		const [, , ...args] = process.argv
 
 		// If help flag is provided, print help message and exit
-		if (this.containsHelpFlag(args)) {
+		if (this.containsFlag(args, "help", "h")) {
 			console.log(HELP_MESSAGE)
+			process.exit(0)
+		}
+
+		// If collections flag is provided, print collections and exit
+		if (this.containsFlag(args, "collections", "c")) {
+			const collectionNames = Object.keys(this.collections).join(", ")
+			console.log(`Collections: ${collectionNames}`)
+
+			for (const collection in this.collections) {
+				console.log("Collection:", collection)
+				console.log(this.collections[collection])
+			}
 			process.exit(0)
 		}
 
@@ -175,6 +187,9 @@ class CliConfig {
 		}
 
 		this._inputContractFilePath = smartContractFilePath
+
+		// Parse and remove single argument flags
+		this.parseFlagsWithoutArguments(additionalArgs)
 
 		// Parse pairs of arguments
 		for (let i = 0; i < additionalArgs.length; i += 2) {
@@ -214,6 +229,24 @@ class CliConfig {
 		}
 	}
 
+	parseFlagsWithoutArguments(args: string[]) {
+		for (const arg of args) {
+			switch (arg) {
+				case "--exclude-interfaces":
+				case "-ei":
+					this._exclude.contracts.interfaces = true
+					args.splice(args.indexOf(arg), 1)
+					break
+
+				case "--exclude-libraries":
+				case "-el":
+					this._exclude.contracts.libraries = true
+					args.splice(args.indexOf(arg), 1)
+					break
+			}
+		}
+	}
+
 	parsePairOfArguments(arg: string, nextArg: string) {
 		if (!nextArg) throw new Error(`Missing value for argument: ${arg}`)
 
@@ -232,11 +265,25 @@ class CliConfig {
 			case "-t":
 				this._output.theme = parseTheme(nextArg)
 				break
+
+			case "--exclude":
+			case "-e":
+				this._exclude.contracts.exceptions = JSON.parse(
+					nextArg,
+				) as string[]
+				break
+
+			case "--include":
+			case "-i":
+				this._exclude.contracts.exceptions = JSON.parse(
+					nextArg,
+				) as string[]
+				break
 		}
 	}
 
-	containsHelpFlag(args: string[]): boolean {
-		return args.includes("--help") || args.includes("-h")
+	containsFlag(args: string[], flag: string, shortFlag: string): boolean {
+		return args.includes("--" + flag) || args.includes("-" + shortFlag)
 	}
 
 	/* ===== GETTERS ===== */

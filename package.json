@@ -25,6 +25,7 @@
 		"build": "rm -rf bin/src && rm -rf bin/test && npx tsc",
 		"start": "npx tsx src/index.ts test/constants/TestContract.sol",
 		"start:help": "npx tsx src/index.ts --help",
+		"start:collections": "npx tsx src/index.ts --collections",
 		"start:svg": "npx tsx src/index.ts test/constants/TestContract.sol -o out/Example.svg -f svg",
 		"start:png": "npx tsx src/index.ts test/constants/TestContract.sol -o out/Example.png -f png",
 		"start:pdf": "npx tsx src/index.ts test/constants/TestContract.sol -o out/Example.pdf -f pdf",

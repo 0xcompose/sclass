@@ -39,6 +39,9 @@ If you want to exclude some contracts, you can setup object with following field
 
 -   interfaces: boolean - whether to exclude interfaces
 -   libraries: boolean - whether to exclude libraries
+
+// TODO: remove collections and replace it with parsing imports
+
 -   collections: array of collection **file names** to exclude
     > **ℹ️ Note:** Collections are groups of related contracts that can be defined in `src/collections`. We've already have LayerZero, OpenZeppelin and Stargate collections. You can create your own collections by adding new file in `src/collections` folder.
 -   contracts: array of contract names to exclude
