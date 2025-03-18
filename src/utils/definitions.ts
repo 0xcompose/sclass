@@ -10,7 +10,7 @@ import {
 	TerminalKindExtensions,
 } from "@nomicfoundation/slang/cst"
 import { CompilationUnit } from "@nomicfoundation/slang/compilation"
-import { assert } from "chai"
+import assert from "node:assert"
 
 /* ====== FINDERS ====== */
 
