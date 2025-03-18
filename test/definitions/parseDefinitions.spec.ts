@@ -12,7 +12,7 @@ describe("parseDefinitions()", () => {
 
 		const parsedDefinitions = parseDefinitions(definitions)
 
-		assert.equal(parsedDefinitions.length, 16)
+		assert.equal(parsedDefinitions.length, 18)
 
 		for (const definition of parsedDefinitions) {
 			expect(definition).to.have.property("name")

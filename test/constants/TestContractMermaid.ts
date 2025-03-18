@@ -45,15 +45,17 @@ title: TestContract Class Diagram
 classDiagram
 
 	class Base {
-		${Visibility.public}${StateMutability.pure} baseFunc() uint256
+		${Visibility.public}${StateMutability.pure} baseFunc() returns (uint256)
 	}
 
 	class MiddleInInheritance {
-		${Visibility.public}${StateMutability.pure} middleFunc() uint256
+		${Visibility.public}${StateMutability.pure} middleFunc() returns (uint256)
 	}
 
 	class ContractInCollection {
-		${Visibility.public}${StateMutability.view} contractToFilterFunc() address
+		${Visibility.internal} mapping(address => bool) addressToBool
+		${Visibility.public} mapping(address => mapping(bytes32 => uint256)) positions
+		${Visibility.public}${StateMutability.view} contractToFilterFunc() returns (address)
 	}
 
 	class TestContract1 {
@@ -63,7 +65,7 @@ classDiagram
 	}
 
 	class TestContract2 {
-		${Visibility.public}${StateMutability.pure} testContract2Func() uint256
+		${Visibility.public}${StateMutability.pure} testContract2Func() returns (uint256)
 	}
 
 	class ITestContract {

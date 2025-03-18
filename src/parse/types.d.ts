@@ -24,9 +24,10 @@ type ParsedLibraryDefinition = ParsedDefinition<"LibraryDefinition"> & {
 
 type ParsedStateVariableDefinition = ParsedDefinition<"StateVariableDefinition">
 
-type ParsedFunctionDefinition = ParsedDefinition<"FunctionDefinition"> & {
-	parameters: ParsedParameterDeclaration[]
-	returnParameters: ParsedParameterDeclaration[]
-}
+// Input and Output parameters are accesses via node unparse()
+// that's why we don't need to parse them!
+type ParsedFunctionDefinition = ParsedDefinition<"FunctionDefinition">
 
-type ParsedParameterDeclaration = ParsedDefinition<"Parameter">
+type ParsedParameterDefinition = ParsedDefinition<"Parameter"> & {
+	type: string
+}

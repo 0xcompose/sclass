@@ -4,7 +4,6 @@ import {
 	Visibility,
 	Method,
 	Mapping,
-	Declaration,
 	StateMutability,
 } from "../mermaid/contract.js"
 import { shouldFilterMethod } from "../utils/filter.js"
@@ -13,7 +12,7 @@ import {
 	ParsedFunctionDefinition,
 	ParsedInterfaceDefinition,
 	ParsedLibraryDefinition,
-	ParsedParameterDeclaration,
+	ParsedParameterDefinition,
 } from "./types.js"
 import {
 	ArrayTypeName,
@@ -23,7 +22,6 @@ import {
 	MappingType,
 	ModifierInvocation,
 	OverrideSpecifier,
-	Parameter,
 	StateVariableAttribute,
 	StateVariableDefinition,
 	TypeName,
@@ -126,20 +124,22 @@ export function convertLibraryDefinitionToLibrary(
 }
 
 function parseMapping(variable: StateVariableDefinition): Mapping {
-	const mapping = new MappingType(variable.typeName.cst.asNonterminalNode())
-	// TODO: Get key type
-	const key = "undefined"
+	const mapping = new MappingType(
+		variable.typeName.variant.cst.asNonterminalNode(),
+	)
+
+	const key = mapping.keyType.cst.unparse().trim()
 
 	return {
 		name: variable.name.unparse(),
 		key,
-		value: parseTypeName(mapping.valueType.typeName),
+		value: mapping.valueType.cst.unparse().trim(),
 		visibility: parseVariableVisibility(variable),
 	}
 }
 
 // Returns name of type, prefers user defined names instead of elementary ones
-function parseTypeName(typeName: TypeName | null): string {
+export function parseTypeName(typeName: TypeName | null): string {
 	if (!typeName) return "empty"
 
 	const variant = typeName.variant
@@ -195,15 +195,14 @@ function parseFunction(func: ParsedFunctionDefinition): Method | null {
 
 	/* ====== Visibility ====== */
 
-	let params: Declaration[] = []
+	const node = getDefinitionNode(func.definition)
+	const astFunc = new FunctionDefinition(node)
 
-	for (const param of func.parameters) {
-		const astParam = new Parameter(getDefinitionNode(param))
-		params.push({
-			type: parseTypeName(astParam.typeName),
-			name: param.name ?? "empty",
-		})
-	}
+	const params = astFunc.parameters.cst
+		.unparse()
+		.replace(/\n/g, "")
+		.replace(/\t/g, "")
+		.trim()
 
 	/* ====== Visibility ====== */
 
@@ -231,33 +230,17 @@ function parseFunction(func: ParsedFunctionDefinition): Method | null {
 }
 
 function parseFunctionReturnType(func: ParsedFunctionDefinition): string {
-	if (!func.returnParameters || func.returnParameters.length == 0) {
-		return ""
-	}
+	const node = getDefinitionNode(func.definition)
+	const astFunc = new FunctionDefinition(node)
 
-	// Struct
-	// named variable
-	// unnamed type
-	// array
-	// Contract Instance
-	const returnParams = func.returnParameters
+	// Remove all new lines/tabs and trim
+	if (!astFunc.returns) return ""
 
-	let returnType = ""
-
-	for (const param of returnParams) {
-		returnType += getReturnTypeName(param) + " "
-	}
-
-	return returnType
-}
-
-function getReturnTypeName(param: ParsedParameterDeclaration): string {
-	// Return positive one
-	const parameter = new Parameter(getDefinitionNode(param))
-	return (
-		param.name || // Named return params like: returns(uint shares)
-		parseTypeName(parameter.typeName)
-	)
+	return astFunc.returns.cst
+		.unparse()
+		.replace(/\n/g, "")
+		.replace(/\t/g, "")
+		.trim()
 }
 
 function parseVariableVisibility(

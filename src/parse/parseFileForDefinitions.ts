@@ -1,13 +1,14 @@
-import { NonterminalKind } from "@nomicfoundation/slang/cst"
+import { Cursor, NonterminalKind } from "@nomicfoundation/slang/cst"
 import { Config } from "../config.js"
 import { buildCompilationUnit } from "./buildCompilationUnit.js"
 import { findDefinitionsOfKindsInFile } from "./findDefinitions.js"
-import { Definition } from "@nomicfoundation/slang/bindings"
+import { BindingGraph, Definition } from "@nomicfoundation/slang/bindings"
 import {
 	ParsedContractDefinition,
 	ParsedFunctionDefinition,
 	ParsedInterfaceDefinition,
 	ParsedLibraryDefinition,
+	ParsedParameterDefinition,
 	ParsedStateVariableDefinition,
 } from "./types.js"
 import { getDefinitionName } from "../utils/getDefinitionName.js"
@@ -16,9 +17,14 @@ import assert from "node:assert"
 import { CompilationUnit } from "@nomicfoundation/slang/compilation"
 import {
 	findFunctionDefinitions,
+	findFunctionParameterDefinitions,
 	findInheritanceIdentifiers,
 	findStateVariableDefinitions,
 } from "./findDescendantDefinitions.js"
+import { getDefinitionNode } from "../utils/getDefinitionNode.js"
+import { FunctionDefinition } from "@nomicfoundation/slang/ast"
+import { parseTypeName } from "./convertContractDefinitionToContract.js"
+import { getDefinitionCursor } from "../utils/getDefinitionCursor.js"
 
 export async function parseFileForDefinitions(): Promise<{
 	contracts: ParsedContractDefinition[]
@@ -37,7 +43,7 @@ export async function parseFileForDefinitions(): Promise<{
 
 	const contracts = findDefinitionsOfKindsInFile(unit, filePath, [
 		NonterminalKind.ContractDefinition,
-	]).map((contract) => parseContractDefinition(unit, filePath, contract))
+	]).map((contract) => parseContractDefinition(unit, contract))
 
 	// Find and Parse LibraryDefinitions
 
@@ -56,7 +62,6 @@ export async function parseFileForDefinitions(): Promise<{
 
 export function parseContractDefinition(
 	unit: CompilationUnit,
-	filePath: string,
 	contractDefinition: Definition,
 ): ParsedContractDefinition {
 	const name = getDefinitionName(contractDefinition)
@@ -194,8 +199,6 @@ function parseFunctionDefinitions(
 			name: getDefinitionName(functionDefinition),
 			kind: NonterminalKind.FunctionDefinition,
 			definition: functionDefinition,
-			parameters: [],
-			returnParameters: [],
 		})
 	}
 

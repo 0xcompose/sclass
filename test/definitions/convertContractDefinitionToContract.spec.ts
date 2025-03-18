@@ -19,7 +19,7 @@ describe.skip("convertContractDefinitionToContract", () => {
 		])
 
 		for (const def of contractDefinitions) {
-			const parsedDefinition = parseContractDefinition(unit, fileId, def)
+			const parsedDefinition = parseContractDefinition(unit, def)
 			convertContractDefinitionToContract(parsedDefinition)
 		}
 	})

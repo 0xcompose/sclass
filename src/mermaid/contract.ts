@@ -21,15 +21,10 @@ export enum StateMutability {
 	payable = "💰",
 }
 
-export interface Declaration {
-	type: string
-	name: string
-}
-
 export interface Method {
 	visibility: Visibility
 	name: string
-	params: Declaration[]
+	params: string
 	returnType: string
 	stateMutability: StateMutability | "mutative"
 }
@@ -81,12 +76,7 @@ export class Contract {
 		let methods: string = ""
 
 		for (const method of this.methods) {
-			const params = this.getParamsString(
-				method.params,
-				disableFunctionParamType,
-			)
-
-			methods += `${margin}\t${method.visibility}${method.stateMutability} ${method.name}(${params}) ${method.returnType}\n`
+			methods += `${margin}\t${method.visibility}${method.stateMutability} ${method.name}${method.params} ${method.returnType}\n`
 		}
 
 		/* ====== Insert Mappings ====== */
@@ -108,15 +98,5 @@ export class Contract {
 
 	addInheritance(definitions: Definition[]) {
 		this.inheritsFrom.push(...definitions)
-	}
-
-	getParamsString(params: Declaration[], disableFunctionParamType: boolean) {
-		return params
-			.map(
-				(param) =>
-					(disableFunctionParamType ? "" : param.type + " ") +
-					param.name,
-			)
-			.join(", ")
 	}
 }

@@ -18,16 +18,15 @@ abstract contract MiddleInInheritance is Base {
 }
 
 contract ContractInCollection {
+    mapping(address => bool) addressToBool;
+    mapping(address => mapping(bytes32 => uint256)) public positions;
+
     function contractToFilterFunc() public view returns (address) {
         return address(this);
     }
 }
 
-contract TestContract1 is
-    MiddleInInheritance,
-    ContractInCollection,
-    ITestContract
-{
+contract TestContract1 is MiddleInInheritance, ContractInCollection, ITestContract {
     uint256 public uint256PublicVar;
     address private addressPrivateVar;
 

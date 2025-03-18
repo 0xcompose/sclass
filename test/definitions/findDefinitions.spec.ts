@@ -23,7 +23,7 @@ describe("findDefinitionsInFile() / findDefinitionsOfKindsInFile()", () => {
 
 		const parsedDefinitions = parseDefinitions(definitions)
 
-		assert.equal(parsedDefinitions.length, 16)
+		assert.equal(parsedDefinitions.length, 18)
 	})
 
 	it("MUST find ContractDefinition in a file", async () => {
@@ -63,6 +63,6 @@ describe("findDefinitionsInFile() / findDefinitionsOfKindsInFile()", () => {
 
 		const parsedDefinitions = parseDefinitions(definitions)
 
-		assert.equal(parsedDefinitions.length, 2)
+		assert.equal(parsedDefinitions.length, 4)
 	})
 })
