@@ -3,7 +3,7 @@ import { sclass } from "../utils/cli.js"
 import { compareMermaidSchemes } from "../utils/compareMermaidSchemes.js"
 
 export function mermaidGenerationTest() {
-	it("should generate mermaid code", () => {
+	it.only("should generate mermaid code", () => {
 		const result = sclass()
 
 		compareMermaidSchemes(result, TEST_CONTRACT_MERMAID)

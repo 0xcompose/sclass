@@ -113,7 +113,7 @@ export class Config {
  * @description Global config class used throughout the application,
  * parses arguments from the CLI and provides it to the rest of the application
  */
-class CliConfig {
+export class CliConfig {
 	private _inputContractFilePath: string | undefined
 
 	private _exclude: ExcludeConfig = {
@@ -230,7 +230,8 @@ class CliConfig {
 	}
 
 	parseFlagsWithoutArguments(args: string[]) {
-		for (const arg of args) {
+		const argsDuplicate = [...args]
+		for (const arg of argsDuplicate) {
 			switch (arg) {
 				case "--exclude-interfaces":
 				case "-ei":
@@ -242,6 +243,8 @@ class CliConfig {
 				case "-el":
 					this._exclude.contracts.libraries = true
 					args.splice(args.indexOf(arg), 1)
+					break
+				default:
 					break
 			}
 		}

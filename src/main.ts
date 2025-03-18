@@ -1,4 +1,8 @@
-import { convertContractDefinitionToContract } from "./parse/convertContractDefinitionToContract.js"
+import {
+	convertContractDefinitionToContract,
+	convertInterfaceDefinitionToInterface,
+	convertLibraryDefinitionToLibrary,
+} from "./parse/convertContractDefinitionToContract.js"
 import { getClassDiagramString } from "./mermaid/diagram.js"
 import { Contract } from "./mermaid/contract.js"
 import {
@@ -32,27 +36,48 @@ export async function parseContracts(): Promise<Diagram> {
 
 	/* ======= PARSE CONTRACTS ======= */
 
-	let preparedContracts: Contract[] = []
+	let preparedContracts: Map<number, Contract> = new Map()
 
 	for (const contract of filteredContracts) {
 		// If contract is already prepared, skip
 		// this case is relevant for multiple contracts referenced in inheritance
-		if (preparedContracts.find((c) => c.className === contract.name))
-			continue
+		if (preparedContracts.has(contract.definition.id)) continue
 
-		preparedContracts.push(convertContractDefinitionToContract(contract))
+		preparedContracts.set(
+			contract.definition.id,
+			convertContractDefinitionToContract(contract),
+		)
+	}
+
+	for (const interfaceDef of filteredInterfaces) {
+		if (preparedContracts.has(interfaceDef.definition.id)) continue
+
+		preparedContracts.set(
+			interfaceDef.definition.id,
+			convertInterfaceDefinitionToInterface(interfaceDef),
+		)
+	}
+
+	for (const library of filteredLibraries) {
+		if (preparedContracts.has(library.definition.id)) continue
+
+		preparedContracts.set(
+			library.definition.id,
+			convertLibraryDefinitionToLibrary(library),
+		)
 	}
 
 	/* ======= PARSE INHERITANCE ======= */
 
 	let relations: string[] = []
-	for (const contract of filteredContracts) {
+
+	for (const contract of preparedContracts.values()) {
 		for (const parent of contract.inheritsFrom) {
 			const parentName = getDefinitionName(parent)
 
 			if (!isInFilteredList(parent, filteredContracts)) continue
 
-			const relationStr = `\t${parentName} <|-- ${contract.name}`
+			const relationStr = `\t${parentName} <|-- ${contract.className}`
 
 			if (relations.includes(relationStr)) continue
 
@@ -62,7 +87,10 @@ export async function parseContracts(): Promise<Diagram> {
 
 	// /* ======= DIAGRAM ======= */
 
-	const diagram = getClassDiagramString(preparedContracts, relations)
+	const diagram = getClassDiagramString(
+		Array.from(preparedContracts.values()),
+		relations,
+	)
 
 	return diagram.trim()
 }

@@ -1,3 +1,5 @@
+import { Definition } from "@nomicfoundation/slang/bindings"
+
 export interface Field {
 	type: string
 	name: string
@@ -46,6 +48,7 @@ export class Contract {
 	fields: Field[] = []
 	methods: Method[] = []
 	mappings: Mapping[] = []
+	inheritsFrom: Definition[] = []
 
 	constructor(className: string) {
 		this.className = className
@@ -101,6 +104,10 @@ export class Contract {
 		/* ====== Construction ====== */
 
 		return start + fields + mappings + methods + end
+	}
+
+	addInheritance(definitions: Definition[]) {
+		this.inheritsFrom.push(...definitions)
 	}
 
 	getParamsString(params: Declaration[], disableFunctionParamType: boolean) {

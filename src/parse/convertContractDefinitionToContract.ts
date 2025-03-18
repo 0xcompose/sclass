@@ -11,6 +11,8 @@ import { shouldFilterMethod } from "../utils/filter.js"
 import {
 	ParsedContractDefinition,
 	ParsedFunctionDefinition,
+	ParsedInterfaceDefinition,
+	ParsedLibraryDefinition,
 	ParsedParameterDeclaration,
 } from "./types.js"
 import {
@@ -63,6 +65,54 @@ export function convertContractDefinitionToContract(
 	/* ====== Functions ====== */
 
 	const functions = contractDefinition.functions
+
+	for (const func of functions) {
+		const method = parseFunction(func)
+
+		if (shouldFilterMethod(method)) continue
+
+		contract.addMethod(method)
+	}
+
+	/* ====== Inheritance ====== */
+
+	contract.addInheritance(contractDefinition.inheritsFrom)
+
+	return contract
+}
+
+export function convertInterfaceDefinitionToInterface(
+	interfaceDefinition: ParsedInterfaceDefinition,
+): Contract {
+	const contract = new Contract(interfaceDefinition.name)
+
+	/* ====== Functions ====== */
+
+	const functions = interfaceDefinition.functions
+
+	for (const func of functions) {
+		const method = parseFunction(func)
+
+		if (shouldFilterMethod(method)) continue
+
+		contract.addMethod(method)
+	}
+
+	/* ====== Inheritance ====== */
+
+	contract.addInheritance(interfaceDefinition.inheritsFrom)
+
+	return contract
+}
+
+export function convertLibraryDefinitionToLibrary(
+	libraryDefinition: ParsedLibraryDefinition,
+): Contract {
+	const contract = new Contract(libraryDefinition.name)
+
+	/* ====== Functions ====== */
+
+	const functions = libraryDefinition.functions
 
 	for (const func of functions) {
 		const method = parseFunction(func)
