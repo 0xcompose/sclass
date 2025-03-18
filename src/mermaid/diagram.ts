@@ -2,7 +2,7 @@ import path from "path"
 import { Config } from "../config.js"
 import { Contract } from "./contract.js"
 
-function getDiagramTemplate() {
+function getDiagramTemplate(): string {
 	const inputContractFilePath = Config.inputContractFilePath
 
 	const fileName = path.basename(inputContractFilePath).split(".")[0]
@@ -19,7 +19,7 @@ classDiagram
 export function getClassDiagramString(
 	classes: Contract[],
 	relations: string[],
-) {
+): string {
 	const disableFunctionParamType = Config.disableFunctionParamType
 
 	let str = getDiagramTemplate()

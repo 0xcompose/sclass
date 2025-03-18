@@ -1,4 +1,4 @@
-import { Format, HELP_MESSAGE, Theme } from "./misc/constants.js"
+import { Format, HELP_MESSAGE, Theme } from "./constants.js"
 import path from "path"
 import fs from "fs"
 import { isSolidityFile } from "./utils/checkers.js"

@@ -1,5 +1,5 @@
 import { expect } from "chai"
-import { HELP_MESSAGE } from "../../src/misc/constants.js"
+import { HELP_MESSAGE } from "../../src/constants.js"
 import { sclass } from "../utils/cli.js"
 
 export function helpFlagTest() {

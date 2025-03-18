@@ -1,5 +1,5 @@
 import fs from "fs"
-import { COLLECTIONS_DIR } from "../../src/misc/constants.js"
+import { COLLECTIONS_DIR } from "../../src/constants.js"
 
 export const TEST_CONTRACT_PATH = "./test/constants/TestContract.sol"
 export const TEST_COLLECTION_PATH = "./test/constants/TestCollection.json"
