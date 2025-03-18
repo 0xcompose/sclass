@@ -2,6 +2,7 @@ import { Method } from "../mermaid/contract.js"
 import { Config } from "../config.js"
 import { getDefinitionName } from "./definitions.js"
 import { Definition } from "@nomicfoundation/slang/bindings"
+
 export function shouldIncludeContract(definition: Definition): boolean {
 	if (isException(definition)) return true
 

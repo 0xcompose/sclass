@@ -46,29 +46,3 @@ Options:
 File:
   Path to the .sol file to parse
 `
-
-export const DefinitionsCollection: NonterminalKind[] = [
-	NonterminalKind.ContractDefinition,
-	NonterminalKind.InterfaceDefinition,
-	NonterminalKind.LibraryDefinition,
-
-	// Contract member definitions
-	NonterminalKind.FunctionDefinition,
-	NonterminalKind.ConstructorDefinition,
-	NonterminalKind.ReceiveFunctionDefinition,
-	NonterminalKind.FallbackFunctionDefinition,
-	NonterminalKind.ModifierDefinition,
-	NonterminalKind.StateVariableDefinition,
-
-	// Function parameters
-	NonterminalKind.Parameter,
-
-	// Type definitions
-	NonterminalKind.StructDefinition,
-	NonterminalKind.EnumDefinition,
-	NonterminalKind.UserDefinedValueTypeDefinition,
-
-	// Event and error definitions
-	NonterminalKind.EventDefinition,
-	NonterminalKind.ErrorDefinition,
-]
