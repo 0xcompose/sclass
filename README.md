@@ -6,24 +6,28 @@ Parses Solidity files using [@nomicfoundation/slang](https://github.com/NomicFou
 
 Supports Foundry projects, doesn't support Hardhat project (create issue to request hardhat support)
 
-## Dependencies
-
--   `foundry` - used for flattening contracts (`forge` command MUST be available in console)
-
 ## Getting Started
 
 ```
-npm i -g sclass
+sudo npm i -g sclass
 sclass --help
 ```
 
 ## Usage example
 
 ```
-sclass src/Contract.sol --format svg --output ClassDiagram.svg
+sclass src/FlattenedContract.sol --format svg --output FlattenedContract.svg
 ```
 
-You can view the ClassDiagram.svg in any web browser or using this [preview extension](https://marketplace.visualstudio.com/items?itemName=vitaliymaz.vscode-svg-previewer)
+or with short flags
+
+```
+sclass src/FlattenedContract.sol -f svg
+```
+
+which will output a scheme in svg format with name 'FlattenedContract.svg'.
+
+You can view the FlattenedContract.svg in any web browser or using this [preview extension](https://marketplace.visualstudio.com/items?itemName=vitaliymaz.vscode-svg-previewer)
 
 ## Configuration
 
