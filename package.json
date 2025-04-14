@@ -1,6 +1,6 @@
 {
 	"name": "sclass",
-	"version": "2.0.2",
+	"version": "2.0.3",
 	"type": "module",
 	"author": "0xcompose",
 	"description": "Solidity to Class Diagram Interpreter",
@@ -42,15 +42,19 @@
 	},
 	"license": "ISC",
 	"devDependencies": {
+		"@eslint/js": "^9.23.0",
 		"@types/chai": "^4.3.16",
 		"@types/mocha": "^10.0.6",
 		"@types/node": "^22.10.6",
 		"chai": "^4.2.0",
+		"eslint": "^9.23.0",
+		"globals": "^16.0.0",
 		"husky": "^9.1.7",
 		"mocha": "^11.1.0",
 		"tsconfig-paths": "^4.2.0",
 		"tsx": "^4.19.3",
-		"typescript": "^5.8.2"
+		"typescript": "^5.8.2",
+		"typescript-eslint": "^8.28.0"
 	},
 	"dependencies": {
 		"@mermaid-js/mermaid-cli": "^10.9.1",
