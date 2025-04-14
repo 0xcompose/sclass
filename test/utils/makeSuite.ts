@@ -2,7 +2,7 @@ import fs from "fs"
 import { COLLECTIONS_DIR } from "../../src/constants.js"
 
 export const TEST_CONTRACT_PATH = "./test/constants/TestContract.sol"
-export const TEST_COLLECTION_PATH = "./test/constants/TestCollection.json"
+// export const TEST_COLLECTION_PATH = "./src/constants/TestCollection.json"
 export const TEST_OUTPUT_DIR = "./test/temp"
 
 export function makeSuite(
@@ -15,11 +15,13 @@ export function makeSuite(
 			describe.skip(name, () => {
 				runTest(test)
 			})
+			break
 
 		case "only":
 			describe.only(name, () => {
 				runTest(test)
 			})
+			break
 
 		default:
 			describe(name, () => {
@@ -30,35 +32,35 @@ export function makeSuite(
 
 // we copy test files to required directories and delete them after the test
 function runTest(test: () => void) {
-	before(async () => {
-		await makeEnv()
+	before(() => {
+		makeEnv()
 	})
 
 	test()
 
-	after(async () => {
-		await cleanup()
+	after(() => {
+		cleanup()
 	})
 }
 
-async function makeEnv() {
+function makeEnv() {
 	/* ======== COPY TEST CONTRACT ======== */
 	// const fileContent = fs.readFileSync(TEST_CONTRACT_PATH)
 	// fs.writeFileSync(`${CONTRACTS_DIR}/TestContract.sol`, fileContent)
 	/* ======== COPY TEST COLLECTION ======== */
-	const collectionContent = fs.readFileSync(TEST_COLLECTION_PATH)
+	// const collectionContent = fs.readFileSync(TEST_COLLECTION_PATH)
 
 	if (!fs.existsSync(TEST_OUTPUT_DIR)) {
 		fs.mkdirSync(TEST_OUTPUT_DIR)
 	}
 
-	fs.writeFileSync(
-		`${COLLECTIONS_DIR}/TestCollection.json`,
-		collectionContent,
-	)
+	// fs.writeFileSync(
+	// 	`${COLLECTIONS_DIR}/TestCollection.json`,
+	// 	collectionContent,
+	// )
 }
 
-async function cleanup() {
+function cleanup() {
 	/* ======== DELETE TEST ENV ======== */
 	// fs.unlinkSync(`${CONTRACTS_DIR}/TestContract.sol`)
 

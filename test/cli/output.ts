@@ -14,11 +14,11 @@ export function outputTest() {
 	// 	const result = sclass()
 	// })
 
-	it("Doesn't throw error if file with given name already exists", () => {
+	it("Doesn't throw error if file with given name already exists", async () => {
 		// Create temp file
 		fs.writeFileSync(`${TEST_OUTPUT_DIR}/Test.mmd`, "occupy file name")
 
-		sclass({
+		await sclass({
 			flags: `-o ${TEST_OUTPUT_DIR}/Test.mmd`,
 		})
 
@@ -30,8 +30,8 @@ export function outputTest() {
 		compareMermaidSchemes(fileContent, TEST_CONTRACT_MERMAID)
 	})
 
-	it("Creates folder, if it doesn't exist", () => {
-		const result = sclass({
+	it("Creates folder, if it doesn't exist", async () => {
+		await sclass({
 			flags: `-o ${TEST_OUTPUT_DIR}/Test/Test.mmd`,
 		})
 
@@ -43,8 +43,8 @@ export function outputTest() {
 		compareMermaidSchemes(fileContent, TEST_CONTRACT_MERMAID)
 	})
 
-	it("Can create multiple child folders to write file into", () => {
-		sclass({
+	it("Can create multiple child folders to write file into", async () => {
+		await sclass({
 			flags: `-o ${TEST_OUTPUT_DIR}/Test/abc/Test.mmd`,
 		})
 
@@ -59,8 +59,8 @@ export function outputTest() {
 	makeSuite(
 		"Appends file extension to output file name, if it is not provided",
 		function () {
-			it("MMD", () => {
-				sclass({
+			it("MMD", async () => {
+				await sclass({
 					flags: `-o ${TEST_OUTPUT_DIR}/Test`,
 				})
 
@@ -72,24 +72,24 @@ export function outputTest() {
 				compareMermaidSchemes(mmdFileContent, TEST_CONTRACT_MERMAID)
 			})
 
-			it("SVG", () => {
-				sclass({
+			it("SVG", async () => {
+				await sclass({
 					flags: `-o ${TEST_OUTPUT_DIR}/Test -f svg`,
 				})
 
 				expectToBeSVG(`${TEST_OUTPUT_DIR}/Test.svg`)
 			})
 
-			it("PNG", () => {
-				sclass({
+			it("PNG", async () => {
+				await sclass({
 					flags: `-o ${TEST_OUTPUT_DIR}/Test -f png`,
 				})
 
 				expectToBePNG(`${TEST_OUTPUT_DIR}/Test.png`)
 			})
 
-			it("PDF", () => {
-				sclass({
+			it("PDF", async () => {
+				await sclass({
 					flags: `-o ${TEST_OUTPUT_DIR}/Test -f pdf`,
 				})
 
@@ -110,17 +110,17 @@ export function outputTest() {
 			// })
 
 			// Generates SVG in markdown file
-			it.skip("MD", function () {
-				const result = sclass({
+			it.skip("MD", async function () {
+				const result = await sclass({
 					flags: "-f md",
 				})
 
-				compareMermaidSchemes(result, TEST_CONTRACT_MERMAID)
+				compareMermaidSchemes(result.stdout, TEST_CONTRACT_MERMAID)
 				cleanUpTempFile(`./TestContract.md`)
 			})
 
-			it("SVG", function () {
-				sclass({
+			it("SVG", async function () {
+				await sclass({
 					flags: "-f svg",
 				})
 
@@ -128,8 +128,8 @@ export function outputTest() {
 				cleanUpTempFile(`./TestContract.svg`)
 			})
 
-			it("PNG", function () {
-				sclass({
+			it("PNG", async function () {
+				await sclass({
 					flags: "-f png",
 				})
 
@@ -137,8 +137,8 @@ export function outputTest() {
 				cleanUpTempFile(`./TestContract.png`)
 			})
 
-			it("PDF", function () {
-				sclass({
+			it("PDF", async function () {
+				await sclass({
 					flags: "-f pdf",
 				})
 

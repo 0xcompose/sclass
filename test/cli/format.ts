@@ -7,9 +7,9 @@ import { expect } from "chai"
 import { compareMermaidSchemes } from "../utils/compareMermaidSchemes.js"
 
 export function formatTest() {
-	it("should generate mermaid code in mmd format", () => {
+	it("should generate mermaid code in mmd format", async () => {
 		const format = Format.MMD
-		sclass({
+		await sclass({
 			flags: `-f ${format} -o ${TEST_OUTPUT_DIR}/Test.${format}`,
 		})
 
@@ -19,9 +19,9 @@ export function formatTest() {
 	})
 
 	// TODO: investigate why it generates svg
-	it.skip("should generate mermaid code in md format", () => {
+	it.skip("should generate mermaid code in md format", async () => {
 		const format = Format.MD
-		sclass({
+		await sclass({
 			flags: `-f ${format} -o ${TEST_OUTPUT_DIR}/Test.${format}`,
 		})
 
@@ -30,9 +30,9 @@ export function formatTest() {
 		compareMermaidSchemes(result, TEST_CONTRACT_MERMAID)
 	})
 
-	it("should generate mermaid code in svg format", () => {
+	it("should generate mermaid code in svg format", async () => {
 		const format = Format.SVG
-		sclass({
+		await sclass({
 			flags: `-f ${format} -o ${TEST_OUTPUT_DIR}/Test.${format}`,
 		})
 
@@ -44,9 +44,9 @@ export function formatTest() {
 		expect(result).length.to.be.greaterThan(1000)
 	})
 
-	it("should generate mermaid code in png format", () => {
+	it("should generate mermaid code in png format", async () => {
 		const format = Format.PNG
-		sclass({
+		await sclass({
 			flags: `-f ${format} -o ${TEST_OUTPUT_DIR}/Test.${format}`,
 		})
 
@@ -57,10 +57,10 @@ export function formatTest() {
 		expect(result).length.to.be.greaterThan(1000)
 	})
 
-	it("should generate mermaid code in pdf format", () => {
+	it("should generate mermaid code in pdf format", async () => {
 		const format = Format.PDF
 
-		sclass({
+		await sclass({
 			flags: `-f ${format} -o ${TEST_OUTPUT_DIR}/Test.${format}`,
 		})
 

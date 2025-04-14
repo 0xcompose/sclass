@@ -3,9 +3,9 @@ import { sclass } from "../utils/cli.js"
 import { compareMermaidSchemes } from "../utils/compareMermaidSchemes.js"
 
 export function mermaidGenerationTest() {
-	it("should generate mermaid code", () => {
-		const result = sclass()
+	it("should generate mermaid code", async () => {
+		const result = await sclass()
 
-		compareMermaidSchemes(result, TEST_CONTRACT_MERMAID)
+		compareMermaidSchemes(result.stdout, TEST_CONTRACT_MERMAID)
 	})
 }
