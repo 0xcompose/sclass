@@ -160,7 +160,7 @@ export function parseTypeName(typeName: TypeName | null): string {
 		case NonterminalKind.ElementaryType:
 			return variant.cst.unparse()
 
-		case NonterminalKind.MappingType:
+		case NonterminalKind.MappingType: {
 			// Handle mapping with named parameters
 			const mapping = new MappingType(variant.cst.asNonterminalNode())
 			const keyVariant = mapping.keyType.keyType.variant
@@ -177,13 +177,17 @@ export function parseTypeName(typeName: TypeName | null): string {
 
 			const value = parseTypeName(mapping.valueType.typeName)
 			return `mapping(${key} => ${value})`
+		}
 
-		case NonterminalKind.UserDefinedValueTypeDefinition:
-			return typeName.variant.cst.unparse().trim()
-
-		case NonterminalKind.ArrayTypeName:
+		case NonterminalKind.ArrayTypeName: {
 			const array = new ArrayTypeName(variant.cst.asNonterminalNode())
 			return parseTypeName(array.operand) + "[]"
+		}
+
+		case NonterminalKind.IdentifierPath:
+			return (variant as IdentifierPath).items
+				.map((item) => item.unparse())
+				.join(".")
 
 		default:
 			throw new Error(`Unhandled typeName: ${variant.cst.kind}`)
@@ -200,7 +204,7 @@ function parseVariable(variable: StateVariableDefinition): Field {
 
 function parseFunction(func: Definition): Method | null {
 	/* ====== Name ====== */
-	let name = getDefinitionName(func)
+	const name = getDefinitionName(func)
 
 	// function name can be null - then it's constructor
 	if (!name) return null
@@ -218,15 +222,15 @@ function parseFunction(func: Definition): Method | null {
 
 	/* ====== Visibility ====== */
 
-	let visibility: Visibility = parseFunctionVisibility(func)
+	const visibility: Visibility = parseFunctionVisibility(func)
 
 	/* ====== Mutability ====== */
 
-	let stateMutability = parseFunctionStateMutability(func)
+	const stateMutability = parseFunctionStateMutability(func)
 
 	/* ====== Return Type ====== */
 
-	let returnType = parseFunctionReturnType(func)
+	const returnType = parseFunctionReturnType(func)
 
 	/* ====== Construction ====== */
 

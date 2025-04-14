@@ -111,6 +111,8 @@ export function findInheritanceIdentifiers(
 
 		if (!reference) continue
 
+		// In some cases, a reference can have multiple definitions
+		// https://arc.net/l/quote/enqcrhem
 		assert(
 			reference.definitions().length === 1,
 			"Expected 1 definition for a reference",
@@ -119,6 +121,8 @@ export function findInheritanceIdentifiers(
 		const definition = reference.definitions()[0]
 
 		if (!definition) continue
+
+		if (definition.nameLocation.isBuiltInLocation()) continue
 
 		const kind = getDefinitionKind(definition)
 

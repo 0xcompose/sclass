@@ -31,11 +31,17 @@ export async function buildCompilationUnit(
 }
 
 // TODO: Implement to support non flattened files
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function resolveImport(importPath: string) {
 	// console.log("Resolving import path", importPath)
 	return undefined
 }
 
 async function readFile(filePath: string): Promise<string> {
-	return fs.readFileSync(filePath, "utf-8")
+	return new Promise((resolve, reject) => {
+		fs.readFile(filePath, "utf-8", (err, data) => {
+			if (err) reject(err)
+			else resolve(data)
+		})
+	})
 }

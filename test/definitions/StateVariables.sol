@@ -1,7 +1,15 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
+interface IERC20 {
+    function transfer(address to, uint256 amount) external returns (bool);
+}
+
 contract StateVariables {
+    IERC20 public immutable token;
+
+    bytes32[] public arrayOfBytes32;
+
     uint256 public stateVariable1;
     uint128 public stateVariable2;
 
@@ -25,6 +33,10 @@ contract StateVariables {
     }
 
     StructOfVariables public stateVariables;
+
+    StructOfVariables[] public arrayOfStructs;
+
+    mapping(address => StructOfVariables[]) public mappingOfStructs;
 
     constructor(bytes2 _immutableBytes2Variable) {
         immutableBytes2Variable = _immutableBytes2Variable;

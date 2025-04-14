@@ -48,7 +48,6 @@ export function findDefinitionsInFile(
 		// definiens should too be located in the file we queried
 		assertUserFileLocation(definition.definiensLocation)
 		assert.strictEqual(definition.definiensLocation.fileId, fileId)
-		definition.definiensLocation.cursor
 
 		definitions.push(definition)
 	}
@@ -95,7 +94,6 @@ export function findDefinitionsOfKindsInFile(
 		// definiens should too be located in the file we queried
 		assertUserFileLocation(definition.definiensLocation)
 		assert.strictEqual(definition.definiensLocation.fileId, fileId)
-		definition.definiensLocation.cursor
 
 		definitions.push(definition)
 	}
@@ -114,9 +112,15 @@ export function getDefinitionCursor(definition: Definition): Cursor {
 }
 
 export function getDefinitionKind(definition: Definition): NonterminalKind {
-	const cursor = definition.definiensLocation.asUserFileLocation().cursor
+	assert(
+		definition.definiensLocation.isUserFileLocation(),
+		"Definition definiens location is not a user file location",
+	)
 
-	return cursor.node.kind as NonterminalKind
+	const cursor = definition.definiensLocation.asUserFileLocation().cursor
+	const kind = cursor.node.kind as NonterminalKind
+
+	return kind
 }
 
 export function getDefinitionName(definition: Definition): string {
