@@ -46,7 +46,7 @@ async function generatePictureFile(diagram: string) {
 	if (stderr) console.error(pc.yellow(stderr))
 }
 
-async function writeToFile(content: string, outputFilePath: string) {
+function writeToFile(content: string, outputFilePath: string) {
 	const filePath = outputFilePath || "diagram.mmd"
 
 	// Ensure directory exists
@@ -59,4 +59,7 @@ async function writeToFile(content: string, outputFilePath: string) {
 	fs.writeFileSync(filePath, content)
 }
 
-main()
+main().catch((error) => {
+	console.error(error)
+	process.exit(1)
+})

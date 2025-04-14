@@ -3,14 +3,14 @@ import { Definition } from "@nomicfoundation/slang/bindings"
 import { findDefinitionsOfKindsInFile } from "../utils/definitions.js"
 import { CompilationUnit } from "@nomicfoundation/slang/compilation"
 
-export async function parseFileForDefinitions(
+export function parseFileForDefinitions(
 	unit: CompilationUnit,
 	filePath: string,
-): Promise<{
+): {
 	contracts: Definition[]
 	interfaces: Definition[]
 	libraries: Definition[]
-}> {
+} {
 	// Find and Parse ContractDefinitions
 
 	const contracts = findDefinitionsOfKindsInFile(unit, filePath, [

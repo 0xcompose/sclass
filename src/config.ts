@@ -4,6 +4,10 @@ import fs from "fs"
 import { isSolidityFile } from "./utils/checkers.js"
 import { parseTheme } from "./utils/parse.js"
 import { parseFormat } from "./utils/parse.js"
+import { layerzero } from "./collections/layerzero.js"
+import { openzeppelin } from "./collections/openzeppelin.js"
+import { commonUtils } from "./collections/common-utils.js"
+import { stargate } from "./collections/stargate.js"
 
 export interface OutputConfig {
 	filePath: string
@@ -356,14 +360,10 @@ export class CliConfig {
 }
 
 function parseCollectionsFolder(): Record<string, string[]> {
-	const collectionsFolder = path.join(process.cwd(), "collections")
-	const collections = fs.readdirSync(collectionsFolder)
-
-	return collections.reduce((acc, collection) => {
-		const collectionPath = path.join(collectionsFolder, collection)
-		const collectionContent = fs.readFileSync(collectionPath, "utf8")
-		const collectionName = collection.replace(".json", "")
-		acc[collectionName] = JSON.parse(collectionContent)
-		return acc
-	}, {} as Record<string, string[]>)
+	return {
+		layerzero: layerzero,
+		openzeppelin: openzeppelin,
+		commonUtils: commonUtils,
+		stargate: stargate,
+	}
 }

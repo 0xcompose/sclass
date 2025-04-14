@@ -30,7 +30,7 @@ export async function parseContracts(): Promise<Diagram> {
 
 	/* ======= READ INPUT FILE ======= */
 
-	const { contracts, interfaces, libraries } = await parseFileForDefinitions(
+	const { contracts, interfaces, libraries } = parseFileForDefinitions(
 		unit,
 		filePath,
 	)
@@ -108,7 +108,7 @@ function getConverter(definition: Definition) {
 }
 
 function constructMermaidRelations(preparedContracts: Map<number, Contract>) {
-	let relations: string[] = []
+	const relations: string[] = []
 
 	for (const contract of preparedContracts.values()) {
 		for (const parent of contract.inheritsFrom) {
