@@ -15,7 +15,7 @@ describe("findInheritanceIdentifiers()", () => {
 		unit = await buildCompilationUnit(fileId)
 	})
 
-	it("MUST find InheritanceIdentifiers in ContractDefinition", async () => {
+	it("MUST find InheritanceIdentifiers in ContractDefinition", () => {
 		const contractDefinitions = findDefinitionsOfKindsInFile(unit, fileId, [
 			NonterminalKind.ContractDefinition,
 		])
@@ -47,7 +47,7 @@ describe("findInheritanceIdentifiers()", () => {
 		}
 	})
 
-	it("MUST find InheritanceIdentifiers in InterfaceDefinition", async () => {
+	it("MUST find InheritanceIdentifiers in InterfaceDefinition", () => {
 		const interfaceDefinitions = findDefinitionsOfKindsInFile(
 			unit,
 			fileId,

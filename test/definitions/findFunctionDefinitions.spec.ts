@@ -13,7 +13,7 @@ describe("findFunctionDefinitions()", () => {
 		unit = await buildCompilationUnit(fileId)
 	})
 
-	it("MUST find FunctionDefinitions in ContractDefinition", async () => {
+	it("MUST find FunctionDefinitions in ContractDefinition", () => {
 		const contractDefinition = findDefinitionsOfKindsInFile(unit, fileId, [
 			NonterminalKind.ContractDefinition,
 		])
@@ -35,7 +35,7 @@ describe("findFunctionDefinitions()", () => {
 		)
 	})
 
-	it("MUST find FunctionDefinitions in InterfaceDefinition", async () => {
+	it("MUST find FunctionDefinitions in InterfaceDefinition", () => {
 		const interfaceDefinition = findDefinitionsOfKindsInFile(unit, fileId, [
 			NonterminalKind.InterfaceDefinition,
 		])
@@ -58,7 +58,7 @@ describe("findFunctionDefinitions()", () => {
 		)
 	})
 
-	it("MUST find FunctionDefinitions in LibraryDefinition", async () => {
+	it("MUST find FunctionDefinitions in LibraryDefinition", () => {
 		const libraryDefinition = findDefinitionsOfKindsInFile(unit, fileId, [
 			NonterminalKind.LibraryDefinition,
 		])

@@ -17,13 +17,13 @@ describe("findDefinitionsInFile() / findDefinitionsOfKindsInFile()", () => {
 		unit = await buildCompilationUnit(fileId)
 	})
 
-	it("MUST find Definitions in a file", async () => {
+	it("MUST find Definitions in a file", () => {
 		const definitions = findDefinitionsInFile(unit, fileId)
 
 		assert.equal(definitions.length, 18)
 	})
 
-	it("MUST find ContractDefinition in a file", async () => {
+	it("MUST find ContractDefinition in a file", () => {
 		const definitions = findDefinitionsOfKindsInFile(unit, fileId, [
 			NonterminalKind.ContractDefinition,
 		])
@@ -31,7 +31,7 @@ describe("findDefinitionsInFile() / findDefinitionsOfKindsInFile()", () => {
 		assert.equal(definitions.length, 5)
 	})
 
-	it("MUST find FunctionDefinition in a file", async () => {
+	it("MUST find FunctionDefinition in a file", () => {
 		const definitions = findDefinitionsOfKindsInFile(unit, fileId, [
 			NonterminalKind.FunctionDefinition,
 		])
@@ -39,7 +39,7 @@ describe("findDefinitionsInFile() / findDefinitionsOfKindsInFile()", () => {
 		assert.equal(definitions.length, 6)
 	})
 
-	it("MUST find Parameter in a file", async () => {
+	it("MUST find Parameter in a file", () => {
 		const definitions = findDefinitionsOfKindsInFile(unit, fileId, [
 			NonterminalKind.Parameter,
 		])
@@ -47,7 +47,7 @@ describe("findDefinitionsInFile() / findDefinitionsOfKindsInFile()", () => {
 		assert.equal(definitions.length, 2)
 	})
 
-	it("MUST find StateVariableDefinition in a file", async () => {
+	it("MUST find StateVariableDefinition in a file", () => {
 		const definitions = findDefinitionsOfKindsInFile(unit, fileId, [
 			NonterminalKind.StateVariableDefinition,
 		])

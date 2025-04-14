@@ -14,7 +14,7 @@ describe("parseFlagsWithoutArguments()", () => {
 
 		cliConfig.parseFlagsWithoutArguments(args)
 
-		expect(cliConfig.exclude.contracts.interfaces).to.be.true
+		expect(cliConfig.exclude.contracts.interfaces).to.be.equal(true)
 		expect(args).to.deep.equal([])
 	})
 
@@ -42,7 +42,7 @@ describe("parseFlagsWithoutArguments()", () => {
 		const args = ["--exclude-interfaces"]
 
 		cliConfig.parseFlagsWithoutArguments(args)
-		expect(cliConfig.exclude.contracts.interfaces).to.be.true
+		expect(cliConfig.exclude.contracts.interfaces).to.be.equal(true)
 	})
 
 	it("MUST exclude interfaces if -ei flag is provided", () => {
@@ -51,7 +51,7 @@ describe("parseFlagsWithoutArguments()", () => {
 		const args = ["-ei"]
 
 		cliConfig.parseFlagsWithoutArguments(args)
-		expect(cliConfig.exclude.contracts.interfaces).to.be.true
+		expect(cliConfig.exclude.contracts.interfaces).to.be.equal(true)
 	})
 
 	it("MUST exclude libraries if --exclude-libraries flag is provided", () => {
@@ -60,7 +60,7 @@ describe("parseFlagsWithoutArguments()", () => {
 		const args = ["--exclude-libraries"]
 
 		cliConfig.parseFlagsWithoutArguments(args)
-		expect(cliConfig.exclude.contracts.libraries).to.be.true
+		expect(cliConfig.exclude.contracts.libraries).to.be.equal(true)
 	})
 
 	it("MUST exclude libraries if -el flag is provided", () => {
@@ -69,6 +69,6 @@ describe("parseFlagsWithoutArguments()", () => {
 		const args = ["-el"]
 
 		cliConfig.parseFlagsWithoutArguments(args)
-		expect(cliConfig.exclude.contracts.libraries).to.be.true
+		expect(cliConfig.exclude.contracts.libraries).to.be.equal(true)
 	})
 })
