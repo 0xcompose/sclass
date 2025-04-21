@@ -1,4 +1,20 @@
 node_modules
 **/.DS_Store
-out/
+
+# Testing directory
+out
+
+# Build
 bin/
+
+test/temp
+
+# Temp Test Files
+**/*.pdf
+**/*.png
+**/*.svg
+**/*.mmd
+collections/TestCollection.json
+
+# Cursor
+.cursorrules

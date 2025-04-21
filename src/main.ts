@@ -1,88 +1,126 @@
-import fs from "fs"
 import {
-    ContractDefinition,
-} from "@solidity-parser/parser/dist/src/ast-types"
-import { convertContractDefinitionToContract } from "./ast/astContractDefinitionToContract"
-import { parse } from "@solidity-parser/parser"
-import { getClassDiagramString } from "./mermaid/diagram"
-import { Contract } from "./mermaid/contract"
-import { CONTRACTS_DIR, OUTPUT_DIAGRAM_FILE } from "./misc/constants"
-import { shouldFilterContract } from "./utils/filter"
-import { config } from "../config"
+	convertContractDefinitionToContract,
+	convertInterfaceDefinitionToInterface,
+	convertLibraryDefinitionToLibrary,
+} from "./parse/convertContractDefinitionToContract.js"
+import { getClassDiagramString } from "./mermaid/diagram.js"
+import { Contract } from "./mermaid/contract.js"
+import {
+	shouldIncludeContract,
+	shouldIncludeInterface,
+	shouldIncludeLibrary,
+} from "./utils/filter.js"
+import { parseFileForDefinitions } from "./parse/parseFileForDefinitions.js"
+import { getDefinitionKind, getDefinitionName } from "./utils/definitions.js"
+import { Definition } from "@nomicfoundation/slang/bindings"
+import { Config } from "./config.js"
+import { buildCompilationUnit } from "./parse/buildCompilationUnit.js"
+import { CompilationUnit } from "@nomicfoundation/slang/compilation"
+import { NonterminalKind } from "@nomicfoundation/slang/cst"
 
-function main() {
-    /* ======= READ FILES ======= */
+type Diagram = string
 
-    const contracts = readFileAndParse(config)
+export async function parseContracts(): Promise<Diagram> {
+	const filePath = Config.inputContractFilePath
+	const unit = await buildCompilationUnit(filePath)
 
-    /* ======= FILTER ======= */
+	if (!filePath) {
+		throw new Error("Input file path is not set")
+	}
 
-    const filteredContracts: ContractDefinition[] = []
-    const excludedContractNames: Map<string, boolean> = new Map()
+	/* ======= READ INPUT FILE ======= */
 
-    for (const contract of contracts) {
-        const shouldFilter = shouldFilterContract(contract, config)
+	const { contracts, interfaces, libraries } = parseFileForDefinitions(
+		unit,
+		filePath,
+	)
 
-        if (!shouldFilter) filteredContracts.push(contract)
-        else excludedContractNames.set(contract.name, true)
-    }
+	/* ======= FILTER ======= */
 
-    /* ======= PARSE CONTRACTS ======= */
+	const filteredContracts = contracts.filter((contract) =>
+		shouldIncludeContract(contract),
+	)
 
-    let parsedContracts: Contract[] = []
+	const filteredInterfaces = interfaces.filter((interfaceDef) =>
+		shouldIncludeInterface(interfaceDef),
+	)
 
-    for (const contract of filteredContracts) {
-        if (parsedContracts.find((c) => c.className === contract.name)) continue
+	const filteredLibraries = libraries.filter((library) =>
+		shouldIncludeLibrary(library),
+	)
 
-        parsedContracts.push(
-            convertContractDefinitionToContract(contract, config),
-        )
-    }
+	/* ======= PARSE CONTRACTS ======= */
 
-    /* ======= PARSE INHERITANCE ======= */
+	const classDefinitions = [
+		...filteredContracts,
+		...filteredInterfaces,
+		...filteredLibraries,
+	]
 
-    let relations: string[] = []
-    for (const contract of filteredContracts) {
-        for (const base of contract.baseContracts) {
-            if (excludedContractNames.get(base.baseName.namePath)) continue
+	const preparedContracts = prepareContracts(unit, classDefinitions)
 
-            const relationStr = `\t${base.baseName.namePath} <|-- ${contract.name}`
+	/* ======= PARSE INHERITANCE ======= */
 
-            if (relations.includes(relationStr)) continue
+	// /* ======= DIAGRAM ======= */
 
-            relations.push(relationStr)
-        }
-    }
+	const diagram = getClassDiagramString(
+		Array.from(preparedContracts.values()),
+		constructMermaidRelations(preparedContracts),
+	)
 
-    // /* ======= DIAGRAM ======= */
-
-    const diagram = getClassDiagramString(
-        parsedContracts,
-        relations,
-        config.disableFunctionParamType,
-    )
-
-    console.log(diagram)
-    fs.writeFileSync(OUTPUT_DIAGRAM_FILE, diagram)
+	return diagram.trim()
 }
 
-export function readFileAndParse(config: Config) {
-    const contracts: ContractDefinition[] = []
+function prepareContracts(
+	unit: CompilationUnit,
+	filteredContracts: Definition[],
+): Map<number, Contract> {
+	const preparedContracts: Map<number, Contract> = new Map()
 
-    for (const file of config.inputContracts) {
-        const path = `${CONTRACTS_DIR}/${file}.sol`
+	for (const contract of filteredContracts) {
+		if (preparedContracts.has(contract.id)) continue
 
-        const buffer = fs.readFileSync(path)
-        const solidityCode = buffer.toString()
+		const convert = getConverter(contract)
 
-        let ast = parse(solidityCode)
+		const convertedContract = convert(unit, contract)
 
-        // console.log(`Parsed ${file}`)
-        // console.log(inspect(ast, { depth: 10 }))
-        contracts.push(...(ast.children as ContractDefinition[]))
-    }
+		preparedContracts.set(contract.id, convertedContract)
+	}
 
-    return contracts
+	return preparedContracts
 }
 
-main()
+function getConverter(definition: Definition) {
+	switch (getDefinitionKind(definition)) {
+		case NonterminalKind.ContractDefinition:
+			return convertContractDefinitionToContract
+		case NonterminalKind.InterfaceDefinition:
+			return convertInterfaceDefinitionToInterface
+		case NonterminalKind.LibraryDefinition:
+			return convertLibraryDefinitionToLibrary
+		default:
+			throw new Error(
+				`Incorrect definition kind passed: ${getDefinitionKind(
+					definition,
+				)}, expected contracts`,
+			)
+	}
+}
+
+function constructMermaidRelations(preparedContracts: Map<number, Contract>) {
+	const relations: string[] = []
+
+	for (const contract of preparedContracts.values()) {
+		for (const parent of contract.inheritsFrom) {
+			const parentName = getDefinitionName(parent)
+
+			const relationStr = `\t${parentName} <|-- ${contract.className}`
+
+			if (relations.includes(relationStr)) continue
+
+			relations.push(relationStr)
+		}
+	}
+
+	return relations
+}

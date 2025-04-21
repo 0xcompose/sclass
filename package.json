@@ -1,27 +1,65 @@
 {
-    "name": "solidity-parsing",
-    "version": "1.0.0",
-    "main": "index.js",
-    "scripts": {
-        "parse": "npx ts-node src/main.ts",
-        "render": "npx mmdc --input out/diagram.mmd --output out/diagram.svg --theme dark",
-        "start": "npm run parse && npm run render",
-        "test": "TS_NODE_FILES=true npx ts-node node_modules/mocha/bin/mocha 'test/**/*.ts'"
-    },
-    "author": "",
-    "license": "ISC",
-    "description": "",
-    "devDependencies": {
-        "@types/chai": "^4.3.16",
-        "@types/mocha": "^10.0.6",
-        "chai": "^4.2.0",
-        "ts-mocha": "^10.0.0"
-    },
-    "dependencies": {
-        "@mermaid-js/mermaid-cli": "^10.9.1",
-        "@solidity-parser/parser": "^0.18.0",
-        "chalk": "^5.3.0",
-        "picocolors": "^1.0.1",
-        "ts-node": "^10.9.2"
-    }
+	"name": "sclass",
+	"version": "2.0.5",
+	"type": "module",
+	"author": "0xcompose",
+	"description": "Solidity to Class Diagram Interpreter",
+	"keywords": [
+		"sclass",
+		"solidity",
+		"class",
+		"diagram",
+		"mermaid",
+		"foundry"
+	],
+	"files": [
+		"bin/src",
+		"collections",
+		"README.md"
+	],
+	"main": "bin/src/index.js",
+	"bin": {
+		"sclass": "bin/src/index.js"
+	},
+	"scripts": {
+		"build": "rm -rf bin/src && rm -rf bin/test && npx tsc",
+		"start": "npx tsx src/index.ts test/constants/TestContract.sol",
+		"start:help": "npx tsx src/index.ts --help",
+		"start:collections": "npx tsx src/index.ts --collections",
+		"start:svg": "npx tsx src/index.ts test/constants/TestContract.sol -o out/Example.svg -f svg",
+		"start:png": "npx tsx src/index.ts test/constants/TestContract.sol -o out/Example.png -f png",
+		"start:pdf": "npx tsx src/index.ts test/constants/TestContract.sol -o out/Example.pdf -f pdf",
+		"start:md": "npx tsx src/index.ts test/constants/TestContract.sol -o out/Example.md -f md",
+		"start:mmd": "npx tsx src/index.ts test/constants/TestContract.sol -o out/Example.mmd -f mmd",
+		"start:mmd:file": "npx tsx src/index.ts test/constants/TestContract.sol -o out/Example.mmd",
+		"start:format": "npx tsx src/index.ts test/constants/TestContract.sol --format mmd",
+		"update": "yarn build && yarn publish",
+		"test": " yarn build && NODE_ENV=test mocha 'bin/test/**/*.spec.js' --timeout 20000",
+		"prepare": "husky",
+		"lint": "npx eslint src/**/*.ts",
+		"lint:fix": "npx eslint src/**/*.ts --fix",
+		"format": "npx prettier --write src/**/*.ts"
+	},
+	"license": "ISC",
+	"devDependencies": {
+		"@eslint/js": "^9.23.0",
+		"@types/chai": "^4.3.16",
+		"@types/mocha": "^10.0.6",
+		"@types/node": "^22.10.6",
+		"chai": "^4.2.0",
+		"eslint": "^9.23.0",
+		"globals": "^16.0.0",
+		"husky": "^9.1.7",
+		"mocha": "^11.1.0",
+		"tsconfig-paths": "^4.2.0",
+		"tsx": "^4.19.3",
+		"typescript": "^5.8.2",
+		"typescript-eslint": "^8.28.0"
+	},
+	"dependencies": {
+		"@mermaid-js/mermaid-cli": "^10.9.1",
+		"@nomicfoundation/slang": "^0.20.1",
+		"chalk": "^5.3.0",
+		"picocolors": "^1.0.1"
+	}
 }

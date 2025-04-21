@@ -1,23 +1,27 @@
 import fs from "fs"
-
-import { COLLECTIONS_DIR, CONTRACTS_DIR } from "../misc/constants"
-
-export function checkIfContractsExist(contracts: string[]) {
-    for (const contract of contracts) {
-        const path = `${CONTRACTS_DIR}/${contract}.sol`
-
-        if (!fs.existsSync(path)) {
-            throw new Error(`Contract ${contract} does not exist`)
-        }
-    }
-}
+import path from "path"
 
 export function checkIfCollectionsExist(collections: string[]) {
-    for (const collection of collections) {
-        const path = `${COLLECTIONS_DIR}/${collection}.json`
+	for (const collection of collections) {
+		// Get absolute path of collections
+		const pathToCollection = path.join(
+			process.cwd(),
+			"collections",
+			`${collection}.json`,
+		)
 
-        if (!fs.existsSync(path)) {
-            throw new Error(`Collection ${collection} does not exist`)
-        }
-    }
+		if (!fs.existsSync(pathToCollection)) {
+			throw new Error(`Collection ${collection} does not exist`)
+		}
+	}
+}
+
+export function isSolidityFile(filePath: string): boolean {
+	// Validate file path
+	if (!filePath.endsWith(".sol")) return false
+
+	// Validate file exists
+	if (!fs.existsSync(filePath)) return false
+
+	return true
 }
