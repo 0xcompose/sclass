@@ -15,6 +15,7 @@ sclass --help
 
 ## Usage example
 
+
 ```
 sclass src/FlattenedContract.sol --format svg --output FlattenedContract.svg
 ```
@@ -35,11 +36,11 @@ Configuration of diagram generation is evaluated via cli flags
 
 ### inputContracts
 
-Array of **file names** without `.sol` extension of contracts to be included in the diagram, you can put your contracts in `/contracts` folder and add them here
+An array of **file names** without the `.sol` extension of contracts to be included in the diagram. You can place your contracts in the `/contracts` folder and add them here.
 
 ### excludeContracts
 
-If you want to exclude some contracts, you can setup object with following fields:
+If you want to exclude some contracts, you can set up an object with the following fields:
 
 -   interfaces: boolean - whether to exclude interfaces
 -   libraries: boolean - whether to exclude libraries
@@ -54,16 +55,16 @@ If you want to exclude some contracts, you can setup object with following field
 
 ### excludeFunctions
 
-Object with following fields:
+An object with the following fields:
 
--   regExps: array of regular expressions to exclude functions by name
--   exceptions: array of function names to be included in the diagram despite of being excluded by other fields
+-   `regExps`: array of regular expressions to exclude functions by name
+-   `exceptions`: array of function names to be included in the diagram despite being excluded by other fields.
 
 ### disableFunctionParamType
 
-Boolean - whether to disable function parameter type rendering
+Boolean - whether to disable function parameter type rendering.
 
-Also filters out OpenZeppelin, LayerZero and Stargate contracts.
+This also filters out OpenZeppelin, LayerZero, and Stargate contracts.
 
 ## Use cases
 
@@ -71,19 +72,20 @@ Also filters out OpenZeppelin, LayerZero and Stargate contracts.
 -   Finding unused variables, functions
 -   Finding deprecated code blocks
 
-## Error handling
 
-If interpreter stumbles across unhandled code variation it will put "empty" to type/name or throw Error with data about unhandled invariant.
+## Error Handling
 
-Doesn't support nested mappings.
+If the interpreter encounters unhandled code variations, it will set "empty" for type/name or throw an error with data about the unhandled invariant.
 
-## Possible features
+It does not support nested mappings.
 
--   Enforcing code style and best practices
-    -   defining comments formatting
-    -   enforcing internal variable and function name to start with "\_"
-    -   validating requirements existence for address (null address) in functions with address param
--   Generating full inheritance tree for contract
+## Possible Features
+
+-   Enforcing code style and best practices:
+    -   Defining comment formatting
+    -   Enforcing that internal variable and function names start with "\_"
+    -   Validating the existence of requirements for addresses (null address) in functions with address parameters
+-   Generating a full inheritance tree for contracts
 -   Generating other types of Mermaid diagrams from Solidity code (Flowchart, Sequence, Use Case, Entity Relationship)
 -   Linking diagram elements to source code to use diagram as a navigation
 
